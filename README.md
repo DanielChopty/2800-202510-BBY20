@@ -1,7 +1,7 @@
 # 2800-202510-BBY20
 
 ## About Us
-Team Name: BBY-XX OR DTC-XX
+Team Name: BBY-20
 Team Members: 
 - Jayden Bergstrome
 - Daniel Chopty
