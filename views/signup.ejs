@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
+    <title>Sign Up</title>
 </head>
 <body>
-    <h1>Log In</h1><br>
-    <form action="/login" method="POST">
+    <h1>Sign Up</h1><br>
+    <form action="/signup" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" name="name" required><br>
+
         <label for="email">Email:</label>
         <input type="email" name="email" required><br>
 
         <label for="password">Password:</label>
         <input type="password" name="password" required><br>
 
-        <button type="submit">Log In</button>
+        <button type="submit">Sign Up</button>
     </form>
 
     <% if (errorMessage) { %>
