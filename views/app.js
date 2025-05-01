@@ -168,3 +168,73 @@ app.use((req, res) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+
+// --------- Multer for Profile Picture Upload ---------
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    const allowed = /jpeg|jpg|png|gif/;
+    const isValid = allowed.test(file.mimetype);
+    cb(null, isValid);
+  }
+});
+
+// --- Updated Upload & Profile Route ---
+/*replaced*/, upload.single('profilePic'), (req, res) => {
+  if (!req.session.username) return res.redirect('/login');
+
+  const profilePicPath = '/uploads/' + req.file.filename;
+  req.session.profilePic = profilePicPath;
+
+  res.redirect('/profile');
+});
+
+
+const { database } = require('./databaseConnection'); // MongoDB client
+
+app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) => {
+  if (!req.session.username) return res.redirect('/login');
+  const profilePicPath = '/uploads/' + req.file.filename;
+
+  try {
+    await database.connect();
+    const users = database.db().collection('users');
+    await users.updateOne(
+      { username: req.session.username },
+      { $set: { profilePic: profilePicPath } }
+    );
+    res.redirect('/profile');
+  } catch (err) {
+    console.error('Error saving profile picture to DB:', err);
+    res.status(500).send('Internal server error');
+  }
+});
+
+// Serve profile page with user's data
+app.get('/profile', async (req, res) => {
+  if (!req.session.username) return res.redirect('/login');
+
+  try {
+    await database.connect();
+    const users = database.db().collection('users');
+    const user = await users.findOne({ username: req.session.username });
+
+    res.render('profile', { user });
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+    res.status(500).send('Internal server error');
+  }
+});

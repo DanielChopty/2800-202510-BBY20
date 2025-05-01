@@ -9,6 +9,9 @@ const bcrypt = require('bcrypt');        // bcrypt for password hashing
 const Joi = require('joi');              // Joi for data validation
 const { database } = require('./databaseConnection'); // MongoDB connection setup
 const saltRounds = 12;                   // Number of salt rounds for bcrypt hashing
+const multer = require('multer');
+const path = require('path');
+const { database } = require('./databaseConnection'); // MongoDB client
 
 // Load MongoDB credentials and session settings from environment variables
 const mongodb_host = process.env.MONGODB_HOST;
@@ -22,6 +25,24 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 const app = express();
 const port = process.env.PORT || 3000;  // Use the port specified in the environment or default to 3000
 const expireTime = 60 * 60 * 1000;      // Set session expiration time to 1 hour (in milliseconds)
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'public/uploads/');
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname));
+    }
+  });
+  
+  const upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+      const allowed = /jpeg|jpg|png|gif/;
+      const isValid = allowed.test(file.mimetype);
+      cb(null, isValid);
+    }
+  });
 
 // Set EJS as the templating engine for views
 app.set('view engine', 'ejs');
@@ -144,15 +165,39 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Profile page route: Display the logged-in user's page
-app.get('/profile', (req, res) => {
-    if (!req.session.authenticated) { // If the user is not authenticated, redirect to the homepage
-        return res.redirect('/');
+// Upload route to store profile picture path in DB
+app.post('/upload-profile-pic', upload.single('profilePic'), async (req, res) => {
+    if (!req.session.username) return res.redirect('/login');
+    const profilePicPath = '/uploads/' + req.file.filename;
+  
+    try {
+      await database.connect();
+      const users = database.db().collection('users');
+      await users.updateOne(
+        { username: req.session.username },
+        { $set: { profilePic: profilePicPath } }
+      );
+      res.redirect('/profile');
+    } catch (err) {
+      console.error('Error saving profile picture to DB:', err);
+      res.status(500).send('Internal server error');
     }
+  });
 
-    // Render the 'profile' view and pass the username to the template
-    res.render('profile', { username: req.session.username });
-});
+// Profile route shows profile image
+app.get('/profile', async (req, res) => {
+    if (!req.session.username) return res.redirect('/login');
+  
+    try {
+      await database.connect();
+      const users = database.db().collection('users');
+      const user = await users.findOne({ username: req.session.username });
+      res.render('profile', { user });
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      res.status(500).send('Internal server error');
+    }
+  });
 
 // Logout route: Destroy the session and redirect to the homepage
 app.get('/logout', (req, res) => {
