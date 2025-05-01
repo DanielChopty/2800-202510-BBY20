@@ -1,18 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>About</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About - BBY-20</title>
+
+  <!-- Bootstrap 5 CDN for styling -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Using Animate.css for animations-->
+
+  <link 
+  rel="stylesheet" 
+  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+
+
+
+
+  <!-- General Styles -->
+  <style>
+   
+    .header-section {
+      background-color: #1E388A; 
+    }
+
+    /* This class is used to style the topic boxes */
+    .topic {
+      border: 1px solid #000000; 
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      
+    }
+
+   
+    .section-title {
+      color: #101111; 
+    }
+
+
+    /* Animations to the page */
+
+    /* Apply transition to the transform property */
+    .topic p {
+  transition: transform 0.3s ease-in-out; 
+    }
+/* Scale up slightly on hover */
+    .topic p:hover {
+  transform: scale(1.05); 
+    }
+
+/* Apply transition to the transform property */
+    h5 {
+  transition: transform 0.3s ease-in-out; 
+  font-family: Roboto Slab;
+    }   
+
+ /* Scale up slightly on hover */
+    h5:hover {
+  transform: scale(1.05);
+    }
+
+    /* Using different font for headings */
+    h2{
+      font-family:Roboto Slab;
+    }
+      h1{
+        font-family: Roboto Slab;
+        color:white
+      }
+
+      .footer{
+        color:white
+      }
+
+      /* Making emojis inline */
+      /*  */
+      .emoji {
+    display: inline-block;
+    animation: timedBounce 6s infinite;
+      }
+
+      /* How the exact bounce physics work */
+      @keyframes timedBounce {
+  0%   { transform: translateY(0); }
+  5%   { transform: translateY(-20px); }
+  10%  { transform: translateY(0); }
+  100% { transform: translateY(0); }
+}
+
+      
+
+
+    </style>
+
     </head>
- <body>
-  Team Name: BBY-20
-  Team Members: 5
-  <ul>
-    <li> Jayden Bergstrome </li>
-    <li> Baltaj Bhandal </li>
-    <li> Mykyta Bozhanov</li>
-    <li> Daniel Chopty </li>
-    <li> Jun Morimoto </li>
-  </ul>
- </body>
+
+    <body>
+
+
+  <!-- Header / Logo placeholder -->
+  <header class="header-section py-4 text-center">
+    <!-- Replace this with an image tag when logo gets made -->
+    <h1 class="mb-0">BBY-20</h1>
+  </header>
+
+  <!-- Our Team Section -->
+   <!-- Describes common traits within our team -->
+  <section class="container my-5">
+    <h2 class="section-title mb-4">Our Team</h2>
+
+    <!-- Topic 1 -->
+    <div class="topic">
+      <h5>Dedication</h5>
+      <p>
+        We don't walk way from a problem
+        just because it's tough. If something is buggy or not working, we keep
+        at it until it is solid. Deadlines and quality matter so we always try and 
+        do our work the best way possible. Whether it's a team activity
+        or solo late-night coding, we're here to finish what we start.
+      </p>
+    </div>
+
+    <!-- Topic 2 -->
+    <div class="topic">
+      <h5>Creativity</h5>
+      <p>
+      For us, creativity shows up in clean code and smart solutions. We like finding
+      better ways of doing things. Whether that's simplifying a messy function
+      or designing a smoother user flow. We enjoy the process of
+      exploring and iterating for a better end product.
+
+      </p>
+    </div>
+
+    <!-- Topic 3-->
+    <div class="topic">
+      Teamwork <span class="emoji">🤝</span>
+
+
+
+      <p>
+        We're not just teammates, we're problem solvers who are 
+        always determing to find the best fix possible. Everyone brings different
+        strengths to the table. We keep things open, honest and supportive.
+        At the end of the day, good teamwork translates to a better codebase.
+      
+      </p>
+    </div>
+
+  
+  </section>
+
+  <!-- Our Goal Section -->
+  <section class="container my-5 ">
+    <h2 class="section-title mb-3">Our Goal</h2>
+    <p>
+     Our goal is simple, make an app that connects citizens and city officials by providing
+     an interactive platform for one-click polls and feedback on local 
+     projects.
+    </p>
+  </section>
+
+  <!-- Footer for the page -->
+  <footer class="header-section py-4 text-center">
+    <h5 class="footer"> 
+     
+      BBY-20
+    
+    </h5>
+
+  </footer>
+
+</body>
 </html>
