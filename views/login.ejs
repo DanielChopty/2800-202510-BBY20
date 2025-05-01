@@ -1,24 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log In</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
 </head>
-<body>
-    <h1>Log In</h1><br>
-    <form action="/login" method="POST">
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
+<body class="bg-light">
 
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow border-0 p-4 rounded-4" style="max-width: 400px; width: 100%;">
+      <h2 class="text-center mb-4" style="color: #003366;">Log In</h2> <!-- Deep Blue -->
 
-        <button type="submit">Log In</button>
-    </form>
+      <form action="/login" method="POST">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            required
+          />
+        </div>
 
-    <% if (errorMessage) { %>
-        <p style="color: red;"><%= errorMessage %></p>
-    <% } %>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            required
+          />
+        </div>
+
+        <% if (errorMessage) { %>
+          <div class="alert alert-danger py-2">
+            <%= errorMessage %>
+          </div>
+        <% } %>
+
+        <div class="d-grid mt-4">
+          <button
+            type="submit"
+            class="btn text-white"
+            style="background-color: #f36f21;" <!-- Civic Orange -->
+          >
+            Log In
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
