@@ -38,6 +38,14 @@
         Log Out
       </a>
     </div>
+    <form action="/upload-profile" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="profileImage" class="form-label">Upload New Profile Picture</label>
+          <input class="form-control" type="file" id="profileImage" name="profileImage" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+      
   </div>
 
   <!-- Bootstrap JS (optional) -->
