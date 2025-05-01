@@ -18,23 +18,32 @@
         <img src="/images/default-profile.png"
              alt="Profile Picture"
              class="rounded-circle me-4 border border-3"
-             style="width: 120px; height: 120px; object-fit: cover; border-color: #00bfff;" /> <!-- Sky Blue -->
+             style="width: 120px; height: 120px; object-fit: cover; border-color: #00bfff;" />
 
         <div>
-          <h2 class="mb-0" style="color: #003366;">Hello, <%= username %>!</h2> <!-- Deep Blue -->
+          <h2 class="mb-0" style="color: #003366;">Hello, <%= username %>!</h2>
           <p class="text-muted">Welcome back to your civic dashboard.</p>
         </div>
       </div>
+
+      <!-- Upload Profile Picture Form -->
+      <form action="/upload-profile-picture" method="POST" enctype="multipart/form-data" class="mb-4">
+        <div class="mb-3">
+          <label for="profilePic" class="form-label">Upload Profile Picture</label>
+          <input class="form-control" type="file" id="profilePic" name="profilePic" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
 
       <hr>
 
       <p>Your insights help shape local projects. Vote on new polls, share ideas, and see feedback from your neighbors.</p>
 
-      <div class="alert text-dark mb-4" style="background-color: #fcd34d;"> <!-- Warm Yellow -->
+      <div class="alert text-dark mb-4" style="background-color: #fcd34d;">
         You have <strong>3 new polls</strong> to vote on!
       </div>
 
-      <a href="/logout" class="btn text-white" style="background-color: #f36f21;"> <!-- Civic Orange -->
+      <a href="/logout" class="btn text-white" style="background-color: #f36f21;">
         Log Out
       </a>
     </div>
