@@ -11,7 +11,6 @@ const { database } = require('./databaseConnection'); // MongoDB connection setu
 const saltRounds = 12;                   // Number of salt rounds for bcrypt hashing
 const multer = require('multer');
 const path = require('path');
-const { database } = require('./databaseConnection'); // MongoDB client
 
 // Load MongoDB credentials and session settings from environment variables
 const mongodb_host = process.env.MONGODB_HOST;
