@@ -216,8 +216,6 @@ app.get('/profile', async (req, res) => {
         return res.redirect('/');
       }
   
-      await database.connect();
-  
       const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
       const user = await userCollection.findOne({ email: req.session.email });
   
