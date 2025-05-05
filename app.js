@@ -223,7 +223,7 @@ app.get('/profile', async (req, res) => {
   
       res.render('profile', {
         title: 'Profile',
-        name: user.name
+        username: user.name
       });
     } catch (error) {
       console.error('Error rendering profile page:', error);
