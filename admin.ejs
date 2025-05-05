@@ -1,0 +1,33 @@
+<div class="container mt-5">
+    <h1>Admin Dashboard</h1>
+    <table class="table table-bordered mt-4">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(u => { %>
+          <tr>
+            <td><%= u.name %></td>
+            <td><%= u.email %></td>
+            <td><%= u.user_type %></td>
+            <td>
+              <% if (u._id.toString() !== user._id.toString()) { %>
+                <% if (u.user_type === 'admin') { %>
+                  <a href="/demote/<%= u._id %>" class="btn btn-danger btn-sm">Demote</a>
+                <% } else { %>
+                  <a href="/promote/<%= u._id %>" class="btn btn-success btn-sm">Promote</a>
+                <% } %>
+              <% } else { %>
+                <span class="text-muted">You</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
