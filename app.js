@@ -64,10 +64,11 @@ const path = require('path');
 // Set up multer storage configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/uploads'); // Directory where images will be saved
+    const uploadDir = path.join(__dirname, 'public', 'uploads'); // Use absolute path
+    cb(null, uploadDir); // Ensure the upload folder is correctly referenced
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Rename file to avoid conflicts
+    cb(null, Date.now() + path.extname(file.originalname)); // Use timestamp for uniqueness
   }
 });
 
