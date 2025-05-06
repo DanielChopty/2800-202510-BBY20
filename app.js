@@ -320,9 +320,19 @@ function isAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-// Middleware to check if a user is an admin
+// Middleware to check if a user is authenticated and an admin
 function isAdmin(req, res, next) {
-  if (req.session.user && req.session.user.user_type === 'admin') return next();
+  // Check if the user is not authenticated
+  if (!req.session.authenticated) {
+    return res.redirect('/login'); // Redirect to login page if not authenticated
+  }
+
+  // If authenticated, check if the user is an admin
+  if (req.session.user && req.session.user.user_type === 'admin') {
+    return next(); // Proceed to the next middleware or route handler if user is an admin
+  }
+
+  // If authenticated but not an admin, show the 403 Forbidden page
   res.status(403).render('403', { title: 'Forbidden' });
 }
 
