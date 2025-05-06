@@ -57,6 +57,22 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware for multer (used for file uploads)
+const multer = require('multer');
+const path = require('path');
+
+// Set up multer storage configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/uploads'); // Directory where images will be saved
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Rename file to avoid conflicts
+  }
+});
+
+const upload = multer({ storage: storage });
+
 /* ROUTES */
 
 // Home page
