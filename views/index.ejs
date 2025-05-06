@@ -21,8 +21,8 @@
     <% if (authenticated) { %>
       <h2 class="mt-5">Hello, <%= username %>!</h2>
       <div class="d-flex gap-3 mt-3 justify-content-center">
+        <a href="/logout" class="btn text-white" style="background-color: #f36f21;">Log Out</a>
         <a href="/profile" class="btn btn-primary">Go to Profile Page</a>
-        <a href="/logout" class="btn btn-danger">Log Out</a>
         
         <% if (user && user.user_type === 'admin') { %>
           <a href="/admin" class="btn btn-primary">Go to Admin Page</a>
