@@ -71,22 +71,43 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpg|jpeg|png|gif/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
-app.post('/upload-profile-picture', upload.single('profilePic'), (req, res) => {
-  if (req.file) {
-    // Store the image path in the database, e.g., in the user's profile
-    const profilePicPath = '/uploads/' + req.file.filename; // Image path relative to public directory
-    // Example: Save the path to the user profile in your database
-    // User.findByIdAndUpdate(req.user.id, { profilePic: profilePicPath });
-
-    res.redirect('/profile'); // Redirect back to profile page
-  } else {
-    res.send('Please upload a valid image file');
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only images are allowed'));
   }
 });
 
 /* ROUTES */
+
+// Route to upload a profile picture
+app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {
+  if (req.file) {
+    // Store the image path in the database, e.g., in the user's profile
+    const profilePicPath = '/uploads/' + req.file.filename; // Image path relative to public directory
+    
+    try {
+      const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+      await userCollection.updateOne(
+        { email: req.session.email }, // Find the logged-in user by email
+        { $set: { profilePic: profilePicPath } } // Update the profilePic field
+      );
+      res.redirect('/profile'); // Redirect back to profile page
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      res.status(500).send('Error updating profile picture');
+    }
+  } else {
+    res.send('Please upload a valid image file');
+  }
+});
 
 // Home page
 app.get('/', (req, res) => {
