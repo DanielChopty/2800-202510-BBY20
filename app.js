@@ -74,7 +74,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    const filetypes = /jpg|jpeg|png|gif/;
+    const filetypes = /jpg|jpeg|png|gif|webp/;
     const mimetype = filetypes.test(file.mimetype);
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
@@ -91,7 +91,7 @@ const upload = multer({
 app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {
   if (req.file) {
     // Store the image path in the database, e.g., in the user's profile
-    const profilePicPath = '/uploads/' + req.file.filename; // Image path relative to public directory
+    const profilePicPath = 'uploads/' + req.file.filename; // Image path relative to public directory
     
     try {
       const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
