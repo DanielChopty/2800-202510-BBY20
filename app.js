@@ -276,8 +276,9 @@ app.get('/profile', async (req, res) => {
   
       res.render('profile', {
         title: 'Profile',
-        username: user.name
-      });
+        username: user.name,
+        user: user // pass the full user object
+      });      
     } catch (error) {
       console.error('Error rendering profile page:', error);
       res.status(500).render('500', { title: 'Server Error' });
