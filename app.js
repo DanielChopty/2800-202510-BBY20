@@ -65,6 +65,7 @@ const path = require('path');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = path.join(__dirname, 'public', 'uploads'); // Use absolute path
+    console.log('Upload Directory:', uploadDir); // Log the upload directory path
     cb(null, uploadDir); // Ensure the upload folder is correctly referenced
   },
   filename: function (req, file, cb) {
@@ -90,10 +91,11 @@ const upload = multer({
 
 // Route to upload a profile picture
 app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {
+  console.log('File Upload Attempt:', req.file); // Log the file upload details
   if (req.file) {
-    // Store the image path in the database, e.g., in the user's profile
-    const profilePicPath = 'uploads/' + req.file.filename; // Image path relative to public directory
-    
+    const profilePicPath = 'uploads/' + req.file.filename;
+    console.log('Profile Pic Path:', profilePicPath); // Log the final file path
+
     try {
       const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
       await userCollection.updateOne(
