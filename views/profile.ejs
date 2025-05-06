@@ -15,7 +15,8 @@
   <div class="container my-5">
     <div class="card shadow border-0 rounded-4 p-4">
       <div class="d-flex align-items-center mb-4">
-        <img src="/images/default-profile.png"
+        <!-- Dynamically show uploaded image or default -->
+        <img src="/<%= user && user.profilePic ? user.profilePic : 'images/default-profile.png' %>"
              alt="Profile Picture"
              class="rounded-circle me-4 border border-3"
              style="width: 120px; height: 120px; object-fit: cover; border-color: #00bfff;" />
@@ -26,13 +27,11 @@
         </div>
       </div>
 
-      <!-- Upload Profile Picture Form -->
-      <form action="/upload-profile-picture" method="POST" enctype="multipart/form-data" class="mb-4">
-        <div class="mb-3">
-          <label for="profilePic" class="form-label">Upload Profile Picture</label>
-          <input class="form-control" type="file" id="profilePic" name="profilePic" accept="image/*" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+      <h2>User Profile</h2>
+
+      <form action="/upload-profile-picture" method="POST" enctype="multipart/form-data">
+        <input type="file" name="profilePic" accept="image/*" required>
+        <button type="submit" class="btn btn-primary btn-sm ms-2">Upload</button>
       </form>
 
       <hr>
