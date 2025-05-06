@@ -97,9 +97,9 @@ const upload = multer({
   }
 });
 
-/* ROUTES */
+/* NORMAL ROUTES */
 
-// Route to upload a profile picture
+// Upload profile picture
 app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {
   console.log('File Upload Attempt:', req.file); // Log the file upload details
   if (req.file) {
@@ -120,6 +120,11 @@ app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res
   } else {
     res.send('Please upload a valid image file');
   }
+});
+
+// About Us page
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/about.html'));
 });
 
 // Home page
