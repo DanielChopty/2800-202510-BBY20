@@ -90,6 +90,12 @@ app.get('/', (req, res) => {
   }
 });
 
+// Main page
+app.get('/main', (req, res) =>{
+  res.render('main');
+});
+
+
 // Signup form
 app.get('/signup', (req, res) => {
   try {
@@ -316,6 +322,11 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
+
+// Page for creating a poll
+app.get('/createPoll', (req, res) =>{
+  res.render('createPoll');
+})
 
 /* ERROR HANDLING */
 
