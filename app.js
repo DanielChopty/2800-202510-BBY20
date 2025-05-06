@@ -59,7 +59,17 @@ app.use((req, res, next) => {
 
 // Middleware for multer (used for file uploads)
 const multer = require('multer');
+
 const path = require('path');
+const fs = require('fs');
+
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+
+// Check if the directory exists, and if not, create it
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Uploads directory created.');
+}
 
 // Set up multer storage configuration
 const storage = multer.diskStorage({
