@@ -26,14 +26,21 @@
         </div>
       </div>
 
-      <!-- Upload Profile Picture Form -->
-      <form action="/upload-profile-picture" method="POST" enctype="multipart/form-data" class="mb-4">
-        <div class="mb-3">
-          <label for="profilePic" class="form-label">Upload Profile Picture</label>
-          <input class="form-control" type="file" id="profilePic" name="profilePic" accept="image/*" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-      </form>
+      <h2>User Profile</h2>
+
+<form action="/upload-profile-picture" method="POST" enctype="multipart/form-data">
+  <input type="file" name="profilePic" accept="image/*" required>
+  <button type="submit">Upload</button>
+</form>
+
+<!-- Display the profile picture if it exists -->
+<% if (user.profilePic) { %>
+  <img src="<%= user.profilePic %>" 
+  alt="Profile Picture" 
+  style="width: 150px; height: 150px; border-radius: 50%;">
+<% } else { %>
+  <p>No profile picture uploaded yet.</p>
+<% } %>
 
       <hr>
 
