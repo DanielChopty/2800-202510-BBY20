@@ -73,6 +73,19 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+app.post('/upload-profile-picture', upload.single('profilePic'), (req, res) => {
+  if (req.file) {
+    // Store the image path in the database, e.g., in the user's profile
+    const profilePicPath = '/uploads/' + req.file.filename; // Image path relative to public directory
+    // Example: Save the path to the user profile in your database
+    // User.findByIdAndUpdate(req.user.id, { profilePic: profilePicPath });
+
+    res.redirect('/profile'); // Redirect back to profile page
+  } else {
+    res.send('Please upload a valid image file');
+  }
+});
+
 /* ROUTES */
 
 // Home page
