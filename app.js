@@ -317,6 +317,77 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+
+// Adding a route to fetch all available polls from the database
+
+// fetching available polls
+
+/*Important details  */
+// Database can be named anything (Ex. polls)
+// corresponds to the MONGODB_DATABASE_POLLS variable in the .env file
+// Collection should be named 'polls'
+// Each document in the polls collection should represent one poll
+// Some of the fields that could be in it  (in JSON format):
+
+// {
+ // "_id": ObjectId("..."),
+ // "title": "Should public transport be free?",
+ // "tags": ["#PublicOpinion", "#DailyLife"],
+//  "available": true,
+//  "choices": [
+ //   { "text": "Yes", "votes": 12 },
+  //  { "text": "No", "votes": 8 },
+  //  { "text": "Maybe", "votes": 3 }
+    // ],
+  // "createdBy": "user123",
+  // "createdAt": ISODate("2024-09-01T10:00:00Z")
+    // }
+
+
+// "_id": ObjectId("...") - automatically generated unique identifier for this poll my MongoDB 
+// "title": "Should public transport be free?" - the title of the poll (a string)
+// "tags": ["#PublicOpinion", "#DailyLife"] - an array of tags for the poll (strings)
+// "available": true - Determines whether users are able to see the poll (boolean)
+
+//"choices": [
+ //   { "text": "Yes", "votes": 12 },
+  //  { "text": "No", "votes": 8 },  - An array of objects 
+  //  { "text": "Maybe", "votes": 3 } - stores each voting option and current 
+    // ]                              number of votes
+
+    // "createdBy": "user123" - User who created this poll
+    //  "createdAt": ISODate("2024-09-01T10:00:00Z") - Timestampe when the poll was created
+
+    /* Additional Notes */
+    // Comments should be added to the list
+
+
+app.get('/polls', async (req, res) => {
+  try {
+    // Getting polls collection from the database using the variable MONGODB_DATABASE_POLLS
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const polls = await pollsCollection.find({ available: true }).toArray();
+    // Renders the main.ejs template
+    res.render('main', {
+      title: 'Available Polls',
+      // passing list of polls to the template
+      polls: polls || [],
+      // Passing login status
+      // Making sure a user is active and session is valid
+      authenticated: req.session.authenticated || false,
+      username: req.session.username || null,
+      user: req.session.user || null
+    });
+
+  } catch (error) {
+    // Error handling if the main.ejs page doesn't exist
+    console.error('Error fetching polls:', error);
+    res.status(500).render('404', { title: 'Server Error' });
+  }
+});
+
+
+
 /* ERROR HANDLING */
 
 // 404 handler (catch-all route)
