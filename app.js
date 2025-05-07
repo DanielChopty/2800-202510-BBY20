@@ -3,6 +3,7 @@ require('dotenv').config();
 
 // Import necessary dependencies
 const express = require('express');
+const axios = require('axios');
 const session = require('express-session');
 const MongoStore = require('connect-mongo'); // For storing sessions in MongoDB
 const bcrypt = require('bcrypt'); // For hashing passwords
@@ -21,7 +22,8 @@ const {
   MONGODB_DATABASE_SESSIONS,
   MONGODB_SESSION_SECRET,
   NODE_SESSION_SECRET,
-  PORT
+  PORT,
+  OPENWEATHER_API_KEY
 } = process.env;
 
 const app = express();
@@ -98,6 +100,29 @@ const upload = multer({
 });
 
 /* NORMAL ROUTES */
+
+// Location and weather
+const API_KEY = process.env.OPENWEATHER_API_KEY; 
+const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
+app.get('/weather', async (req, res) => {
+  const { location } = req.query; // location parameter (city name)
+
+  if (!location) {
+    return res.send('Location is required.');
+  }
+
+  try {
+    const response = await axios.get(`${BASE_URL}?q=${location}&appid=${API_KEY}&units=metric`);
+    const weatherData = response.data;
+    
+    // Send weather data to the view (EJS)
+    res.render('weather', { weather: weatherData });
+  } catch (error) {
+    console.error(error);
+    res.send('Error fetching weather data.');
+  }
+});
 
 // Upload profile picture
 app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {

@@ -5,27 +5,27 @@
     </div>
 
     <% if (weather) { %>
-  <!-- Weather widget (right aligned) -->
-  <div class="d-flex justify-content-end mt-4">
-    <div class="d-flex align-items-center bg-dark rounded px-3 py-2 shadow" style="color: white;">
-      
-      <!-- Variable weather icon -->
-      <img src="https://openweathermap.org/img/wn/<%= weather.icon %>@2x.png" 
-           alt="Weather Icon" 
-           style="width: 40px; height: 40px;" />
-      
-      <!-- Temperature and description -->
-      <div class="ms-2">
-        <div><strong><%= weather.temp %>°C</strong> — 
-          <!-- Capitalize first letter of weather description -->
-          <%= weather.desc.charAt(0).toUpperCase() + weather.desc.slice(1) %>
+      <!-- Weather widget (right aligned) -->
+      <div class="d-flex justify-content-end mt-4">
+        <div class="d-flex align-items-center bg-dark rounded px-3 py-2 shadow" style="color: white;">
+          
+          <!-- Weather icon -->
+          <img src="https://openweathermap.org/img/wn/<%= weather.weather[0].icon %>@2x.png" 
+               alt="Weather Icon" 
+               style="width: 40px; height: 40px;" />
+          
+          <!-- Temperature and description -->
+          <div class="ms-2">
+            <div><strong><%= weather.main.temp %>°C</strong> — 
+              <!-- Capitalize first letter of weather description -->
+              <%= weather.weather[0].description.charAt(0).toUpperCase() + weather.weather[0].description.slice(1) %>
+            </div>
+            <!-- Location name -->
+            <small class="text-muted"><%= weather.name %></small>
+          </div>
         </div>
-        <!-- Location name -->
-        <small class="text-muted"><%= weather.location %></small>
       </div>
-    </div>
-  </div>
-<% } %>
+    <% } %>    
 
   </footer>
   
