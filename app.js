@@ -142,11 +142,6 @@ app.get('/', async (req, res) => {
   }
 });
 
-// For 404 error handling, pass `weather` and `city` to the view
-app.use((req, res, next) => {
-  res.status(404).render('404', { weather: null, city: null });
-});
-
 // Upload profile picture
 app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {
   console.log('File Upload Attempt:', req.file); // Log the file upload details
