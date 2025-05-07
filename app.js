@@ -374,6 +374,7 @@ app.get('/polls', async (req, res) => {
       polls: polls || [],
       // Passing login status
       // Making sure a user is active and session is valid
+      // If not system defaults to false / null
       authenticated: req.session.authenticated || false,
       username: req.session.username || null,
       user: req.session.user || null
@@ -382,10 +383,50 @@ app.get('/polls', async (req, res) => {
   } catch (error) {
     // Error handling if the main.ejs page doesn't exist
     console.error('Error fetching polls:', error);
-    res.status(500).render('404', { title: 'Server Error' });
+    res.status(404).render('404', { title: 'Page Not Found' });
   }
 });
 
+
+// Adding a route to handle the submission of a vote on a poll
+
+app.post('/vote', async (req, res) => {
+  const { pollId, choiceText } = req.body;
+
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+
+    // Find the poll
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
+
+    // Check if the poll exists
+    if (!poll) {
+      return res.status(404).send('Poll not found');
+    }
+
+    // Find the index of the selected choice
+    const choiceIndex = poll.choices.findIndex(c => c.text === choiceText);
+
+    if (choiceIndex === -1) {
+      return res.status(400).send('Invalid choice');
+    }
+
+    // Increment the vote count for the selected choice
+    poll.choices[choiceIndex].votes += 1;
+
+    // Update the poll document in the database
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(pollId) },
+      { $set: { choices: poll.choices } }
+    );
+
+    // Redirecting the user to the main.ejs page
+    res.redirect('/main'); 
+  } catch (error) {
+    console.error('Error processing vote:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
 
 
 /* ERROR HANDLING */
