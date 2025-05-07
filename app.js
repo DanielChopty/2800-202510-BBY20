@@ -3,7 +3,6 @@ require('dotenv').config();
 
 // Import necessary dependencies
 const express = require('express');
-const axios = require('axios');
 const session = require('express-session');
 const MongoStore = require('connect-mongo'); // For storing sessions in MongoDB
 const bcrypt = require('bcrypt'); // For hashing passwords
@@ -27,6 +26,7 @@ const {
 } = process.env;
 
 const app = express();
+const axios = require('axios');
 const port = PORT || 3000;
 const expireTime = 60 * 60 * 1000; // 1 hour session expiration
 
@@ -102,25 +102,30 @@ const upload = multer({
 /* NORMAL ROUTES */
 
 // Location and weather
-const API_KEY = process.env.OPENWEATHER_API_KEY; 
-const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
-
-app.get('/weather', async (req, res) => {
-  const { location } = req.query; // location parameter (city name)
-
-  if (!location) {
-    return res.send('Location is required.');
-  }
-
+app.get('/', async (req, res) => {
   try {
-    const response = await axios.get(`${BASE_URL}?q=${location}&appid=${API_KEY}&units=metric`);
-    const weatherData = response.data;
-    
-    // Send weather data to the view (EJS)
-    res.render('weather', { weather: weatherData });
-  } catch (error) {
-    console.error(error);
-    res.send('Error fetching weather data.');
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+
+    // Get location from IP
+    const ipApiUrl = `http://ip-api.com/json/${ip}`;
+    const ipResponse = await axios.get(ipApiUrl);
+    const location = ipResponse.data;
+
+    if (location.status !== 'success') {
+      return res.render('index', { weather: null });
+    }
+
+    const { lat, lon, city } = location;
+
+    // Fetch weather from OpenWeather
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+    const weatherResponse = await axios.get(weatherUrl);
+    const weather = weatherResponse.data;
+
+    res.render('index', { weather });
+  } catch (err) {
+    console.error('Weather fetch error:', err.message);
+    res.render('index', { weather: null });
   }
 });
 
