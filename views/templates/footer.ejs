@@ -3,5 +3,18 @@
       <!-- Copyright notice, we can probably add some other stuff -->
       <p class="mb-0">&copy; BBY-20, All rights reserved.</p>
     </div>
+    
+    <% if (weather) { %>
+      <div class="d-flex justify-content-center mt-4">
+        <div class="d-flex align-items-center bg-dark rounded px-3 py-2 shadow" style="color: white;">
+          <img src="https://openweathermap.org/img/wn/<%= weather.icon %>@2x.png" alt="Weather Icon" style="width: 40px; height: 40px;" />
+          <div class="ms-2">
+            <div><strong><%= weather.temp %>°C</strong> — <%= weather.desc.charAt(0).toUpperCase() + weather.desc.slice(1) %></div>
+            <small class="text-muted"><%= weather.location %></small>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
   </footer>
   
