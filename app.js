@@ -104,29 +104,47 @@ const upload = multer({
 // Location and weather
 app.get('/', async (req, res) => {
   try {
-    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    console.log('IP Address:', ip);  // Log the IP address to see what you are getting
+
+    // If the IP is a localhost address, default to a test IP
+    if (ip === '::1' || ip === '127.0.0.1') {
+      ip = '8.8.8.8'; // Use a known valid IP address for testing (Google's DNS IP)
+    }
 
     // Get location from IP
     const ipApiUrl = `http://ip-api.com/json/${ip}`;
     const ipResponse = await axios.get(ipApiUrl);
     const location = ipResponse.data;
 
+    console.log('Location Data:', location);  // Log the location response
+
     if (location.status !== 'success') {
-      return res.render('index', { weather: null });
+      console.log('Location data is missing or invalid');
+      return res.render('index', { weather: null, city: null });
     }
 
-    const { lat, lon, city } = location;
+    const { lat, lon, city } = location;  // Extract city along with lat and lon
+    console.log('City:', city);  // Log the city to check if it's passed correctly
 
     // Fetch weather from OpenWeather
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
     const weatherResponse = await axios.get(weatherUrl);
     const weather = weatherResponse.data;
 
-    res.render('index', { weather });
+    console.log('Weather Data:', weather);  // Log weather data to check its contents
+
+    // Pass both weather and city to the view
+    res.render('index', { weather, city: city || weather.name });  // Fallback to weather.name if city is unavailable
   } catch (err) {
     console.error('Weather fetch error:', err.message);
-    res.render('index', { weather: null });
+    res.render('index', { weather: null, city: null });  // Render with null values if there's an error
   }
+});
+
+// For 404 error handling, pass `weather` and `city` to the view
+app.use((req, res, next) => {
+  res.status(404).render('404', { weather: null, city: null });
 });
 
 // Upload profile picture

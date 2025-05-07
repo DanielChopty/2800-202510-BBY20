@@ -1,30 +1,26 @@
 <footer class="text-center text-white py-4" style="background-color: #003366;">
-    <div class="container">
-      <!-- Copyright notice, we can probably add some other stuff -->
-      <p class="mb-0">&copy; BBY-20, All rights reserved.</p>
-    </div>
+  <div class="container d-flex justify-content-between align-items-center">
+    <!-- Copyright notice -->
+    <p class="mb-0">&copy; BBY-20, All rights reserved.</p>
 
     <% if (weather) { %>
       <!-- Weather widget (right aligned) -->
-      <div class="d-flex justify-content-end mt-4">
-        <div class="d-flex align-items-center bg-dark rounded px-3 py-2 shadow" style="color: white;">
-          <!-- Weather icon -->
-          <img src="https://openweathermap.org/img/wn/<%= weather.weather[0].icon %>@2x.png" 
-               alt="Weather Icon" 
-               style="width: 40px; height: 40px;" />
-          
-          <!-- Temperature and description -->
-          <div class="ms-2">
-            <div><strong><%= weather.main.temp %>°C</strong> — 
-              <!-- Capitalize first letter of weather description -->
-              <%= weather.weather[0].description.charAt(0).toUpperCase() + weather.weather[0].description.slice(1) %>
-            </div>
-            <!-- Location name -->
-            <small class="text-muted"><%= weather.name %></small>
+      <div class="d-flex align-items-center bg-dark rounded px-3 py-2 shadow" style="color: white;">
+        <!-- Weather icon -->
+        <img src="https://openweathermap.org/img/wn/<%= weather.weather[0].icon %>@2x.png" 
+             alt="Weather Icon" 
+             style="width: 40px; height: 40px;" />
+        
+        <!-- Temperature and description -->
+        <div class="ms-2">
+          <div><strong><%= weather.main.temp %>°C</strong> — 
+            <!-- Capitalize first letter of weather description -->
+            <%= weather.weather[0].description.charAt(0).toUpperCase() + weather.weather[0].description.slice(1) %>
           </div>
+          <!-- Location name (using city from IP location) -->
+          <small style="color: white;"><%= city || weather.name %></small> <!-- Use city from IP if available -->
         </div>
       </div>
-    <% } %>     
-
-  </footer>
-  
+    <% } %>  
+  </div>
+</footer>
