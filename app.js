@@ -461,6 +461,118 @@ app.get('/createPoll', (req, res) =>{
   res.render('createPoll');
 })
 
+
+// Adding a route to fetch all available polls from the database
+
+// fetching available polls
+
+/*Important details  */
+// Database can be named anything (Ex. polls)
+// corresponds to the MONGODB_DATABASE_POLLS variable in the .env file
+// Collection should be named 'polls'
+// Each document in the polls collection should represent one poll
+// Some of the fields that could be in it  (in JSON format):
+
+// {
+ // "_id": ObjectId("..."),
+ // "title": "Should public transport be free?",
+ // "tags": ["#PublicOpinion", "#DailyLife"],
+//  "available": true,
+//  "choices": [
+ //   { "text": "Yes", "votes": 12 },
+  //  { "text": "No", "votes": 8 },
+  //  { "text": "Maybe", "votes": 3 }
+    // ],
+  // "createdBy": "user123",
+  // "createdAt": ISODate("2024-09-01T10:00:00Z")
+    // }
+
+
+// "_id": ObjectId("...") - automatically generated unique identifier for this poll my MongoDB 
+// "title": "Should public transport be free?" - the title of the poll (a string)
+// "tags": ["#PublicOpinion", "#DailyLife"] - an array of tags for the poll (strings)
+// "available": true - Determines whether users are able to see the poll (boolean)
+
+//"choices": [
+ //   { "text": "Yes", "votes": 12 },
+  //  { "text": "No", "votes": 8 },  - An array of objects 
+  //  { "text": "Maybe", "votes": 3 } - stores each voting option and current 
+    // ]                              number of votes
+
+    // "createdBy": "user123" - User who created this poll
+    //  "createdAt": ISODate("2024-09-01T10:00:00Z") - Timestampe when the poll was created
+
+    /* Additional Notes */
+    // Comments should be added to the list
+
+
+app.get('/polls', async (req, res) => {
+  try {
+    // Getting polls collection from the database using the variable MONGODB_DATABASE_POLLS
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const polls = await pollsCollection.find({ available: true }).toArray();
+    // Renders the main.ejs template
+    res.render('main', {
+      title: 'Available Polls',
+      // passing list of polls to the template
+      polls: polls || [],
+      // Passing login status
+      // Making sure a user is active and session is valid
+      // If not system defaults to false / null
+      authenticated: req.session.authenticated || false,
+      username: req.session.username || null,
+      user: req.session.user || null
+    });
+
+  } catch (error) {
+    // Error handling if the main.ejs page doesn't exist
+    console.error('Error fetching polls:', error);
+    res.status(404).render('404', { title: 'Page Not Found' });
+  }
+});
+
+
+// Adding a route to handle the submission of a vote on a poll
+
+app.post('/vote', async (req, res) => {
+  const { pollId, choiceText } = req.body;
+
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+
+    // Find the poll
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
+
+    // Check if the poll exists
+    if (!poll) {
+      return res.status(404).send('Poll not found');
+    }
+
+    // Find the index of the selected choice
+    const choiceIndex = poll.choices.findIndex(c => c.text === choiceText);
+
+    if (choiceIndex === -1) {
+      return res.status(400).send('Invalid choice');
+    }
+
+    // Increment the vote count for the selected choice
+    poll.choices[choiceIndex].votes += 1;
+
+    // Update the poll document in the database
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(pollId) },
+      { $set: { choices: poll.choices } }
+    );
+
+    // Redirecting the user to the main.ejs page
+    res.redirect('/main'); 
+  } catch (error) {
+    console.error('Error processing vote:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+
 /* ERROR HANDLING */
 
 // 404 handler (catch-all route)
