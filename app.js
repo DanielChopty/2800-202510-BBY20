@@ -64,41 +64,40 @@ app.use(async (req, res, next) => {
   res.locals.authenticated = req.session.authenticated || false;
   res.locals.user = req.session.user || null;
 
-  // Get weather data for all pages if needed
+  // Always attempt to fetch weather data, regardless of authentication
   try {
     let weather = null;
     let city = null;
-    
-    if (req.session.authenticated) {
-      let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
-      
-      if (ip === '::1' || ip === '127.0.0.1') {
-        ip = '8.8.8.8'; // Test IP for local environment
-      }
-  
-      const ipApiUrl = `http://ip-api.com/json/${ip}`;
-      const ipResponse = await axios.get(ipApiUrl);
-      const location = ipResponse.data;
-  
-      if (location.status === 'success') {
-        const { lat, lon, city: locationCity } = location;
-        city = locationCity;
-  
-        // Fetch weather from OpenWeather
-        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
-        const weatherResponse = await axios.get(weatherUrl);
-        weather = weatherResponse.data;
-      }
+
+    // Get IP and use it to fetch location
+    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    if (ip === '::1' || ip === '127.0.0.1') {
+      ip = '8.8.8.8'; // Test IP for local environment
     }
 
-    res.locals.weather = weather;  // Pass weather to all views
-    res.locals.city = city;        // Optionally pass city to all views
+    const ipApiUrl = `http://ip-api.com/json/${ip}`;
+    const ipResponse = await axios.get(ipApiUrl);
+    const location = ipResponse.data;
+
+    if (location.status === 'success') {
+      const { lat, lon, city: locationCity } = location;
+      city = locationCity;
+
+      // Fetch weather from OpenWeather
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+      const weatherResponse = await axios.get(weatherUrl);
+      weather = weatherResponse.data;
+    }
+
+    // Pass weather and city to all views
+    res.locals.weather = weather;
+    res.locals.city = city;
 
     next();
   } catch (err) {
     console.error('Error fetching weather data:', err);
-    res.locals.weather = null;  // In case of error, pass null weather
-    res.locals.city = null;     // In case of error, pass null city
+    res.locals.weather = null;
+    res.locals.city = null;
     next();
   }
 });
@@ -145,44 +144,43 @@ const upload = multer({
 
 /* NORMAL ROUTES */
 
-// Location and weather
+// Location + weather and index
 app.get('/', async (req, res) => {
   try {
-    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
-    console.log('IP Address:', ip);  // Log the IP address to see what you are getting
+    let weather = null;
+    let city = null;
 
-    // If the IP is a localhost address, default to a test IP
+    // Always attempt to fetch weather data, regardless of authentication
+    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
     if (ip === '::1' || ip === '127.0.0.1') {
-      ip = '8.8.8.8'; // Use a known valid IP address for testing (Google's DNS IP)
+      ip = '8.8.8.8'; // Test IP for local environment
     }
 
-    // Get location from IP
     const ipApiUrl = `http://ip-api.com/json/${ip}`;
     const ipResponse = await axios.get(ipApiUrl);
     const location = ipResponse.data;
 
-    console.log('Location Data:', location);  // Log the location response
+    if (location.status === 'success') {
+      const { lat, lon, city: locationCity } = location;
+      city = locationCity;
 
-    if (location.status !== 'success') {
-      console.log('Location data is missing or invalid');
-      return res.render('index', { weather: null, city: null });
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+      const weatherResponse = await axios.get(weatherUrl);
+      weather = weatherResponse.data;
     }
 
-    const { lat, lon, city } = location;  // Extract city along with lat and lon
-    console.log('City:', city);  // Log the city to check if it's passed correctly
-
-    // Fetch weather from OpenWeather
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
-    const weatherResponse = await axios.get(weatherUrl);
-    const weather = weatherResponse.data;
-
-    console.log('Weather Data:', weather);  // Log weather data to check its contents
-
-    // Pass both weather and city to the view
-    res.render('index', { weather, city: city || weather.name });  // Fallback to weather.name if city is unavailable
+    // Render index page with weather, city, and session data
+    res.render('index', {
+      title: 'Home',
+      authenticated: req.session.authenticated || false,
+      username: req.session.username || null,
+      user: req.session.user || null,
+      weather: weather,
+      city: city || null
+    });
   } catch (err) {
-    console.error('Weather fetch error:', err.message);
-    res.render('index', { weather: null, city: null });  // Render with null values if there's an error
+    console.error('Error fetching weather data:', err);
+    res.render('index', { weather: null, city: null });
   }
 });
 
@@ -212,21 +210,6 @@ app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res
 // About Us page
 app.get('/about', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'about.html'));
-});
-
-// Home page
-app.get('/', (req, res) => {
-  try {
-    res.render('index', {
-      title: 'Home',
-      authenticated: req.session.authenticated || false,
-      username: req.session.username || null,
-      user: req.session.user || null
-    });
-  } catch (error) {
-    console.error('Error rendering home page:', error);
-    res.status(500).render('500', { title: 'Server Error' });
-  }
 });
 
 // Main page
