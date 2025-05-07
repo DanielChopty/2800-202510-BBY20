@@ -59,6 +59,50 @@ app.use((req, res, next) => {
   next();
 });
 
+// Custom middleware to pass session data and weather to all views
+app.use(async (req, res, next) => {
+  res.locals.authenticated = req.session.authenticated || false;
+  res.locals.user = req.session.user || null;
+
+  // Get weather data for all pages if needed
+  try {
+    let weather = null;
+    let city = null;
+    
+    if (req.session.authenticated) {
+      let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+      
+      if (ip === '::1' || ip === '127.0.0.1') {
+        ip = '8.8.8.8'; // Test IP for local environment
+      }
+  
+      const ipApiUrl = `http://ip-api.com/json/${ip}`;
+      const ipResponse = await axios.get(ipApiUrl);
+      const location = ipResponse.data;
+  
+      if (location.status === 'success') {
+        const { lat, lon, city: locationCity } = location;
+        city = locationCity;
+  
+        // Fetch weather from OpenWeather
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+        const weatherResponse = await axios.get(weatherUrl);
+        weather = weatherResponse.data;
+      }
+    }
+
+    res.locals.weather = weather;  // Pass weather to all views
+    res.locals.city = city;        // Optionally pass city to all views
+
+    next();
+  } catch (err) {
+    console.error('Error fetching weather data:', err);
+    res.locals.weather = null;  // In case of error, pass null weather
+    res.locals.city = null;     // In case of error, pass null city
+    next();
+  }
+});
+
 // Middleware for multer (used for file uploads)
 const multer = require('multer');
 
