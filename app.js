@@ -36,6 +36,7 @@ app.set('view engine', 'ejs');
 // Middleware to parse form data and serve static files
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(express.static(__dirname));
 
 // Configure session store using MongoDB
 const mongoStore = MongoStore.create({
@@ -456,15 +457,17 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Page for creating a poll
 app.get('/createPoll', (req, res) =>{
   res.render('createPoll');
 })
 
+=======
+>>>>>>> 6b3d7443235b1245fbaf4450c72a8b33324d9175
 
 // Adding a route to fetch all available polls from the database
 
-// fetching available polls
 
 /*Important details  */
 // Database can be named anything (Ex. polls)
@@ -535,7 +538,21 @@ app.get('/polls', async (req, res) => {
 // Adding a route to handle the submission of a vote on a poll
 
 app.post('/vote', async (req, res) => {
+
+// Making sure user is actually logged in to vote
+if(!req.session.authenticated){
+// If they are not a 403 page gets displayed to them, not allowed them to access this feature
+  return res.status(403).render('403', { title: 'Forbidden' });
+}
+
   const { pollId, choiceText } = req.body;
+  // Variable to make sure user can only vote once on every poll
+  const userVotedPolls = req.session.votedPolls || [];
+
+  // Check if already voted on this poll
+  if (userVotedPolls.includes(pollId)) {
+    return res.status(403).send('You have already voted on this poll.');
+  }
 
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
@@ -564,6 +581,10 @@ app.post('/vote', async (req, res) => {
       { $set: { choices: poll.choices } }
     );
 
+    // Mark poll as voted
+    userVotedPolls.push(pollId);
+    req.session.votedPolls = userVotedPolls;
+
     // Redirecting the user to the main.ejs page
     res.redirect('/main'); 
   } catch (error) {
@@ -572,6 +593,13 @@ app.post('/vote', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+// Page for creating a poll
+app.get('/createPoll', (req, res) =>{
+  res.render('createPoll');
+})
+>>>>>>> 6b3d7443235b1245fbaf4450c72a8b33324d9175
 
 /* ERROR HANDLING */
 
