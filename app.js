@@ -457,14 +457,11 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 // Page for creating a poll
 app.get('/createPoll', (req, res) =>{
   res.render('createPoll');
 })
 
-=======
->>>>>>> 6b3d7443235b1245fbaf4450c72a8b33324d9175
 
 // Adding a route to fetch all available polls from the database
 
@@ -593,13 +590,10 @@ if(!req.session.authenticated){
   }
 });
 
-<<<<<<< HEAD
-=======
 // Page for creating a poll
 app.get('/createPoll', (req, res) =>{
   res.render('createPoll');
 })
->>>>>>> 6b3d7443235b1245fbaf4450c72a8b33324d9175
 
 /* ERROR HANDLING */
 
