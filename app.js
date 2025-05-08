@@ -123,10 +123,11 @@ app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res
   }
 });
 
-// About Us page
+// route to render about.ejs
 app.get('/about', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'about.html'));
+  res.render('about');
 });
+
 
 // Home page
 app.get('/', (req, res) => {
