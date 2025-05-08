@@ -34,6 +34,7 @@ app.set('view engine', 'ejs');
 // Middleware to parse form data and serve static files
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(express.static(__dirname));
 
 // Configure session store using MongoDB
 const mongoStore = MongoStore.create({
