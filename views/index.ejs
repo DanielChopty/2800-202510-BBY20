@@ -5,14 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Home</title>
   <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: url('/images/city-background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1;
+    }
+    .bg-overlay {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 2rem;
+      border-radius: 1rem;
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body>
 
-  <div class="container text-center my-5">
+  <%- include('templates/header') %>
+
+  <main class="container text-center my-5 bg-overlay">
     <h1 class="display-1 fw-bold" style="color: #003366;">CivIQ</h1>
     <p class="lead text-muted">Engage. Influence. Empower Your City.</p>
 
@@ -20,7 +36,6 @@
       <h2 class="mt-5">Hello, <%= username %>!</h2>
       <div class="d-flex gap-3 mt-3 justify-content-center">
         <a href="/profile" class="btn btn-primary">Go to Profile Page</a>
-        
         <% if (user && user.user_type === 'admin') { %>
           <a href="/admin" class="btn btn-primary">Go to Admin Page</a>
         <% } %>
@@ -32,55 +47,50 @@
         <a href="/login" class="btn btn-outline-primary">Log In</a>
       </div>
     <% } %>
-  </div>
+  </main>
 
-  <!-- Feature Boxes -->
-  <div class="container mb-5">
+  <div class="container my-5 bg-overlay">
     <div class="row g-4">
-      <!-- Post Polls (City Workers) -->
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow text-white" style="background-color: #1E2A78;">
+          <div class="card-body">
+            <h4 class="card-title fw-bold">What the App Does</h4>
+            <p class="card-text">Make your voice heard in local decisions.</p>
+          </div>
+        </div>
+      </div>
       <div class="col-md-4">
         <div class="card h-100 border-0 shadow text-white" style="background-color: #f36f21;">
           <div class="card-body">
-            <h4 class="card-title fw-bold">Post Polls</h4>
-            <p class="card-text">City officials can easily post interactive polls to gather public input and drive informed decisions.</p>
+            <h4 class="card-title fw-bold">How It Works</h4>
+            <p class="card-text">Post polls. Vote. Influence real change.</p>
           </div>
         </div>
       </div>
-
-      <!-- Vote on Polls (Citizens) -->
       <div class="col-md-4">
-        <div class="card h-100 border-0 shadow text-white" style="background-color: #00bfff;">
+        <div class="card h-100 border-0 shadow text-dark" style="background-color: #FFD700;">
           <div class="card-body">
-            <h4 class="card-title fw-bold">Vote on Local Projects</h4>
-            <p class="card-text">Citizens can cast votes on projects that matter to them, shaping the future of their communities.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Save & Filter Polls -->
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow text-dark" style="background-color: #fcd34d;">
-          <div class="card-body">
-            <h4 class="card-title fw-bold">Save & Filter Polls</h4>
-            <p class="card-text">Bookmark your favorite polls and apply filters to easily return and engage at your convenience.</p>
+            <h4 class="card-title fw-bold">Why It Matters</h4>
+            <p class="card-text">Your opinion shapes your community.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- About Us Button (bottom-left) -->
-  <div class="container">
+  <div class="container bg-overlay mb-5">
     <div class="row">
-      <div class="col-12 text-start mb-5">
-        <a href="about.html" class="btn btn-info text-white" style="position: relative; left: 0; bottom: 0;">
+      <div class="col-12 text-start">
+        <a href="about.html" class="btn btn-info text-white">
           About Us
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS (optional) -->
+  <%- include('templates/footer') %>
+
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -82,8 +82,9 @@ app.get('/', (req, res) => {
       title: 'Home',
       authenticated: req.session.authenticated || false,
       username: req.session.username || null,
-      user: req.session.user || null
-    });
+      user: req.session.user || null,
+      weather: null 
+    });    
   } catch (error) {
     console.error('Error rendering home page:', error);
     res.status(500).render('500', { title: 'Server Error' });
@@ -146,7 +147,7 @@ app.post('/signup', async (req, res) => {
     req.session.email = email;
     req.session.cookie.maxAge = expireTime;
 
-    res.redirect('/profile');
+    res.redirect('/dashboard');
   } catch (error) {
     console.error('Error during signup:', error);
     res.status(500).render('signup', {
@@ -209,7 +210,7 @@ app.post('/login', async (req, res) => {
       req.session.user = user;
       req.session.cookie.maxAge = expireTime;
 
-      res.redirect('/profile');
+      res.redirect('/dashboard');
     } else {
       res.render('login', {
         title: 'Login',
@@ -224,6 +225,19 @@ app.post('/login', async (req, res) => {
     });
   }
 });
+
+// Dashboard page(after logging in)
+app.get('/dashboard', (req, res) => {
+  if (!req.session.authenticated) {
+    return res.redirect('/login');
+  }
+
+  res.render('dashboard', {
+    username: req.session.username,
+    weather: null
+  });
+});
+
 
 // Profile page (protected route)
 app.get('/profile', async (req, res) => {
