@@ -520,6 +520,7 @@ app.get('/createPoll', (req, res) =>{
   res.render('createPoll');
 })
 
+// Handle creating a new poll
 app.post('/createPoll', isAuthenticated, async (req, res) => {
   try {
     const {
@@ -531,7 +532,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       visibility
     } = req.body;
 
-    // Removes any empty strings and trims whitespace.
+    // Removes any empty strings and trims whitespace
     const choices = options
       .filter(text => text && text.trim().length > 0)
       .map(text => ({ text: text.trim(), votes: 0})); // Each option starts at 0 votes
@@ -539,6 +540,20 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
     if (choices.length < 2) {
       return res.status(400).send('Error! Please provide at least two options');
     }
+
+    // Creating the poll document and all its values
+    const pollDoc = {
+      title: title.trim(),
+      importance,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      visibility,
+      createdBy: req.session.email, // We could also use their user ID here instead
+      createdAt: new Date(),
+      available: true,
+      choices
+    }
+
   } catch (err) {
     console.error('Error creating poll:', err);
     res.status(500).render('500', { title: 'Server Error' });
