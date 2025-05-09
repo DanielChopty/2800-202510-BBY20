@@ -554,6 +554,17 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       choices
     }
 
+    // Inserting the values into our database
+    const pollsColl = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const result = await pollsColl.insertOne(pollDoc);
+    console.log('Inserted poll! _id:', result.insertedId); 
+
+    // Redirect back to the polls page once done
+    res.redirect('/polls');
+
   } catch (err) {
     console.error('Error creating poll:', err);
     res.status(500).render('500', { title: 'Server Error' });
