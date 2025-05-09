@@ -21,10 +21,12 @@ const {
   MONGODB_DATABASE_SESSIONS,
   MONGODB_SESSION_SECRET,
   NODE_SESSION_SECRET,
-  PORT
+  PORT,
+  OPENWEATHER_API_KEY
 } = process.env;
 
 const app = express();
+const axios = require('axios');
 const port = PORT || 3000;
 const expireTime = 60 * 60 * 1000; // 1 hour session expiration
 
@@ -56,6 +58,49 @@ app.use((req, res, next) => {
   res.locals.authenticated = req.session.authenticated || false;
   res.locals.user = req.session.user || null;
   next();
+});
+
+// Custom middleware to pass session data and weather to all views
+app.use(async (req, res, next) => {
+  res.locals.authenticated = req.session.authenticated || false;
+  res.locals.user = req.session.user || null;
+
+  // Always attempt to fetch weather data, regardless of authentication
+  try {
+    let weather = null;
+    let city = null;
+
+    // Get IP and use it to fetch location
+    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    if (ip === '::1' || ip === '127.0.0.1') {
+      ip = '8.8.8.8'; // Test IP for local environment
+    }
+
+    const ipApiUrl = `http://ip-api.com/json/${ip}`;
+    const ipResponse = await axios.get(ipApiUrl);
+    const location = ipResponse.data;
+
+    if (location.status === 'success') {
+      const { lat, lon, city: locationCity } = location;
+      city = locationCity;
+
+      // Fetch weather from OpenWeather
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+      const weatherResponse = await axios.get(weatherUrl);
+      weather = weatherResponse.data;
+    }
+
+    // Pass weather and city to all views
+    res.locals.weather = weather;
+    res.locals.city = city;
+
+    next();
+  } catch (err) {
+    console.error('Error fetching weather data:', err);
+    res.locals.weather = null;
+    res.locals.city = null;
+    next();
+  }
 });
 
 // Middleware for multer (used for file uploads)
@@ -99,6 +144,46 @@ const upload = multer({
 });
 
 /* NORMAL ROUTES */
+
+// Location + weather and index
+app.get('/', async (req, res) => {
+  try {
+    let weather = null;
+    let city = null;
+
+    // Always attempt to fetch weather data, regardless of authentication
+    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    if (ip === '::1' || ip === '127.0.0.1') {
+      ip = '8.8.8.8'; // Test IP for local environment
+    }
+
+    const ipApiUrl = `http://ip-api.com/json/${ip}`;
+    const ipResponse = await axios.get(ipApiUrl);
+    const location = ipResponse.data;
+
+    if (location.status === 'success') {
+      const { lat, lon, city: locationCity } = location;
+      city = locationCity;
+
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+      const weatherResponse = await axios.get(weatherUrl);
+      weather = weatherResponse.data;
+    }
+
+    // Render index page with weather, city, and session data
+    res.render('index', {
+      title: 'Home',
+      authenticated: req.session.authenticated || false,
+      username: req.session.username || null,
+      user: req.session.user || null,
+      weather: weather,
+      city: city || null
+    });
+  } catch (err) {
+    console.error('Error fetching weather data:', err);
+    res.render('index', { weather: null, city: null });
+  }
+});
 
 // Upload profile picture
 app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {
@@ -387,6 +472,11 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
+
+// Page for creating a poll
+app.get('/createPoll', (req, res) =>{
+  res.render('createPoll');
+})
 
 
 // Adding a route to fetch all available polls from the database
