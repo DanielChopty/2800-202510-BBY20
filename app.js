@@ -525,6 +525,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
   try {
     const {
       title,
+      tags = '',
       options = [],
       importance,
       startDate,
@@ -541,16 +542,22 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       return res.status(400).send('Error! Please provide at least two options');
     }
 
+    const tagArray = tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
     // Creating the poll document and all its values
     const pollDoc = {
-      title: title.trim(),
+      title:          title.trim(),
+      tags:           tagArray,
       importance,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
+      startDate:      new Date(startDate),
+      endDate:        new Date(endDate),
       visibility,
-      createdBy: req.session.email, // We could also use their user ID here instead
-      createdAt: new Date(),
-      available: true,
+      createdBy:      req.session.email, // We could also use their user ID here instead
+      createdAt:      new Date(),
+      available:      true,
       choices
     }
 
