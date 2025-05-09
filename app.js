@@ -520,6 +520,31 @@ app.get('/createPoll', (req, res) =>{
   res.render('createPoll');
 })
 
+app.post('/createPoll', isAuthenticated, async (req, res) => {
+  try {
+    const {
+      title,
+      options = [],
+      importance,
+      startDate,
+      endDate,
+      visibility
+    } = req.body;
+
+    // Removes any empty strings and trims whitespace.
+    const choices = options
+      .filter(text => text && text.trim().length > 0)
+      .map(text => ({ text: text.trim(), votes: 0})); // Each option starts at 0 votes
+    
+    if (choices.length < 2) {
+      return res.status(400).send('Error! Please provide at least two options');
+    }
+  } catch (err) {
+    console.error('Error creating poll:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
 /* ERROR HANDLING */
 
 // 404 handler (catch-all route)
