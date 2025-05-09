@@ -208,10 +208,6 @@ app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res
   }
 });
 
-// route to render about.ejs
-app.get('/about', (req, res) => {
-  res.render('about');
-});
 
 
 // Home page
@@ -227,6 +223,16 @@ app.get('/', (req, res) => {
     console.error('Error rendering home page:', error);
     res.status(500).render('500', { title: 'Server Error' });
   }
+});
+
+// route to render about.ejs
+app.get('/about', (req, res) => {
+  res.render('about', {
+    title: 'About',
+    authenticated: req.session.authenticated || false,
+    username: req.session.username || null,
+    user: req.session.user || null
+  });
 });
 
 // Main page
