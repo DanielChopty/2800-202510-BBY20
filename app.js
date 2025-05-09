@@ -32,7 +32,7 @@ const expireTime = 60 * 60 * 1000; // 1 hour session expiration
 app.set('view engine', 'ejs');
 
 // Middleware to parse form data and serve static files
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(express.static(__dirname));
 
@@ -522,6 +522,7 @@ app.get('/createPoll', (req, res) =>{
 
 // Handle creating a new poll
 app.post('/createPoll', isAuthenticated, async (req, res) => {
+  console.log('POST /createPoll hit', req.body);
   try {
     const {
       title,
