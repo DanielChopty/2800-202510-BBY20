@@ -539,7 +539,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       .map(text => ({ text: text.trim(), votes: 0})); // Each option starts at 0 votes
     
     if (choices.length < 2) {
-      return res.status(400).send('Error! Please provide at least two options');
+      return res.status(400).send('Error 400: Please provide at least two options');
     }
 
     const tagArray = tags
