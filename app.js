@@ -34,7 +34,7 @@ const expireTime = 60 * 60 * 1000; // 1 hour session expiration
 app.set('view engine', 'ejs');
 
 // Middleware to parse form data and serve static files
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(express.static(__dirname));
 
@@ -616,6 +616,65 @@ if(!req.session.authenticated){
 app.get('/createPoll', (req, res) =>{
   res.render('createPoll');
 })
+
+// Handle creating a new poll
+app.post('/createPoll', isAuthenticated, async (req, res) => {
+  console.log('POST /createPoll hit', req.body);
+  try {
+    const {
+      title,
+      tags = '',
+      options = [],
+      importance,
+      startDate,
+      endDate,
+      visibility
+    } = req.body;
+
+    // Removes any empty strings and trims whitespace
+    const choices = options
+      .filter(text => text && text.trim().length > 0)
+      .map(text => ({ text: text.trim(), votes: 0})); // Each option starts at 0 votes
+    
+    if (choices.length < 2) {
+      return res.status(400).send('Error 400: Please provide at least two options');
+    }
+
+    const tagArray = tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    // Creating the poll document and all its values
+    const pollDoc = {
+      title:          title.trim(),
+      tags:           tagArray,
+      importance,
+      startDate:      new Date(startDate),
+      endDate:        new Date(endDate),
+      visibility,
+      createdBy:      req.session.email, // We could also use their user ID here instead
+      createdAt:      new Date(),
+      available:      true,
+      choices
+    }
+
+    // Inserting the values into our database
+    const pollsColl = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const result = await pollsColl.insertOne(pollDoc);
+    console.log('Inserted poll! _id:', result.insertedId); 
+
+    // Redirect back to the polls page once done
+    res.redirect('/polls');
+
+  } catch (err) {
+    console.error('Error creating poll:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
 
 /* ERROR HANDLING */
 

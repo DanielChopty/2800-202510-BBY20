@@ -16,26 +16,26 @@
       <div class="col-lg-8">
         <h2 class="mb-4 text-center text-primary">Create a New Poll</h2>
 
-        <form>
+        <form method="POST" action="/createPoll">
           <!-- Poll Question -->
           <div class="mb-3">
             <label for="question" class="form-label">Poll Question</label>
-            <input type="text" class="form-control" id="question" placeholder="Enter the poll question">
+            <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question">
           </div>
 
           <!-- Options -->
           <div class="mb-3">
             <label class="form-label">Options (Enter at least two)</label>
-            <input type="text" class="form-control mb-2" placeholder="Option 1">
-            <input type="text" class="form-control mb-2" placeholder="Option 2">
-            <input type="text" class="form-control mb-2" placeholder="Option 3 (optional)">
-            <input type="text" class="form-control" placeholder="Option 4 (optional)">
+            <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 1">
+            <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 2">
+            <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 3 (optional)">
+            <input type="text" name="options[]" class="form-control" placeholder="Option 4 (optional)">
           </div>
 
           <!-- Importance -->
           <div class="mb-3">
             <label for="importance" class="form-label">Importance</label>
-            <select class="form-select" id="importance">
+            <select class="form-select" name="importance" id="importance">
               <option selected disabled>Choose importance</option>
               <option>Low</option>
               <option>Medium</option>
@@ -47,18 +47,18 @@
           <div class="row mb-3">
             <div class="col">
               <label for="startDate" class="form-label">Start Date</label>
-              <input type="date" class="form-control" id="startDate">
+              <input type="date" name="startDate" class="form-control" id="startDate">
             </div>
             <div class="col">
               <label for="endDate" class="form-label">End Date</label>
-              <input type="date" class="form-control" id="endDate">
+              <input type="date" name="endDate" class="form-control" id="endDate">
             </div>
           </div>
 
           <!-- Visibility -->
           <div class="mb-3">
             <label for="visibility" class="form-label">Visibility</label>
-            <select class="form-select" id="visibility">
+            <select class="form-select" name="visibility" id="visibility">
               <option selected disabled>Select visibility</option>
               <option>Public</option>
               <option>Internal</option>
