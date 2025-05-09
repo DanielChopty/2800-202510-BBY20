@@ -12,10 +12,13 @@
 </head>
 <body class="bg-light">
 
+  <%- include('templates/header') %>
+
   <div class="container my-5">
     <div class="card shadow border-0 rounded-4 p-4">
       <div class="d-flex align-items-center mb-4">
-        <img src="/images/default-profile.png"
+        <!-- Dynamically show uploaded image or default -->
+        <img src="/<%= user && user.profilePic ? user.profilePic : 'images/default-profile.png' %>"
              alt="Profile Picture"
              class="rounded-circle me-4 border border-3"
              style="width: 120px; height: 120px; object-fit: cover; border-color: #00bfff;" />
@@ -26,28 +29,30 @@
         </div>
       </div>
 
-      <!-- Upload Profile Picture Form -->
-      <form action="/upload-profile-picture" method="POST" enctype="multipart/form-data" class="mb-4">
-        <div class="mb-3">
-          <label for="profilePic" class="form-label">Upload Profile Picture</label>
-          <input class="form-control" type="file" id="profilePic" name="profilePic" accept="image/*" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+      <h2>User Profile</h2>
+
+      <form action="/upload-profile-picture" method="POST" enctype="multipart/form-data">
+        <input type="file" name="profilePic" accept="image/*" required>
+        <button type="submit" class="btn btn-primary btn-sm ms-2">Upload</button>
       </form>
 
       <hr>
 
       <p>Your insights help shape local projects. Vote on new polls, share ideas, and see feedback from your neighbors.</p>
 
-      <div class="alert text-dark mb-4" style="background-color: #fcd34d;">
-        You have <strong>3 new polls</strong> to vote on!
-      </div>
+      <a href="/main" class="text-decoration-none">
+        <div class="alert text-dark mb-4" style="background-color: #fcd34d;">
+          You have <strong>3 new polls</strong> to vote on!
+        </div>
+      </a>
 
       <a href="/logout" class="btn text-white" style="background-color: #f36f21;">
         Log Out
       </a>
     </div>
   </div>
+
+  <%- include('templates/footer') %>
 
   <!-- Bootstrap JS (optional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
