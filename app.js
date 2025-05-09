@@ -534,7 +534,7 @@ app.get('/polls', async (req, res) => {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
     const polls = await pollsCollection.find({ available: true }).toArray();
     // Renders the main.ejs template
-    res.render('main', {
+    res.render('polls', {
       title: 'Available Polls',
       // passing list of polls to the template
       polls: polls || [],
