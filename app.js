@@ -378,53 +378,44 @@ app.post('/login', async (req, res) => {
 
 // Profile page (protected route)
 app.get('/profile', async (req, res) => {
-    try {
-      if (!req.session.authenticated) {
-        return res.redirect('/');
-      }
-  
-      const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-      const user = await userCollection.findOne({ email: req.session.email });
-
-      // Getting the polls collection from the polls database
-      const pollsCollection = database.db(MONGODB_DATABASE_POLLS).collection('polls');
-      // if no user is present redirect them to the index.ejs page
-      if (!user) return res.redirect('/');
-
-      // Retreives user and checks if they have any saved polls
-      const userWithSavedPolls = await userCollection.aggregate([
-      {
-        $match: { email: req.session.email }
-      },
-      {
-        $lookup: {
-          from: 'polls',
-          localField: 'savedPolls',
-          foreignField: '_id',
-          as: 'savedPollsData'
-        }
-      }
-    ]).toArray();
-
-    // Making sure a user actually exists in the database based on the session email
-    // If not then then it redirects back to the 
-    if (!userWithSavedPolls || userWithSavedPolls.length === 0) {
+  try {
+    // If there is no active session redirect to index.ejs page
+    if (!req.session.authenticated) {
       return res.redirect('/');
     }
 
-    const user = userWithSavedPolls[0];
+    // Connect to users and polls collections in separate databases
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
 
-  
-      res.render('profile', {
-        title: 'Profile',
-        username: user.name,
-        user: user // pass the full user object with the saved pools data
-      });      
-    } catch (error) {
-      console.error('Error rendering profile page:', error);
-      res.status(500).render('500', { title: 'Server Error' });
+    // Fetch the user based on their email
+    const user = await userCollection.findOne({ email: req.session.email });
+
+    if (!user) {
+      return res.redirect('/');
     }
-  });
+
+    // Fetch saved polls if any exist
+    let savedPollsData = [];
+    if (user.savedPolls && user.savedPolls.length > 0) {
+      savedPollsData = await pollsCollection
+        .find({ _id: { $in: user.savedPolls.map(id => new ObjectId(id)) } })
+        .toArray();
+    }
+
+    // Render profile with the saved polls
+    res.render('profile', {
+      title: 'Profile',
+      username: user.name,
+      user: user,
+      savedPolls: savedPollsData
+    });
+  } catch (error) {
+    console.error('Error rendering profile page:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
   
 // Logout handler
 app.get('/logout', (req, res) => {
@@ -705,18 +696,30 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
 
 /* Everything related to saving and unsaving user polls */
 
+// checking if the user is logged in 
+function requireLogin(req, res, next) {
+  if (!req.session.authenticated) {
+    return res.redirect('/');
+  }
+  next();
+}
+
+
 // Route to save a poll to a user's profile
 app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
   try {
     const pollId = req.params.pollId;
     const userId = req.session.user._id;
 
+     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+
     // Validate if pollId is a valid ObjectId
     if (!ObjectId.isValid(pollId)) {
       return res.status(400).json({ message: 'Invalid poll ID' });
     }
 
-    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
     const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
 
     if (!user || !poll) {
@@ -725,7 +728,7 @@ app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
 
     // Check if savedPolls array exists, if not create it
     if (!user.savedPolls) {
-      await usersCollection.updateOne(
+      await userCollection.updateOne(
         { _id: new ObjectId(userId) },
         { $set: { savedPolls: [] } }
       );
@@ -734,7 +737,7 @@ app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
 
     // Check if the poll is already saved
     if (!user.savedPolls.some(savedId => savedId.equals(new ObjectId(pollId)))) {
-      await usersCollection.updateOne(
+      await userCollection.updateOne(
         { _id: new ObjectId(userId) },
         { $push: { savedPolls: new ObjectId(pollId) } }
       );
@@ -742,6 +745,7 @@ app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
     } else {
       return res.status(200).json({ message: 'Poll already saved' });
     }
+    // When there is an error saving a poll
   } catch (error) {
     console.error('Error saving poll:', error);
     res.status(500).json({ message: 'Failed to save poll' });
@@ -755,19 +759,22 @@ app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
     const pollId = req.params.pollId;
     const userId = req.session.user._id;
 
+     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+
     // Validate if pollId is a valid ObjectId
     if (!ObjectId.isValid(pollId)) {
       return res.status(400).json({ message: 'Invalid poll ID' });
     }
 
-    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Remove the poll ID from the savedPolls array
-    await usersCollection.updateOne(
+    await userCollection.updateOne(
       { _id: new ObjectId(userId) },
       { $pull: { savedPolls: new ObjectId(pollId) } }
     );
