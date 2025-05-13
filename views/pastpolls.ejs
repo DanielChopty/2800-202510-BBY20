@@ -198,31 +198,41 @@
 <!-- Script to open the edit poll modal -->
 <script>
   function openEditModal(poll) {
-    // Fill hidden poll ID and title field
     document.getElementById('pollId').value = poll._id;
-    document.getElementById('title').value = poll.title;
+    document.getElementById('title').value = poll.title || '';
+    document.getElementById('importance').value = poll.importance || 'Low';
+    document.getElementById('available').value = poll.available ? 'true' : 'false';
 
-    // Set importance dropdown
-    const importanceSelect = document.getElementById('importance');
-    importanceSelect.value = poll.importance || 'Low';
-
-    // Set availability dropdown
-    const availableSelect = document.getElementById('available');
-    availableSelect.value = poll.available ? 'true' : 'false';
-
-    // Clear all options fields (keep them blank as requested)
+    // Pre-fill options based on poll.choices
     const optionInputs = document.querySelectorAll('.option-input');
-    optionInputs.forEach(input => input.value = '');
+    for (let i = 0; i < optionInputs.length; i++) {
+      optionInputs[i].value = poll.choices && poll.choices[i] ? poll.choices[i].text : '';
+    }
 
-    // Clear and set form action to correct endpoint
+    // Pre-fill start and end dates if they exist
+    if (poll.startDate) {
+      const startDate = new Date(poll.startDate).toISOString().split('T')[0];
+      document.getElementById('startDate').value = startDate;
+    } else {
+      document.getElementById('startDate').value = '';
+    }
+
+    if (poll.endDate) {
+      const endDate = new Date(poll.endDate).toISOString().split('T')[0];
+      document.getElementById('endDate').value = endDate;
+    } else {
+      document.getElementById('endDate').value = '';
+    }
+
+    // Set form action dynamically
     const editForm = document.getElementById('editPollForm');
     editForm.action = `/editpoll/${poll._id}`;
 
-    // Show the modal
+    // Show the Bootstrap modal
     const modal = new bootstrap.Modal(document.getElementById('editPollModal'));
     modal.show();
   }
-</script>
+</script> 
 
 </body>
 </html>
