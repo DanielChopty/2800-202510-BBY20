@@ -25,17 +25,13 @@ const {
   OPENWEATHER_API_KEY
 } = process.env;
 
-const path = require('path');
 const app = express();
-const port = PORT || 8080;
 const axios = require('axios');
 const port = PORT || 3000;
 const expireTime = 60 * 60 * 1000; // 1 hour session expiration
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to parse form data and serve static files
 app.use(express.urlencoded({ extended: true }));
@@ -221,9 +217,8 @@ app.get('/', (req, res) => {
       title: 'Home',
       authenticated: req.session.authenticated || false,
       username: req.session.username || null,
-      user: req.session.user || null,
-      weather: null 
-    });    
+      user: req.session.user || null
+    });
   } catch (error) {
     console.error('Error rendering home page:', error);
     res.status(500).render('500', { title: 'Server Error' });
@@ -302,7 +297,7 @@ app.post('/signup', async (req, res) => {
     req.session.email = email;
     req.session.cookie.maxAge = expireTime;
 
-    res.redirect('/dashboard');
+    res.redirect('/profile');
   } catch (error) {
     console.error('Error during signup:', error);
     res.status(500).render('signup', {
@@ -365,7 +360,7 @@ app.post('/login', async (req, res) => {
       req.session.user = user;
       req.session.cookie.maxAge = expireTime;
 
-      res.redirect('/dashboard');
+      res.redirect('/profile');
     } else {
       res.render('login', {
         title: 'Login',
@@ -380,28 +375,6 @@ app.post('/login', async (req, res) => {
     });
   }
 });
-
-// Dashboard page (after logging in)
-app.get('/dashboard', (req, res) => {
-  const user = req.session.user; //get user from session
-  if (!req.session.authenticated) {
-    return res.redirect('/login'); //redirect to login page if user isn't logged in
-  }
-
-  // Temporary activity data (can be connected to a database later)
-  const recentActivity = [
-    { type: 'Voted', description: 'Voted on Park Renovation', date: 'May 10, 2025' },
-    { type: 'Commented', description: 'Shared opinion on public transit plan', date: 'May 9, 2025' }
-  ];
-
-  res.render('citizenDashboard', {
-    username: user.username,
-    user: { name: req.session.username },
-    recentActivity: recentActivity
-  });
-});
-
-
 
 // Profile page (protected route)
 app.get('/profile', async (req, res) => {
@@ -426,24 +399,15 @@ app.get('/profile', async (req, res) => {
     }
   });
   
-// About page (public or protected, choose based on need)
-app.get('/about', (req, res) => {
-  res.render('about', {
-    title: 'About',
-    user: req.session.user || null // send user to header.ejs
-  });
-});
-
 // Logout handler
 app.get('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error('Logout error:', err);
-      return res.redirect('/dashboard'); // redirect to header when error occurs
-    }
-    res.clearCookie('connect.sid'); // deleting session cookies
-    res.redirect('/'); // head over to top page after logout
-  });
+  try {
+    req.session.destroy(); // Destroys the session
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
 });
 
 /* MIDDLEWARE */
@@ -722,6 +686,6 @@ app.use((req, res) => {
 /* SERVER */
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
