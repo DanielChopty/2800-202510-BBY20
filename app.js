@@ -716,6 +716,19 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+// Delete poll route
+app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    await pollsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect('/pastpolls');
+  } catch (err) {
+    console.error('Error deleting poll:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+
 /* ERROR HANDLING */
 
 // 404 handler (catch-all route)
