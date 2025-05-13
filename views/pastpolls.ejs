@@ -93,9 +93,10 @@
                   <h5 class="mb-0 me-3"><%= poll.title %></h5>
                   <% if (poll.description && poll.description.length > 100) { %>
                     <a href="javascript:void(0);" 
-                       class="text-decoration-underline text-primary fw-semibold fs-5 align-middle" 
-                       onclick="toggleDescription('<%= poll._id %>', `<%= poll.description.replace(/`/g, '\\`') %>`)">
-                      read more
+                      id="toggle-<%= poll._id %>"
+                      class="text-decoration-underline text-primary fw-semibold fs-5 align-middle" 
+                      onclick="toggleDescription('<%= poll._id %>', `<%= poll.description.replace(/`/g, '\\`') %>`)">
+                        expand
                     </a>
                   <% } %>
                 </div>                                                
@@ -261,13 +262,19 @@
 
   // Script to toggle the full description upon clicking 'read more'
   function toggleDescription(id, fullText) {
-    const descElement = document.getElementById(`desc-${id}`);
-    if (descElement.innerText.endsWith('...')) {
-      descElement.innerText = fullText;
-    } else {
-      descElement.innerText = fullText.substring(0, 100) + '...';
-    }
+  const descElement = document.getElementById(`desc-${id}`);
+  const toggleLink = document.getElementById(`toggle-${id}`);
+
+  if (descElement.dataset.expanded === 'true') {
+    descElement.innerText = fullText.substring(0, 100) + '...';
+    descElement.dataset.expanded = 'false';
+    toggleLink.textContent = 'expand';
+  } else {
+    descElement.innerText = fullText;
+    descElement.dataset.expanded = 'true';
+    toggleLink.textContent = 'collapse';
   }
+}
 </script> 
 
 </body>
