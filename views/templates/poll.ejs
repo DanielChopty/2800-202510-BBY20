@@ -1,40 +1,31 @@
-<div class="card mb-4">
+<div class="card mb-3">
   <div class="card-body">
     <h5 class="card-title"><%= poll.title %></h5>
 
+    <!-- Displays all of the poll's tags-->
     <% if (poll.tags && poll.tags.length) { %>
       <p>
         <% poll.tags.forEach(tag => { %>
-          <span class="badge bg-secondary"><%= tag %></span>
+          <span class="badge bg-primary"><%= tag %></span>
         <% }) %>
       </p>
     <% } %>
 
+    <!-- Vote on a poll option-->
     <form action="/vote" method="POST">
-      <!-- we need to know which poll is being voted on -->
       <input type="hidden" name="pollId" value="<%= poll._id %>">
 
       <% poll.choices.forEach((choice, idx) => { %>
         <div class="form-check">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="choiceText"
-            id="choice-<%= poll._id %>-<%= idx %>"
-            value="<%= choice.text %>"
-            required
-          >
-          <label
-            class="form-check-label"
-            for="choice-<%= poll._id %>-<%= idx %>"
-          >
+          <input class="form-check-input" type="radio" name="choiceText" id="choice-<%= poll._id %>-<%= idx %>" value="<%= choice.text %>" required>
+          <label class="form-check-label" for="choice-<%= poll._id %>-<%= idx %>">
             <%= choice.text %>
             <small class="text-muted">( <%= choice.votes %> votes )</small>
           </label>
         </div>
       <% }) %>
 
-      <button type="submit" class="btn btn-primary mt-2">Vote</button>
+      <button type="submit" class="btn btn-primary mt-3">Vote</button>
     </form>
   </div>
 </div>

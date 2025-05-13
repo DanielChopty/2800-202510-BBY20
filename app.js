@@ -605,7 +605,7 @@ if(!req.session.authenticated){
     req.session.votedPolls = userVotedPolls;
 
     // Redirecting the user to the main.ejs page
-    res.redirect('/main'); 
+    res.redirect('/polls'); 
   } catch (error) {
     console.error('Error processing vote:', error);
     res.status(500).render('500', { title: 'Server Error' });
