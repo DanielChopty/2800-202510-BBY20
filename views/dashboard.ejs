@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main {
+      flex: 1;
+    }
+    .dashboard-section {
+      padding: 3rem 1rem;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .dashboard-card {
+      border-radius: 1rem;
+      padding: 2rem;
+      transition: all 0.2s ease-in-out;
+      color: white;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+    }
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.1);
+    }
+    .dashboard-card h5 {
+      font-weight: bold;
+    }
+    .dashboard-card p {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .orange { background-color: #FF7300; }
+    .blue { background-color: #1DAEFF; }
+    .yellow { background-color: #FFD700; color: black; }
+    .green { background-color: #56C02B; }
+    .magenta { background-color: #BA00C1; }
+    .purple { background-color: #5E35B1; }
+  </style>
+</head>
+<body>
+  <%- include('templates/header') %>
+
+  <main class="container dashboard-section">
+    <h2 class="mb-4 text-center">Your Dashboard</h2>
+    <div class="dashboard-grid">
+      <div class="dashboard-card orange">
+        <h5>Post a New Poll</h5>
+        <p>Create polls to gather community input on your topic.</p>
+        <a href="#" class="btn btn-light btn-sm mt-2">Start Posting</a>
+      </div>
+      <div class="dashboard-card blue">
+        <h5>Vote on Projects</h5>
+        <p>Explore open polls and cast your vote on local initiatives.</p>
+        <a href="#" class="btn btn-light btn-sm mt-2">Go to Voting</a>
+      </div>
+      <div class="dashboard-card yellow">
+        <h5>Saved Polls</h5>
+        <p>Access polls you've saved for later reference or review.</p>
+        <a href="#" class="btn btn-light btn-sm mt-2">View Saved</a>
+      </div>
+      <div class="dashboard-card green">
+        <h5>Manage Tags</h5>
+        <p>Edit or assign tags to organize and categorize your polls.</p>
+        <a href="#" class="btn btn-light btn-sm mt-2">Manage Tags</a>
+      </div>
+      <div class="dashboard-card magenta">
+        <h5>Poll History</h5>
+        <p>Review results and performance of polls you've posted.</p>
+        <a href="#" class="btn btn-light btn-sm mt-2">See History</a>
+      </div>
+      <div class="dashboard-card purple">
+        <h5>Settings</h5>
+        <p>Update your profile, preferences, and account settings.</p>
+        <a href="#" class="btn btn-light btn-sm mt-2">Edit Profile</a>
+      </div>
+    </div>
+  </main>
+
+  <%- include('templates/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

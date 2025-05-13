@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>About - BBY-20</title>
 
+<<<<<<< HEAD
   <!-- Bootstrap 5 CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   
@@ -55,6 +56,60 @@
 
     .footer {
       color: white;
+=======
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Animate.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: url('/images/homepage-background.png') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      color: white;
+      text-shadow: 0 0 6px rgba(0,0,0,0.7);
+    }
+
+    .header-section, .footer-section {
+      background-color: rgba(30, 56, 138, 0.75); /* 半透明ネイビー */
+      backdrop-filter: blur(8px);
+    }
+
+    .logo {
+      max-width: 120px;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+    }
+
+    .topic {
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: white;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+    }
+
+    .topic-dedication {
+      background-color: rgba(96, 165, 250, 0.8); /* Sky Blue */
+    }
+
+    .topic-creativity {
+      background-color: rgba(250, 204, 21, 0.85); /* Warm Yellow */
+      color: #222;
+      text-shadow: none;
+    }
+
+    .topic-teamwork {
+      background-color: rgba(249, 115, 22, 0.85); /* Civic Orange */
+    }
+
+    h1, h2, h5 {
+      font-family: "Roboto Slab", serif;
+>>>>>>> 3b0e3cc1a04039a869d498e1d2111232a1159fcf
     }
 
     .emoji {
@@ -68,6 +123,7 @@
       10% { transform: translateY(0); }
     }
 
+<<<<<<< HEAD
     .topic-dedication {
       background-color: #60A5FA;
     }
@@ -85,11 +141,24 @@
       height: auto;
       display: block;
       margin: 0 auto 1rem auto;
+=======
+    .footer-section h5 {
+      margin-bottom: 0;
+      color: white;
+    }
+
+    a.btn-info {
+      position: absolute;
+      top: 10rem;
+      left: 1rem;
+      z-index: 999;
+>>>>>>> 3b0e3cc1a04039a869d498e1d2111232a1159fcf
     }
   </style>
 </head>
 
 <body>
+<<<<<<< HEAD
 
   <!-- Back to Landing Button -->
   <div style="position: absolute; top: 10rem; left: -.5rem; z-index: 1000;">
@@ -140,19 +209,54 @@
         We're not just teammates, we're problem solvers who are always determined to find the best fix possible. 
         Everyone brings different strengths to the table. We keep things open, honest and supportive. 
         At the end of the day, good teamwork translates to a better codebase.
+=======
+  <!-- Header -->
+  <%- include('templates/header') %>
+
+  <!-- Our Team Section -->
+  <section class="container my-5">
+    <h2 class="mb-4">Our Team</h2>
+
+    <div class="topic topic-dedication">
+      <h5>Dedication <span class="emoji">💪</span></h5>
+      <p>
+        We don't walk away from a problem just because it's tough. If something is buggy or not working, we keep at it until it is solid. Deadlines and quality matter, so we always try and do our work the best way possible. Whether it's a team activity or solo late-night coding, we're here to finish what we start.
+      </p>
+    </div>
+
+    <div class="topic topic-creativity">
+      <h5>Creativity <span class="emoji">🎨</span></h5>
+      <p>
+        For us, creativity shows up in clean code and smart solutions. We like finding better ways of doing things. Whether that's simplifying a messy function or designing a smoother user flow. We enjoy the process of exploring and iterating for a better end product.
+      </p>
+    </div>
+
+    <div class="topic topic-teamwork">
+      <h5>Teamwork <span class="emoji">🤝</span></h5>
+      <p>
+        We're not just teammates, we're problem solvers who are always determined to find the best fix possible. Everyone brings different strengths to the table. We keep things open, honest and supportive. At the end of the day, good teamwork translates to a better codebase.
+>>>>>>> 3b0e3cc1a04039a869d498e1d2111232a1159fcf
       </p>
     </div>
   </section>
 
+<<<<<<< HEAD
   <!-- Our Goal Section -->
   <section class="container my-5">
     <h2 class="section-title mb-3">Our Goal</h2>
+=======
+  <!-- Goal Section -->
+  <section class="container my-5">
+  <div class="topic bg-dark bg-opacity-75 p-4 rounded-3 text-white shadow-lg">
+    <h2 class="mb-3">Our Goal</h2>
+>>>>>>> 3b0e3cc1a04039a869d498e1d2111232a1159fcf
     <p>
       Our goal is simple: make an app that connects citizens and city officials by providing an interactive platform 
       for one-click polls and feedback on local projects. 
       Citizens' voices need to be heard, and this app will amplify those voices, making them an integral part of 
       shaping a city's future.
     </p>
+<<<<<<< HEAD
   </section>
 
   <!-- Credits Section -->
@@ -164,6 +268,22 @@
   <footer class="header-section py-4 text-center">
     <h5 class="footer">BBY-20</h5>
   </footer>
+=======
+  </div>
+  </section>
+
+
+  <!-- Credits -->
+  <section class="container my-5">
+  <div class="bg-dark bg-opacity-75 p-3 rounded-3 text-white text-center fw-semibold shadow" style="text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
+    Developed with dedication by Daniel, Jayden, Mykyta, Baltaj and Jun.
+  </div>
+  </section>
+
+
+  <!-- Footer -->
+  <%- include('templates/footer') %>
+>>>>>>> 3b0e3cc1a04039a869d498e1d2111232a1159fcf
 
 </body>
 </html>
