@@ -37,12 +37,16 @@
     <div class="card shadow border-0 rounded-4 p-4">
       <h1 class="mb-4">Your Past Polls</h1>
 
-      <!-- Sort Buttons Always Filled with Site Colors -->
+      <!-- Sort Buttons Always Filled with Site Colors and Yellow Outline When Selected -->
       <div class="d-flex justify-content-start gap-3 mb-3">
-        <a href="/pastpolls?sort=all" class="btn btn-site-blue">
-          Alphabetical Order
+        <a href="/pastpolls?sort=all" 
+           class="btn btn-site-blue text-white" 
+           style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+          All
         </a>
-        <a href="/pastpolls?sort=importance" class="btn btn-site-orange">
+        <a href="/pastpolls?sort=importance" 
+           class="btn btn-site-orange text-white" 
+           style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
           By Importance
         </a>
       </div>

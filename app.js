@@ -691,12 +691,13 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
 
     // Manual sorting if importance sort is selected
     if (sortOption === 'importance') {
+      // Mapping importance to numbers (because they are strings in database)
       const importanceMap = { high: 3, medium: 2, low: 1 };
 
       polls.sort((a, b) => {
         const aVal = importanceMap[a.importance?.toLowerCase()] || 0;
         const bVal = importanceMap[b.importance?.toLowerCase()] || 0;
-        return bVal - aVal; // Descending: High > Medium > Low
+        return bVal - aVal; // Descending order; High > Medium > Low
       });
     } else {
       // Default to alphabetical order by title
