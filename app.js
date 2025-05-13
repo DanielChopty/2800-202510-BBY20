@@ -677,12 +677,13 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
 });
 
 // GET /pastpolls - show polls created by logged-in user
-app.get('/pastpolls', ensureAuthenticated, async (req, res) => {
+app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   try {
-    const polls = await Poll.find({ createdBy: req.user._id }).sort({ createdAt: -1 }).lean();
+    const polls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
+
     res.render('pastPolls', {
       title: 'Past Polls',
-      user: req.user,
+      user: req.session.user,
       polls: polls
     });
   } catch (err) {
