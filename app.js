@@ -143,6 +143,12 @@ const upload = multer({
   }
 });
 
+// 
+app.use((req, res, next) => {
+  res.locals.votedPolls = req.session.votedPolls || [];
+  next();
+});
+
 /* NORMAL ROUTES */
 
 // Location + weather and index
@@ -543,7 +549,8 @@ app.get('/polls', async (req, res) => {
       // If not system defaults to false / null
       authenticated: req.session.authenticated || false,
       username: req.session.username || null,
-      user: req.session.user || null
+      user: req.session.user || null,
+      votedPolls: req.session.votedPolls || []
     });
 
   } catch (error) {
