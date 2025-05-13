@@ -3,94 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Home</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>CivIQ - Home</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom Styles -->
   <style>
     body {
-      background: url('/images/city-background.jpg') no-repeat center center fixed;
+      background: url('/images/homepage-background.png') no-repeat center center fixed;
       background-size: cover;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      color: white;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
     }
+
     main {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
     }
-    .bg-overlay {
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 2rem;
-      border-radius: 1rem;
+
+    .hero-title {
+      font-size: 6rem;
+      font-weight: 700;
+    }
+
+    .btn-start {
+      background-color: #F97316;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    .btn-start:hover {
+      background-color: #e85c00;
+      color: white;
+    }
+
+    .feature-row {
+      margin-top: 4rem;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .feature-card {
+      border: none;
+      border-radius: 0.75rem;
+      padding: 2rem 1.5rem;
+      background-color: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px); /* blur level of the background */
+      color: white;
+      text-align: center;
+      height: 100%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); /* Make text clearer */
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* For semi-transparent navbars and footers */
+    .navbar, footer {
+      background-color: rgba(0, 51, 102, 0.75) !important; /* translucency */
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
-<body>
 
+<body>
   <%- include('templates/header') %>
 
-  <main class="container text-center my-5 bg-overlay">
-    <h1 class="display-1 fw-bold" style="color: #003366;">CivIQ</h1>
-    <p class="lead text-muted">Engage. Influence. Empower Your City.</p>
+  <main>
+    <h1 class="hero-title">CivIQ</h1>
+    <p class="lead">Engage. Influence. Empower Your City.</p>
 
-    <% if (authenticated) { %>
-      <h2 class="mt-5">Hello, <%= username %>!</h2>
-      <div class="d-flex gap-3 mt-3 justify-content-center">
-        <a href="/profile" class="btn btn-primary">Go to Profile Page</a>
-        <% if (user && user.user_type === 'admin') { %>
-          <a href="/admin" class="btn btn-primary">Go to Admin Page</a>
-        <% } %>
-      </div>
+    <% if (authenticated && username) { %>
+      <h2 class="mt-3">Hello, <%= username %>!</h2>
+      <a href="/dashboard" class="btn btn-start">Go to Dashboard</a>
     <% } else { %>
-      <h2 class="mt-5">Welcome to our site!</h2>
+      <h2 class="mt-3">Welcome to CivIQ</h2>
       <div class="d-flex justify-content-center gap-3 mt-3">
         <a href="/signup" class="btn btn-warning text-dark">Sign Up</a>
-        <a href="/login" class="btn btn-outline-primary">Log In</a>
+        <a href="/login" class="btn btn-outline-light">Login</a>
       </div>
     <% } %>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 feature-row">
+      <div class="col">
+        <div class="feature-card">
+          <h5>🧠 What the App Does</h5>
+          <p>Make your voice heard in local decisions.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feature-card">
+          <h5>⚙️ How It Works</h5>
+          <p>Post polls. Vote. Influence real change.</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="feature-card">
+          <h5>💡 Why It Matters</h5>
+          <p>Your opinion shapes your community.</p>
+        </div>
+      </div>
+    </div>
   </main>
 
-  <div class="container my-5 bg-overlay">
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow text-white" style="background-color: #1E2A78;">
-          <div class="card-body">
-            <h4 class="card-title fw-bold">What the App Does</h4>
-            <p class="card-text">Make your voice heard in local decisions.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow text-white" style="background-color: #f36f21;">
-          <div class="card-body">
-            <h4 class="card-title fw-bold">How It Works</h4>
-            <p class="card-text">Post polls. Vote. Influence real change.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow text-dark" style="background-color: #FFD700;">
-          <div class="card-body">
-            <h4 class="card-title fw-bold">Why It Matters</h4>
-            <p class="card-text">Your opinion shapes your community.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="container bg-overlay mb-5">
-    <div class="row">
-      <div class="col-12 text-start">
-        <a href="about.html" class="btn btn-info text-white">
-          About Us
-        </a>
-      </div>
-    </div>
-  </div>
-
   <%- include('templates/footer') %>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color: #003366;">
     <div class="container-fluid">
       <!-- Name (Could add logo too) -->
-      <a class="navbar-brand" href="/" style="color: #FFFFFF;">CivIQ</a>
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/" style="color: #FFFFFF;">
+      <img src="/images/logo.png" alt="Logo Icon" style="height: 32px; width: auto;">CivIQ</a>
       <!-- Toggler for collapsed navbar on small screens -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -13,7 +14,7 @@
             <a class="nav-link" href="/" style="color: #FFFFFF;">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/views/about" style="color: #FFFFFF;">About</a>
+            <a class="nav-link" href="/about" style="color: #FFFFFF;">About</a>
           </li>
   
           <% if (user) { %>
@@ -22,6 +23,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/main" style="color: #FFFFFF;">Main</a>
+            </li>
+            <li class="nav-time">
+              <a class="nav-link" href="/logout" style="color: #FFFFFF;">Logout</a>
             </li>
             <% if (user.user_type === 'admin') { %>
               <li class="nav-item">
