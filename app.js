@@ -725,6 +725,10 @@ app.post('/unvote', async (req, res) => {
   }
 });
 
+// Dedicated Poll details page
+app.get('/poll/:id', async (req, res) => {
+});
+
 
 /* ERROR HANDLING */
 
