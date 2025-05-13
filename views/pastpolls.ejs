@@ -310,6 +310,19 @@ function confirmDelete(event, pollId) {
   });
   return false;
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('deleted') === 'true') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Poll Deleted',
+      text: 'The poll was successfully deleted.',
+      confirmButtonColor: '#003366'
+    });
+  }
+});
+
 </script> 
 
 </body>
