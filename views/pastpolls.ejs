@@ -89,14 +89,16 @@
             <div class="d-flex justify-content-between align-items-center">
 
               <div>
-                <!-- Read More -->
-                <% if (poll.description && poll.description.length > 120) { %>
-                  <a href="javascript:void(0);" 
-                     class="ms-3 text-decoration-underline text-primary fw-semibold small" 
-                     onclick="toggleDescription('<%= poll._id %>', `<%= poll.description.replace(/`/g, '\\`') %>`)">
-                    Read More
-                  </a>
-                <% } %>                    
+                <div class="d-flex align-items-center">
+                  <h5 class="mb-1 me-2"><%= poll.title %></h5>
+                  <% if (poll.description && poll.description.length > 120) { %>
+                    <a href="javascript:void(0);" 
+                       class="text-decoration-underline text-primary fw-semibold small" 
+                       onclick="toggleDescription('<%= poll._id %>', `<%= poll.description.replace(/`/g, '\\`') %>`)">
+                      read more
+                    </a>
+                  <% } %>   
+                </div>                                 
 
                 <p class="mb-1 text-muted">Available: 
                   <strong><%= poll.available ? 'Yes' : 'No' %></strong>
