@@ -289,6 +289,25 @@
     toggleLink.textContent = 'collapse';
   }
 }
+
+// Delete poll confirmation script 
+function confirmDelete(event, pollId) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'This poll will be permanently deleted.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#dc3545'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById(`delete-form-${pollId}`).submit();
+    }
+  });
+  return false;
+}
 </script> 
 
 </body>
