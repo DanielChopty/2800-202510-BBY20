@@ -685,22 +685,29 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
 
     const sortOption = req.query.sort || 'all';
 
-    // Determine sorting logic
-    let sortCriteria = { title: 1 }; // Default to alphabetical (A-Z)
-    if (sortOption === 'importance') {
-      sortCriteria = { importance: -1 }; // Sort by importance descending
-    }
-
-    const polls = await pollsCollection
-      .find({ createdBy: req.session.email }) // or ._id if using ObjectId
-      .sort(sortCriteria)
+    let polls = await pollsCollection
+      .find({ createdBy: req.session.email })
       .toArray();
+
+    // Manual sorting if importance sort is selected
+    if (sortOption === 'importance') {
+      const importanceMap = { high: 3, medium: 2, low: 1 };
+
+      polls.sort((a, b) => {
+        const aVal = importanceMap[a.importance?.toLowerCase()] || 0;
+        const bVal = importanceMap[b.importance?.toLowerCase()] || 0;
+        return bVal - aVal; // Descending: High > Medium > Low
+      });
+    } else {
+      // Default to alphabetical order by title
+      polls.sort((a, b) => a.title.localeCompare(b.title));
+    }
 
     res.render('pastPolls', {
       title: 'Past Polls',
       user: req.session.user,
       polls: polls,
-      sort: sortOption // So the frontend knows which button is active
+      sort: sortOption
     });
   } catch (err) {
     console.error('Error fetching past polls:', err);
