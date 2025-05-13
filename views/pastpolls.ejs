@@ -62,7 +62,6 @@
               <% if (poll.importance) { %>
                 <p class="mb-1 text-muted">Importance: <strong><%= poll.importance %></strong></p>
               <% } %>
-              <p class="mb-1"><%= poll.description || 'No description provided.' %></p>
               <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
             </div>
           <% }); %>
