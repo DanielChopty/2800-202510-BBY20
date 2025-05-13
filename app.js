@@ -605,7 +605,7 @@ if(!req.session.authenticated){
     req.session.votedPolls = userVotedPolls;
 
     // Redirecting the user to the main.ejs page
-    res.redirect('/main'); 
+    res.redirect('/polls'); 
   } catch (error) {
     console.error('Error processing vote:', error);
     res.status(500).render('500', { title: 'Server Error' });
@@ -675,6 +675,49 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
+
+// GET: Display all user's polls and their tags
+app.get('/manageTags', isAuthenticated, async (req, res) => {
+  try {
+    const pollsColl = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const myPolls = await pollsColl.find({ createdBy: req.session.email }).toArray();
+    const availableTags = ['#DailyLife', '#CulturalViews', '#FamilyMatters', '#MoralChoices', '#PersonalValues', '#PublicOpinion']; // Example list of tags
+    res.render('manageTags', { title: 'Manage Tags', polls: myPolls, availableTags });
+  } catch (err) {
+    console.error('Error fetching polls:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+
+
+// POST: Handle updating specific tags of a poll
+app.post('/updateTags/:id', isAuthenticated, async (req, res) => {
+  try {
+    const pollId = req.params.id;
+    const selectedTags = req.body.selectedTags || []; // Get selected tags from the form
+
+    // If no tags were selected, do nothing
+    if (selectedTags.length === 0) {
+      return res.redirect('/manageTags');
+    }
+
+    const pollsColl = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    await pollsColl.updateOne(
+      { _id: new ObjectId(pollId), createdBy: req.session.email },
+      { $set: { tags: selectedTags } } // Update tags to the selected ones
+    );
+
+    res.redirect('/manageTags'); // Redirect back to the manage tags page
+  } catch (err) {
+    console.error('Error updating tags:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+
+
+
 
 /* ERROR HANDLING */
 
