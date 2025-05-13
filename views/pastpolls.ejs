@@ -15,6 +15,14 @@
     <div class="card shadow border-0 rounded-4 p-4">
       <h1 class="mb-4">Your Past Polls</h1>
 
+      <!-- Sort Buttons -->
+      <div class="d-flex justify-content-start gap-3 mb-3">
+        <a href="/pastpolls?sort=all" class="btn btn-outline-primary">Sort by All</a>
+        <a href="/pastpolls?sort=importance" class="btn btn-outline-secondary">Sort by Importance</a>
+      </div>
+
+      <hr>
+
       <% if (polls.length === 0) { %>
         <p class="text-muted">You haven't created any polls yet.</p>
       <% } else { %>
@@ -22,8 +30,11 @@
           <% polls.forEach(poll => { %>
             <div class="list-group-item list-group-item-action mb-3 rounded-3 shadow-sm p-3">
               <h5 class="mb-1"><%= poll.title %></h5>
-              <p class="mb-1 text-muted">Status: <strong><%= poll.available %></strong></p>
-              <p class="mb-1"><%= poll.description %></p>
+              <p class="mb-1 text-muted">Available: <strong><%= poll.available %></strong></p>
+              <% if (poll.importance) { %>
+                <p class="mb-1 text-muted">Importance: <strong><%= poll.importance %></strong></p>
+              <% } %>
+              <p class="mb-1"><%= poll.description || 'No description provided.' %></p>
               <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
             </div>
           <% }); %>
