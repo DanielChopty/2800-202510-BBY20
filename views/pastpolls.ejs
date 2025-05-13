@@ -140,6 +140,12 @@
             <input type="text" class="form-control" id="title" name="title" placeholder="Enter the poll question" required>
           </div>
 
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter a short description for the poll..."></textarea>
+          </div>
+          
           <!-- Options -->
           <div class="mb-3">
             <label class="form-label">Options (Enter at least two)</label>
@@ -200,6 +206,7 @@
   function openEditModal(poll) {
     document.getElementById('pollId').value = poll._id;
     document.getElementById('title').value = poll.title || '';
+    document.getElementById('description').value = poll.description || '';
     document.getElementById('importance').value = poll.importance || 'Low';
     document.getElementById('available').value = poll.available ? 'true' : 'false';
 
