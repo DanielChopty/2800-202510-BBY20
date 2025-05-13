@@ -385,13 +385,40 @@ app.get('/profile', async (req, res) => {
   
       const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
       const user = await userCollection.findOne({ email: req.session.email });
-  
+
+      // Getting the polls collection from the polls database
+      const pollsCollection = database.db(MONGODB_DATABASE_POLLS).collection('polls');
+      // if no user is present redirect them to the index.ejs page
       if (!user) return res.redirect('/');
+
+      // Retreives user and checks if they have any saved polls
+      const userWithSavedPolls = await userCollection.aggregate([
+      {
+        $match: { email: req.session.email }
+      },
+      {
+        $lookup: {
+          from: 'polls',
+          localField: 'savedPolls',
+          foreignField: '_id',
+          as: 'savedPollsData'
+        }
+      }
+    ]).toArray();
+
+    // Making sure a user actually exists in the database based on the session email
+    // If not then then it redirects back to the 
+    if (!userWithSavedPolls || userWithSavedPolls.length === 0) {
+      return res.redirect('/');
+    }
+
+    const user = userWithSavedPolls[0];
+
   
       res.render('profile', {
         title: 'Profile',
         username: user.name,
-        user: user // pass the full user object
+        user: user // pass the full user object with the saved pools data
       });      
     } catch (error) {
       console.error('Error rendering profile page:', error);
@@ -675,6 +702,84 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
+
+/* Everything related to saving and unsaving user polls */
+
+// Route to save a poll to a user's profile
+app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
+  try {
+    const pollId = req.params.pollId;
+    const userId = req.session.user._id;
+
+    // Validate if pollId is a valid ObjectId
+    if (!ObjectId.isValid(pollId)) {
+      return res.status(400).json({ message: 'Invalid poll ID' });
+    }
+
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
+
+    if (!user || !poll) {
+      return res.status(404).json({ message: 'User or poll not found' });
+    }
+
+    // Check if savedPolls array exists, if not create it
+    if (!user.savedPolls) {
+      await usersCollection.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { savedPolls: [] } }
+      );
+      user.savedPolls = []; // Update local user object
+    }
+
+    // Check if the poll is already saved
+    if (!user.savedPolls.some(savedId => savedId.equals(new ObjectId(pollId)))) {
+      await usersCollection.updateOne(
+        { _id: new ObjectId(userId) },
+        { $push: { savedPolls: new ObjectId(pollId) } }
+      );
+      return res.status(200).json({ message: 'Poll saved successfully' });
+    } else {
+      return res.status(200).json({ message: 'Poll already saved' });
+    }
+  } catch (error) {
+    console.error('Error saving poll:', error);
+    res.status(500).json({ message: 'Failed to save poll' });
+  }
+});
+
+
+// Route to unsave a poll from a user's profile
+app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
+  try {
+    const pollId = req.params.pollId;
+    const userId = req.session.user._id;
+
+    // Validate if pollId is a valid ObjectId
+    if (!ObjectId.isValid(pollId)) {
+      return res.status(400).json({ message: 'Invalid poll ID' });
+    }
+
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Remove the poll ID from the savedPolls array
+    await usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $pull: { savedPolls: new ObjectId(pollId) } }
+    );
+    return res.status(200).json({ message: 'Poll unsaved successfully' });
+  } catch (error) {
+    console.error('Error unsaving poll:', error);
+    res.status(500).json({ message: 'Failed to unsave poll' });
+  }
+});
+
+
+
 
 /* ERROR HANDLING */
 
