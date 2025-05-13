@@ -716,7 +716,7 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
-// Delete poll route
+// Delete poll route (used in pastPolls.ejs)
 app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
@@ -728,6 +728,32 @@ app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+// Edit poll route (used in pastPolls.ejs)
+app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const { title, tags, importance, available } = req.body;
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      {
+        $set: {
+          title: title.trim(),
+          tags: tags.split(',').map(tag => tag.trim()),
+          importance: importance,
+          available: available === 'true'
+        }
+      }
+    );
+
+    res.redirect('/pastpolls');
+  } catch (err) {
+    console.error('Error updating poll:', err);
+    res.status(500).send('Server Error');
+  }
+});
 
 /* ERROR HANDLING */
 
