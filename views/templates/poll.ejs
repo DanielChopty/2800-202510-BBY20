@@ -1,11 +1,40 @@
-<div class="card mb-4" style="background-color: #FFFFFF; border: 2px solid #60A5FA;">
-    <div class="card-body">
-      <h5 class="card-title text-primary"><%= poll.title %></h5>
-      <div class="mt-3 d-flex flex-wrap gap-2">
-        <% let i=0; %>
-		    <% for(i=0; i < poll.tags.length; i++) { %>
-        <span class="badge bg-warning text-dark"><%= poll.tags[i] %></span>
-        <% } %> 
-      </div>
-    </div>
+<div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title"><%= poll.title %></h5>
+
+    <% if (poll.tags && poll.tags.length) { %>
+      <p>
+        <% poll.tags.forEach(tag => { %>
+          <span class="badge bg-secondary"><%= tag %></span>
+        <% }) %>
+      </p>
+    <% } %>
+
+    <form action="/vote" method="POST">
+      <!-- we need to know which poll is being voted on -->
+      <input type="hidden" name="pollId" value="<%= poll._id %>">
+
+      <% poll.choices.forEach((choice, idx) => { %>
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="choiceText"
+            id="choice-<%= poll._id %>-<%= idx %>"
+            value="<%= choice.text %>"
+            required
+          >
+          <label
+            class="form-check-label"
+            for="choice-<%= poll._id %>-<%= idx %>"
+          >
+            <%= choice.text %>
+            <small class="text-muted">( <%= choice.votes %> votes )</small>
+          </label>
+        </div>
+      <% }) %>
+
+      <button type="submit" class="btn btn-primary mt-2">Vote</button>
+    </form>
+  </div>
 </div>
