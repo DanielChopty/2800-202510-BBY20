@@ -679,7 +679,14 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
 // GET /pastpolls - show polls created by logged-in user
 app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   try {
-    const polls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const polls = await pollsCollection
+      .find({ createdBy: req.session.email }) // or req.session.user._id if using ObjectId
+      .sort({ createdAt: -1 })
+      .toArray();
 
     res.render('pastPolls', {
       title: 'Past Polls',
@@ -687,7 +694,7 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
       polls: polls
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching past polls:', err);
     res.status(500).send('Server Error');
   }
 });
