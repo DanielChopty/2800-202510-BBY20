@@ -90,14 +90,13 @@
 
               <div>
                 <!-- Read More -->
-                <h5 class="mb-3 d-flex align-items-center">
-                  <%= poll.title %>
+                <% if (poll.description && poll.description.length > 120) { %>
                   <a href="javascript:void(0);" 
-                     class="ms-3 text-decoration-underline text-primary fw-semibold small"
-                     onclick="toggleDescription('<%= poll._id %>')">
-                    read more
+                     class="ms-3 text-decoration-underline text-primary fw-semibold small" 
+                     onclick="toggleDescription('<%= poll._id %>', `<%= poll.description.replace(/`/g, '\\`') %>`)">
+                    Read More
                   </a>
-                </h5>       
+                <% } %>                    
 
                 <p class="mb-1 text-muted">Available: 
                   <strong><%= poll.available ? 'Yes' : 'No' %></strong>
@@ -264,7 +263,7 @@
     if (descElement.innerText.endsWith('...')) {
       descElement.innerText = fullText;
     } else {
-      descElement.innerText = fullText.substring(0, 100) + '...';
+      descElement.innerText = fullText.substring(0, 120) + '...';
     }
   }
 </script> 
