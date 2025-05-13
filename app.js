@@ -145,7 +145,7 @@ const upload = multer({
 
 // 
 app.use((req, res, next) => {
-  res.locals.votedPolls = req.session.votedPolls || [];
+  res.locals.votedPolls = req.session.votedPolls || {};
   next();
 });
 
@@ -573,10 +573,10 @@ if(!req.session.authenticated){
 
   const { pollId, choiceText } = req.body;
   // Variable to make sure user can only vote once on every poll
-  const userVotedPolls = req.session.votedPolls || [];
+  const userVotedPolls = req.session.votedPolls || {};
 
   // Check if already voted on this poll
-  if (userVotedPolls.includes(pollId)) {
+  if (userVotedPolls[pollId]) {
     return res.status(403).send('You have already voted on this poll.');
   }
 
@@ -608,7 +608,7 @@ if(!req.session.authenticated){
     );
 
     // Mark poll as voted
-    userVotedPolls.push(pollId);
+    userVotedPolls[pollId] = choiceText;
     req.session.votedPolls = userVotedPolls;
 
     // Redirecting the user to the main.ejs page
@@ -682,6 +682,49 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
+
+// Unvote option allowing a user to remove their vote
+app.post('/unvote', async (req, res) => {
+  
+  if(!req.session.authenticated) {
+    return res.status(403).render('403', { title: 'Forbidden' });
+  }
+
+  const { pollId } = req.body;
+  const userVotedPolls = req.session.votedPolls || {};
+  const choiceText = userVotedPolls[pollId];
+
+  // If they never voted on this poll, just redirect back
+  if (!choiceText) {
+    return res.redirect('/polls');
+  }
+
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+  
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
+    if (!poll) {
+      return res.redirect('/polls');
+    }
+
+    const idx = poll.choices.findIndex(c => c.text === choiceText);
+    if (idx > -1 && poll.choices[idx].votes > 0) {
+      poll.choices[idx].votes -= 1;
+      await pollsCollection.updateOne(
+        { _id: new ObjectId(pollId) },
+        { $set: { choices: poll.choices } }
+      );
+    }
+
+    delete userVotedPolls[pollId]; 
+    req.session.votedPolls = userVotedPolls; 
+    res.redirect('/polls');
+  } catch (err) {
+    console.error('Error unvoting:', err);
+    res.status(500).send('Error unvoting');
+  }
+});
+
 
 /* ERROR HANDLING */
 

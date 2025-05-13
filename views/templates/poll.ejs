@@ -13,7 +13,7 @@
 
     <% 
       const pollIdStr = poll._id.toString();
-      const hasVoted = votedPolls.includes(pollIdStr);
+      const hasVoted = (votedPolls[pollIdStr]);
     %>
 
     <% if (hasVoted) { %>
@@ -30,11 +30,18 @@
             (<%= choice.votes %> votes, <%= pct %>%)
           </span>
 
-          <div class="progress mt-1">
-            <div class="progress-bar" role="progressbar" style="width: <%= pct %>%" aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
+            <div class="progress mt-1">
+            <div class="progress-bar" role="progressbar" style="width: <%= pct %>%;" aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
         </div>
-      <% }) %>
+      <% }); %>
+
+      <form action="/unvote" method="POST" class="mt-3">
+        <input type="hidden" name="pollId" value="<%= poll._id %>">
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+          Remove my vote
+        </button>
+      </form>
 
     <% } else { %>
       <!-- Voting form where you can vote -->
