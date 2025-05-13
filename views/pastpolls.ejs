@@ -15,14 +15,16 @@
     <div class="card shadow border-0 rounded-4 p-4">
       <h1 class="mb-4">Your Past Polls</h1>
 
-      <!-- Sort Buttons with Active State -->
+      <!-- Sort Buttons with Exact Site Colors and Active State -->
       <div class="d-flex justify-content-start gap-3 mb-3">
         <a href="/pastpolls?sort=all" 
-           class="btn <%= (!sort || sort === 'all') ? 'btn-primary' : 'btn-outline-primary' %>">
+           class="btn text-white <%= (!sort || sort === 'all') ? '' : 'btn-outline-primary' %>" 
+           style="<%= (!sort || sort === 'all') ? 'background-color: #003366;' : '' %>">
           All
         </a>
         <a href="/pastpolls?sort=importance" 
-           class="btn <%= (sort === 'importance') ? 'btn-secondary' : 'btn-outline-secondary' %>">
+           class="btn text-white <%= (sort === 'importance') ? '' : 'btn-outline-warning' %>" 
+           style="<%= (sort === 'importance') ? 'background-color: #f36f21;' : '' %>">
           By Importance
         </a>
       </div>
