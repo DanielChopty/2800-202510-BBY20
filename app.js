@@ -612,11 +612,6 @@ if(!req.session.authenticated){
   }
 });
 
-// Page for creating a poll
-app.get('/createPoll', (req, res) =>{
-  res.render('createPoll');
-})
-
 // Handle creating a new poll
 app.post('/createPoll', isAuthenticated, async (req, res) => {
   console.log('POST /createPoll hit', req.body);
@@ -628,7 +623,8 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       importance,
       startDate,
       endDate,
-      visibility
+      visibility,
+      description
     } = req.body;
 
     // Removes any empty strings and trims whitespace
@@ -653,6 +649,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       startDate:      new Date(startDate),
       endDate:        new Date(endDate),
       visibility,
+      description: description?.trim() || '',
       createdBy:      req.session.email, // We could also use their user ID here instead
       createdAt:      new Date(),
       available:      true,
@@ -731,7 +728,7 @@ app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
 // Edit poll route (used in pastPolls.ejs)
 app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
   try {
-    const { title, importance, available, options = [] } = req.body;
+    const { title, importance, available, options = [], description } = req.body;
 
     // Validate options: Remove empty/whitespace-only options
     const choices = Array.isArray(options)
@@ -755,6 +752,7 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
           title: title.trim(),
           importance,
           available: available === 'true',
+          description: description?.trim() || '',
           choices
         }
       }
