@@ -100,8 +100,8 @@
                 <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
               </div>
 
-              <!-- Action Buttons -->
-              <div class="d-flex flex-column gap-3">
+              <!-- Edit and Delete Buttons -->
+              <div class="d-flex flex-column gap-3 me-4">
                 <button class="btn btn-edit-grey" 
                         title="Edit" 
                         onclick='openEditModal(<%- JSON.stringify(poll) %>)'>
@@ -113,7 +113,7 @@
                     <i class="bi bi-trash"></i>
                   </button>
                 </form>
-              </div>
+              </div>              
             </div>
           </div>
         <% }); %>
