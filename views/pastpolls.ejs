@@ -91,15 +91,13 @@
               <div>
                 <div class="d-flex align-items-baseline mb-3">
                   <h5 class="mb-0 me-3"><%= poll.title %></h5>
-                  <% if (poll.description && poll.description.length > 100) { %>
-                    <a href="javascript:void(0);" 
-                      id="toggle-<%= poll._id %>"
-                      class="text-decoration-underline text-primary fw-semibold fs-5 align-middle" 
-                      onclick="toggleDescription('<%= poll._id %>', `<%= poll.description.replace(/`/g, '\\`') %>`)">
-                        expand
-                    </a>
-                  <% } %>
-                </div>                                                
+                  <a href="javascript:void(0);" 
+                     id="toggle-<%= poll._id %>"
+                     class="text-decoration-underline text-primary fw-semibold fs-5 align-middle" 
+                     onclick="toggleDescription('<%= poll._id %>', `<%= poll.description ? poll.description.replace(/`/g, '\\`') : 'No description provided.' %>`)">
+                      expand
+                  </a>
+                </div>                                                             
 
                 <p class="mb-1 text-muted">Available: 
                   <strong><%= poll.available ? 'Yes' : 'No' %></strong>
@@ -116,7 +114,7 @@
                     <%= poll.description %>
                   <% } %>
                 </p>                
-                <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
+                <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>               
               </div>
 
               <!-- Edit and Delete Buttons -->
