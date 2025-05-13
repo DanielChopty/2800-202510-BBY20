@@ -89,16 +89,16 @@
             <div class="d-flex justify-content-between align-items-center">
 
               <div>
-                <div class="d-flex align-items-center">
-                  <h5 class="mb-1 me-3"><%= poll.title %></h5>
-                  <% if (poll.description && poll.description.length > 120) { %>
+                <div class="d-flex align-items-baseline mb-3">
+                  <h5 class="mb-0 me-3"><%= poll.title %></h5>
+                  <% if (poll.description && poll.description.length > 100) { %>
                     <a href="javascript:void(0);" 
-                       class="text-decoration-underline text-primary fw-semibold small" 
+                       class="text-decoration-underline text-primary fw-semibold fs-5 align-middle" 
                        onclick="toggleDescription('<%= poll._id %>', `<%= poll.description.replace(/`/g, '\\`') %>`)">
                       read more
                     </a>
-                  <% } %>   
-                </div>                                 
+                  <% } %>
+                </div>                                                
 
                 <p class="mb-1 text-muted">Available: 
                   <strong><%= poll.available ? 'Yes' : 'No' %></strong>
@@ -109,8 +109,8 @@
                 <p class="mb-1 text-muted" id="desc-<%= poll._id %>">
                   <% if (!poll.description) { %>
                     No description provided.
-                  <% } else if (poll.description.length > 120) { %>
-                    <%= poll.description.substring(0, 120) + '...' %>
+                  <% } else if (poll.description.length > 100) { %>
+                    <%= poll.description.substring(0, 100) + '...' %>
                   <% } else { %>
                     <%= poll.description %>
                   <% } %>
@@ -265,7 +265,7 @@
     if (descElement.innerText.endsWith('...')) {
       descElement.innerText = fullText;
     } else {
-      descElement.innerText = fullText.substring(0, 120) + '...';
+      descElement.innerText = fullText.substring(0, 100) + '...';
     }
   }
 </script> 
