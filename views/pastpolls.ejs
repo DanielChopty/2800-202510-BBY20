@@ -22,7 +22,7 @@
           <% polls.forEach(poll => { %>
             <div class="list-group-item list-group-item-action mb-3 rounded-3 shadow-sm p-3">
               <h5 class="mb-1"><%= poll.title %></h5>
-              <p class="mb-1 text-muted">Status: <strong><%= poll.status %></strong></p>
+              <p class="mb-1 text-muted">Status: <strong><%= poll.available %></strong></p>
               <p class="mb-1"><%= poll.description %></p>
               <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
             </div>
