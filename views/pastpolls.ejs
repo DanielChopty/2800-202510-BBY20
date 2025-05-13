@@ -136,12 +136,14 @@
                         onclick='openEditModal(<%- JSON.stringify(poll) %>)'>
                   <i class="bi bi-pencil-square"></i>
                 </button>
-                <form action="/deletepoll/<%= poll._id %>" method="POST" 
-                      onsubmit="return confirm('Are you sure you want to delete this poll?');">
+                <form onsubmit="return confirmDelete(event, '<%= poll._id %>')" 
+                  id="delete-form-<%= poll._id %>" 
+                  method="POST" 
+                  action="/deletepoll/<%= poll._id %>">
                   <button type="submit" class="btn btn-delete-red" title="Delete">
                     <i class="bi bi-trash"></i>
                   </button>
-                </form>
+                </form>                
               </div>              
             </div>
           </div>
