@@ -87,9 +87,18 @@
         <% polls.forEach(poll => { %>
           <div class="list-group-item list-group-item-action mb-3 rounded-3 shadow-sm p-3">
             <div class="d-flex justify-content-between align-items-center">
-              <!-- Poll Information -->
+
               <div>
-                <h5 class="mb-1"><%= poll.title %></h5>
+                <!-- Read More -->
+                <h5 class="mb-1 d-flex align-items-center">
+                  <%= poll.title %>
+                  <a href="javascript:void(0);" 
+                     class="ms-3 text-decoration-underline text-primary fw-semibold small"
+                     onclick="toggleDescription('<%= poll._id %>')">
+                    read more
+                  </a>
+                </h5>       
+
                 <p class="mb-1 text-muted">Available: 
                   <strong><%= poll.available ? 'Yes' : 'No' %></strong>
                 </p>
