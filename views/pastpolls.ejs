@@ -54,6 +54,18 @@
     .btn-delete-red:hover {
       background-color: #b02a37 !important;
     }
+    
+    .description-text {
+  display: block;
+  max-width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word; /* Extra safety */
+}
+
+.list-group-item .d-flex {
+  align-items: flex-start; /* Prevent vertical alignment issues */
+}
   </style>
 </head>
 
@@ -88,7 +100,7 @@
           <div class="list-group-item list-group-item-action mb-3 rounded-3 shadow-sm p-3">
             <div class="d-flex justify-content-between align-items-center">
 
-              <div>
+              <div style="flex-grow: 1; max-width: 80%;">
                 <div class="d-flex align-items-baseline mb-3">
                   <h5 class="mb-0 me-3"><%= poll.title %></h5>
                   <a href="javascript:void(0);" 
@@ -105,7 +117,7 @@
                 <% if (poll.importance) { %>
                   <p class="mb-1 text-muted">Importance: <strong><%= poll.importance %></strong></p>
                 <% } %>
-                <p class="mb-1 text-muted" id="desc-<%= poll._id %>">
+                <p class="mb-1 text-muted description-text" id="desc-<%= poll._id %>">
                   <% if (!poll.description) { %>
                     No description provided.
                   <% } else if (poll.description.length > 100) { %>
@@ -113,12 +125,12 @@
                   <% } else { %>
                     <%= poll.description %>
                   <% } %>
-                </p>                
+                </p>                            
                 <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>               
               </div>
 
               <!-- Edit and Delete Buttons -->
-              <div class="d-flex flex-column gap-3 me-4">
+              <div class="d-flex flex-column gap-3 me-4" style="flex-shrink: 0;">
                 <button class="btn btn-edit-grey" 
                         title="Edit" 
                         onclick='openEditModal(<%- JSON.stringify(poll) %>)'>
@@ -264,11 +276,13 @@
   const toggleLink = document.getElementById(`toggle-${id}`);
 
   if (descElement.dataset.expanded === 'true') {
-    descElement.innerText = fullText.substring(0, 100) + '...';
+    descElement.innerHTML = fullText.substring(0, 100) + '...';
     descElement.dataset.expanded = 'false';
     toggleLink.textContent = 'expand';
   } else {
-    descElement.innerText = fullText;
+    // Replace newlines with <br> to preserve line breaks
+    const formattedText = fullText.replace(/\n/g, '<br>');
+    descElement.innerHTML = formattedText;
     descElement.dataset.expanded = 'true';
     toggleLink.textContent = 'collapse';
   }
