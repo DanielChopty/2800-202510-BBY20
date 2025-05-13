@@ -718,7 +718,7 @@ app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
     await pollsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
-    res.redirect('/pastpolls');
+    res.redirect('/pastpolls?deleted=true');
   } catch (err) {
     console.error('Error deleting poll:', err);
     res.status(500).send('Server Error');
@@ -758,7 +758,7 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
       }
     );
 
-    res.redirect('/pastpolls');
+    res.redirect('/pastpolls?edited=true');
   } catch (err) {
     console.error('Error updating poll:', err);
     res.status(500).send('Server Error');
