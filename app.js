@@ -685,14 +685,14 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
 
     const sortOption = req.query.sort || 'all';
 
-    // Determine sorting criteria based on query parameter
-    let sortCriteria = { createdAt: -1 }; // Default: Newest first
+    // Determine sorting logic
+    let sortCriteria = { title: 1 }; // Default to alphabetical (A-Z)
     if (sortOption === 'importance') {
       sortCriteria = { importance: -1 }; // Sort by importance descending
     }
 
     const polls = await pollsCollection
-      .find({ createdBy: req.session.email })
+      .find({ createdBy: req.session.email }) // or ._id if using ObjectId
       .sort(sortCriteria)
       .toArray();
 
@@ -700,7 +700,7 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
       title: 'Past Polls',
       user: req.session.user,
       polls: polls,
-      sort: sortOption // Pass sort parameter to EJS
+      sort: sortOption // So the frontend knows which button is active
     });
   } catch (err) {
     console.error('Error fetching past polls:', err);
