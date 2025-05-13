@@ -28,7 +28,7 @@ const {
 const app = express();
 const axios = require('axios');
 const port = PORT || 3000;
-const expireTime = 60 * 60 * 1000; // 1 hour session expiration
+const expireTime = 60 * 60 * 24 * 1000; // 1 day session expiration
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
