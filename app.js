@@ -676,22 +676,31 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
   }
 });
 
-// GET /pastpolls - show polls created by logged-in user
+// Past polls page route
 app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const pollsCollection = database
       .db(process.env.MONGODB_DATABASE_POLLS)
       .collection('polls');
 
+    const sortOption = req.query.sort || 'all';
+
+    // Determine sorting criteria based on query parameter
+    let sortCriteria = { createdAt: -1 }; // Default: Newest first
+    if (sortOption === 'importance') {
+      sortCriteria = { importance: -1 }; // Sort by importance descending
+    }
+
     const polls = await pollsCollection
-      .find({ createdBy: req.session.email }) // or req.session.user._id if using ObjectId
-      .sort({ createdAt: -1 })
+      .find({ createdBy: req.session.email })
+      .sort(sortCriteria)
       .toArray();
 
     res.render('pastPolls', {
       title: 'Past Polls',
       user: req.session.user,
-      polls: polls
+      polls: polls,
+      sort: sortOption // Pass sort parameter to EJS
     });
   } catch (err) {
     console.error('Error fetching past polls:', err);
