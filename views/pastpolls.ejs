@@ -124,39 +124,61 @@
 
 <!-- Edit Poll Modal -->
 <div class="modal fade" id="editPollModal" tabindex="-1" aria-labelledby="editPollModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <form id="editPollForm" method="POST">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editPollModalLabel">Edit Poll</h5>
+          <h5 class="modal-title text-primary" id="editPollModalLabel">Edit Poll</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" id="pollId" name="pollId">
+
+          <!-- Poll Question -->
           <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" name="title" required>
+            <label for="title" class="form-label">Poll Question</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Enter the poll question" required>
           </div>
+
+          <!-- Tags -->
           <div class="mb-3">
             <label for="tags" class="form-label">Tags (comma-separated)</label>
-            <input type="text" class="form-control" id="tags" name="tags">
+            <input type="text" class="form-control" id="tags" name="tags" placeholder="Enter tags separated by commas">
           </div>
+
+          <!-- Importance -->
           <div class="mb-3">
             <label for="importance" class="form-label">Importance</label>
-            <select class="form-select" id="importance" name="importance">
+            <select class="form-select" id="importance" name="importance" required>
+              <option disabled selected>Choose importance</option>
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
               <option value="High">High</option>
             </select>
           </div>
+
+          <!-- Start and End Dates -->
+          <div class="row mb-3">
+            <div class="col">
+              <label for="startDate" class="form-label">Start Date</label>
+              <input type="date" class="form-control" id="startDate" name="startDate">
+            </div>
+            <div class="col">
+              <label for="endDate" class="form-label">End Date</label>
+              <input type="date" class="form-control" id="endDate" name="endDate">
+            </div>
+          </div>
+
+          <!-- Availability -->
           <div class="mb-3">
-            <label for="available" class="form-label">Available</label>
+            <label for="available" class="form-label">Availability</label>
             <select class="form-select" id="available" name="available">
               <option value="true">Yes</option>
               <option value="false">No</option>
             </select>
           </div>
         </div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-site-orange text-white">Save Changes</button>
