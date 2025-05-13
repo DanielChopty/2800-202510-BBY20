@@ -731,19 +731,31 @@ app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
 // Edit poll route (used in pastPolls.ejs)
 app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
   try {
-    const { title, tags, importance, available } = req.body;
+    const { title, importance, available, options = [] } = req.body;
+
+    // Validate options: Remove empty/whitespace-only options
+    const choices = Array.isArray(options)
+      ? options.filter(opt => opt && opt.trim().length > 0).map(opt => ({ text: opt.trim(), votes: 0 }))
+      : [];
+
+    // Ensure at least two valid options are provided
+    if (choices.length < 2) {
+      return res.status(400).send('Please provide at least two valid options.');
+    }
+
     const pollsCollection = database
       .db(process.env.MONGODB_DATABASE_POLLS)
       .collection('polls');
 
+    // Update the poll document
     await pollsCollection.updateOne(
       { _id: new ObjectId(req.params.id) },
       {
         $set: {
           title: title.trim(),
-          tags: tags.split(',').map(tag => tag.trim()),
-          importance: importance,
-          available: available === 'true'
+          importance,
+          available: available === 'true',
+          choices
         }
       }
     );

@@ -140,10 +140,13 @@
             <input type="text" class="form-control" id="title" name="title" placeholder="Enter the poll question" required>
           </div>
 
-          <!-- Tags -->
+          <!-- Options -->
           <div class="mb-3">
-            <label for="tags" class="form-label">Tags (comma-separated)</label>
-            <input type="text" class="form-control" id="tags" name="tags" placeholder="Enter tags separated by commas">
+            <label class="form-label">Options (Enter at least two)</label>
+            <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 1">
+            <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 2">
+            <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 3 (optional)">
+            <input type="text" name="options[]" class="form-control option-input" placeholder="Option 4 (optional)">
           </div>
 
           <!-- Importance -->
@@ -194,20 +197,32 @@
 
 <!-- Script to open the edit poll modal -->
 <script>
-    function openEditModal(poll) {
-      document.getElementById('pollId').value = poll._id;
-      document.getElementById('title').value = poll.title;
-      document.getElementById('tags').value = poll.tags ? poll.tags.join(', ') : '';
-      document.getElementById('importance').value = poll.importance || 'Low';
-      document.getElementById('available').value = poll.available ? 'true' : 'false';
-  
-      const editForm = document.getElementById('editPollForm');
-      editForm.action = `/editpoll/${poll._id}`;
-  
-      const modal = new bootstrap.Modal(document.getElementById('editPollModal'));
-      modal.show();
-    }
-  </script>  
+  function openEditModal(poll) {
+    // Fill hidden poll ID and title field
+    document.getElementById('pollId').value = poll._id;
+    document.getElementById('title').value = poll.title;
+
+    // Set importance dropdown
+    const importanceSelect = document.getElementById('importance');
+    importanceSelect.value = poll.importance || 'Low';
+
+    // Set availability dropdown
+    const availableSelect = document.getElementById('available');
+    availableSelect.value = poll.available ? 'true' : 'false';
+
+    // Clear all options fields (keep them blank as requested)
+    const optionInputs = document.querySelectorAll('.option-input');
+    optionInputs.forEach(input => input.value = '');
+
+    // Clear and set form action to correct endpoint
+    const editForm = document.getElementById('editPollForm');
+    editForm.action = `/editpoll/${poll._id}`;
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('editPollModal'));
+    modal.show();
+  }
+</script>
 
 </body>
 </html>
