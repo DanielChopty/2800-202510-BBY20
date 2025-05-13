@@ -676,6 +676,21 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
   }
 });
 
+// GET /pastpolls - show polls created by logged-in user
+app.get('/pastpolls', ensureAuthenticated, async (req, res) => {
+  try {
+    const polls = await Poll.find({ createdBy: req.user._id }).sort({ createdAt: -1 }).lean();
+    res.render('pastPolls', {
+      title: 'Past Polls',
+      user: req.user,
+      polls: polls
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 /* ERROR HANDLING */
 
 // 404 handler (catch-all route)
