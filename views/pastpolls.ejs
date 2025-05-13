@@ -218,8 +218,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Script to open the edit poll modal -->
+<!-- Client-side scripts -->
 <script>
+  // Script to open the edit modal
   function openEditModal(poll) {
     document.getElementById('pollId').value = poll._id;
     document.getElementById('title').value = poll.title || '';
@@ -255,6 +256,16 @@
     // Show the Bootstrap modal
     const modal = new bootstrap.Modal(document.getElementById('editPollModal'));
     modal.show();
+  }
+
+  // Script to toggle the full description upon clicking 'read more'
+  function toggleDescription(id, fullText) {
+    const descElement = document.getElementById(`desc-${id}`);
+    if (descElement.innerText.endsWith('...')) {
+      descElement.innerText = fullText;
+    } else {
+      descElement.innerText = fullText.substring(0, 100) + '...';
+    }
   }
 </script> 
 
