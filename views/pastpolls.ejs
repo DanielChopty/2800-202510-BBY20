@@ -106,7 +106,7 @@
                   <a href="javascript:void(0);" 
                      id="toggle-<%= poll._id %>"
                      class="text-decoration-underline text-primary fw-semibold fs-5 align-middle" 
-                     onclick="toggleDescription('<%= poll._id %>', `<%= poll.description ? poll.description.replace(/`/g, '\\`') : 'No description provided.' %>`)">
+                     onclick="toggleDetails('<%= poll._id %>', `<%= poll.description ? poll.description.replace(/`/g, '\\`') : 'No description provided.' %>`)">
                       expand
                   </a>
                 </div>                                                             
@@ -133,10 +133,10 @@
                       <li><%= choice.text %> - <strong><%= choice.votes %></strong> votes</li>
                     <% }); %>
                   </ul>
-                  <p class="mb-1 text-muted">Start Date: <%= poll.startDate ? new Date(poll.startDate).toLocaleDateString() : 'Not Set' %></p>
-                  <p class="mb-1 text-muted">End Date: <%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %></p>
+                  <p class="mb-1 text-muted">Start Date: <strong><%= poll.startDate ? new Date(poll.startDate).toLocaleDateString() : 'Not Set' %></strong></p>
+                  <p class="mb-1 text-muted">End Date: <strong><%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %></strong></p>
                 </div>                                            
-                <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>               
+                <small class="d-block mb-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>              
               </div>
 
               <!-- Edit and Delete Buttons -->
@@ -285,7 +285,7 @@
   }
 
   // Script to toggle the full description upon clicking 'expand'
-  function toggleDescription(id, fullText) {
+  function toggleDetails(id, fullText) {
   const descElement = document.getElementById(`desc-${id}`);
   const toggleLink = document.getElementById(`toggle-${id}`);
   const detailsElement = document.getElementById(`details-${id}`);
