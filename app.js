@@ -481,7 +481,7 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
 
 // Page for creating a poll
 app.get('/createPoll', (req, res) =>{
-  res.render('createPoll');
+  res.redirect('/createPoll?created=true');
 })
 
 

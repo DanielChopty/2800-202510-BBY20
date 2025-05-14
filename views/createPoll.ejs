@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Create a Poll</title>
@@ -7,109 +8,129 @@
   <!-- Bootstrap 5 CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
 
   <%- include('templates/header') %>
 
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <h2 class="mb-4 text-center text-primary">Create a New Poll</h2>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="mb-4 text-center text-primary">Create a New Poll</h2>
 
-        <form method="POST" action="/createPoll">
-          <!-- Poll Question -->
-          <div class="mb-3">
-            <label for="question" class="form-label">Poll Question</label>
-            <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question">
-          </div>
-
-          <!-- Description -->
-          <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter a short description for the poll..."></textarea>
-          </div>          
-
-          <!-- Options -->
-          <div class="mb-3">
-            <label class="form-label">Options (Enter at least two)</label>
-            <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 1">
-            <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 2">
-            <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 3 (optional)">
-            <input type="text" name="options[]" class="form-control" placeholder="Option 4 (optional)">
-          </div>
-
-          <!-- Importance -->
-          <div class="mb-3">
-            <label for="importance" class="form-label">Importance</label>
-            <select class="form-select" name="importance" id="importance">
-              <option selected disabled>Choose importance</option>
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-            </select>
-          </div>
-
-          <!-- Start and End Dates -->
-          <div class="row mb-3">
-            <div class="col">
-              <label for="startDate" class="form-label">Start Date</label>
-              <input type="date" name="startDate" class="form-control" id="startDate">
+          <form method="POST" action="/createPoll">
+            <!-- Poll Question -->
+            <div class="mb-3">
+              <label for="question" class="form-label">Poll Question</label>
+              <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question">
             </div>
-            <div class="col">
-              <label for="endDate" class="form-label">End Date</label>
-              <input type="date" name="endDate" class="form-control" id="endDate">
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3"
+                placeholder="Enter a short description for the poll..."></textarea>
             </div>
-          </div>
 
-          <!-- Visibility -->
-          <div class="mb-3">
-            <label for="visibility" class="form-label">Visibility</label>
-            <select class="form-select" name="visibility" id="visibility">
-              <option selected disabled>Select visibility</option>
-              <option>Public</option>
-              <option>Internal</option>
-            </select>
-          </div>
+            <!-- Options -->
+            <div class="mb-3">
+              <label class="form-label">Options (Enter at least two)</label>
+              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 1">
+              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 2">
+              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 3 (optional)">
+              <input type="text" name="options[]" class="form-control" placeholder="Option 4 (optional)">
+            </div>
 
-          <!-- Submit Button -->
-          <div class="text-center">
-            <button type="submit" class="btn btn-primary">Submit Poll</button>
-          </div>
-        </form>
+            <!-- Importance -->
+            <div class="mb-3">
+              <label for="importance" class="form-label">Importance</label>
+              <select class="form-select" name="importance" id="importance">
+                <option selected disabled>Choose importance</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
 
+            <!-- Start and End Dates -->
+            <div class="row mb-3">
+              <div class="col">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input type="date" name="startDate" class="form-control" id="startDate">
+              </div>
+              <div class="col">
+                <label for="endDate" class="form-label">End Date</label>
+                <input type="date" name="endDate" class="form-control" id="endDate">
+              </div>
+            </div>
+
+            <!-- Visibility -->
+            <div class="mb-3">
+              <label for="visibility" class="form-label">Visibility</label>
+              <select class="form-select" name="visibility" id="visibility">
+                <option selected disabled>Select visibility</option>
+                <option>Public</option>
+                <option>Internal</option>
+              </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary">Submit Poll</button>
+            </div>
+          </form>
+
+        </div>
       </div>
     </div>
-  </div>
 
-  <%- include('templates/footer') %>
+    <%- include('templates/footer') %>
 
-  <!-- Bootstrap JS (Optional for functionality like dropdowns) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <!-- Bootstrap JS (Optional for functionality like dropdowns) -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- SweetAlert scripts (for poll creation confirmation and acknowledgement) -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <!-- SweetAlert scripts (for poll creation confirmation and acknowledgement) -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <script>
-    // Event listener to give acknowledgement that poll has been created
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function (event) {
-      event.preventDefault(); // Prevent immediate submission
-  
-      Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to create this poll?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, create it!',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#003366'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          form.submit(); // Proceed with actual submission
-        }
-      });
-    });
-  </script>
-  
+      <script>
+        // Event listener to give acknowledgement that poll has been created
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (event) {
+          event.preventDefault(); // Prevent immediate submission
+
+          Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to create this poll?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, create it!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#003366'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              form.submit(); // Proceed with actual submission
+            }
+          });
+        });
+
+        // Show success alert if poll was created successfully
+        window.addEventListener('DOMContentLoaded', () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('created') === 'true') {
+            Swal.fire({
+              icon: 'success',
+              title: 'Poll Created!',
+              text: 'Your poll was successfully created.',
+              confirmButtonColor: '#003366'
+            }).then(() => {
+              // Clean up URL to remove the query param
+              const newUrl = window.location.origin + window.location.pathname;
+              window.history.replaceState({}, document.title, newUrl);
+            });
+          }
+        });
+      </script>
+
 </body>
+
 </html>
