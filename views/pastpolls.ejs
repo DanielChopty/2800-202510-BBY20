@@ -288,19 +288,21 @@
   function toggleDescription(id, fullText) {
   const descElement = document.getElementById(`desc-${id}`);
   const toggleLink = document.getElementById(`toggle-${id}`);
+  const detailsElement = document.getElementById(`details-${id}`);
 
   if (descElement.dataset.expanded === 'true') {
-    // If description is longer than 80 characters, show truncated text with "..."
     if (fullText.length > 80) {
       descElement.innerHTML = fullText.substring(0, 80) + '...';
     } else {
       descElement.innerHTML = fullText;
     }
+    detailsElement.style.display = 'none';
     descElement.dataset.expanded = 'false';
     toggleLink.textContent = 'expand';
   } else {
     const formattedText = fullText.replace(/\n/g, '<br>');
     descElement.innerHTML = formattedText;
+    detailsElement.style.display = 'block';
     descElement.dataset.expanded = 'true';
     toggleLink.textContent = 'collapse';
   }
