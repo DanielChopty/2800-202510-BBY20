@@ -93,6 +93,15 @@
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
       <script>
+        <% if (created) { %>
+          Swal.fire({
+            icon: 'success',
+            title: 'Poll Created!',
+            text: 'Your poll was successfully created.',
+            confirmButtonColor: '#1ee004'
+          });
+        <% } %>
+
         // Event listener to give acknowledgement that poll has been created
         const form = document.querySelector('form');
         form.addEventListener('submit', function (event) {
@@ -113,22 +122,6 @@
           });
         });
 
-        // Show success alert if poll was created successfully
-        window.addEventListener('DOMContentLoaded', () => {
-          const urlParams = new URLSearchParams(window.location.search);
-          if (urlParams.get('created') === 'true') {
-            Swal.fire({
-              icon: 'success',
-              title: 'Poll Created!',
-              text: 'Your poll was successfully created.',
-              confirmButtonColor: '#003366'
-            }).then(() => {
-              // Clean up URL to remove the query param
-              const newUrl = window.location.origin + window.location.pathname;
-              window.history.replaceState({}, document.title, newUrl);
-            });
-          }
-        });
       </script>
 
 </body>

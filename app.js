@@ -480,13 +480,12 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
 });
 
 // Page for creating a poll
-app.get('/createPoll', (req, res) =>{
-  res.redirect('/createPoll?created=true');
-})
-
+app.get('/createPoll', isAuthenticated, (req, res) => {
+  const created = req.query.created === 'true';
+  res.render('createPoll', { created });
+});
 
 // Adding a route to fetch all available polls from the database
-
 
 /*Important details  */
 // Database can be named anything (Ex. polls)
@@ -665,7 +664,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
     console.log('Inserted poll! _id:', result.insertedId); 
 
     // Redirect back to the polls page once done
-    res.redirect('/polls');
+    res.render('createPoll', { created: true });
 
   } catch (err) {
     console.error('Error creating poll:', err);
