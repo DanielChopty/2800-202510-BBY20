@@ -731,6 +731,10 @@ app.get('/poll/:id', async (req, res) => {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls;');
     const poll = await pollsCollection.findOne({ _id: new ObjectId(req.params.id)});
 
+    if (!poll || !poll.available) {
+      return res.status(404).render('404', { title: 'Poll Not Found' });
+    }
+    
     const votedPolls = req.session.votedPolls || {};
     res.render('pollDetail', {
       title: poll.title,
