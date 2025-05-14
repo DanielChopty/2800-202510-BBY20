@@ -311,6 +311,7 @@ function confirmDelete(event, pollId) {
   return false;
 }
 
+// Event listener to give acknowledgement message that poll has been deleted
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('deleted') === 'true') {
@@ -319,6 +320,10 @@ window.addEventListener('DOMContentLoaded', () => {
       title: 'Poll Deleted',
       text: 'The poll was successfully deleted.',
       confirmButtonColor: '#003366'
+    }).then(() => {
+      // Remove the 'deleted' parameter from the URL without reloading the page
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
     });
   }
 });
