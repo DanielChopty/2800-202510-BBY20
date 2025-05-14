@@ -613,8 +613,8 @@ if(!req.session.authenticated){
 
     // Redirecting the user to the main.ejs page
     res.redirect('/polls'); 
-  } catch (error) {
-    console.error('Error processing vote:', error);
+  } catch (err) {
+    console.err('Error processing vote:', err);
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
