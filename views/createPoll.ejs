@@ -86,7 +86,30 @@
   <!-- Bootstrap JS (Optional for functionality like dropdowns) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- SweetAlert scripts (for poll creation acknowledgement) -->
+  <!-- SweetAlert scripts (for poll creation confirmation and acknowledgement) -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Event listener to give acknowledgement that poll has been created
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function (event) {
+      event.preventDefault(); // Prevent immediate submission
+  
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to create this poll?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, create it!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#003366'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit(); // Proceed with actual submission
+        }
+      });
+    });
+  </script>
+  
 </body>
 </html>
