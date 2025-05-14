@@ -612,7 +612,9 @@ if(!req.session.authenticated){
     req.session.votedPolls = userVotedPolls;
 
     // Redirecting the user to the main.ejs page
-    res.redirect('/polls'); 
+    const returnTo = req.get('Referer') || '/polls';
+    res.redirect(returnTo);
+
   } catch (err) {
     console.err('Error processing vote:', err);
     res.status(500).render('500', { title: 'Server Error' });
@@ -718,7 +720,9 @@ app.post('/unvote', async (req, res) => {
 
     delete userVotedPolls[pollId]; 
     req.session.votedPolls = userVotedPolls; 
-    res.redirect('/polls');
+    const returnTo = req.get('Referer') || '/polls';
+    res.redirect(returnTo);
+
   } catch (err) {
     console.error('Error unvoting:', err);
     res.status(500).send('Error unvoting');
