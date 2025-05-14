@@ -66,6 +66,19 @@
 .list-group-item .d-flex {
   align-items: flex-start; /* Prevent vertical alignment issues */
 }
+
+.poll-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 85%;
+}
+
+@media (max-width: 1000px) {
+  .poll-content {
+    max-width: calc(100% - 120px); /* Leaves space for buttons on smaller screen widths */
+  }
+}
+
   </style>
 </head>
 
@@ -78,11 +91,15 @@
 
     <!-- Sort Controls -->
     <div class="d-flex justify-content-start gap-3 mb-3">
+
+      <!-- Sort alphabetically -->
       <a href="/pastpolls?sort=all" 
          class="btn btn-site-blue text-white" 
          style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-        Sort by Alphabetical
+        Sort Alphabetically
       </a>
+
+      <!-- Sort by importance -->
       <a href="/pastpolls?sort=importance" 
          class="btn btn-site-orange text-white" 
          style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
@@ -101,7 +118,7 @@
           <div class="list-group-item list-group-item-action mb-3 rounded-3 shadow-sm p-3">
             <div class="d-flex justify-content-between align-items-center">
 
-              <div style="flex-grow: 1; max-width: 85%;">
+              <div class="poll-content">
 
                 <!-- Primary details (always visible) -->
                 <div class="d-flex align-items-baseline mb-3">
@@ -145,7 +162,7 @@
               </div>
 
               <!-- Edit and Delete Buttons -->
-              <div class="d-flex flex-column gap-3 me-4" style="flex-shrink: 0;">
+              <div class="d-flex flex-column gap-3 me-3" style="flex-shrink: 0;">
                 <button class="btn btn-edit-grey" 
                         title="Edit" 
                         onclick='openEditModal(<%- JSON.stringify(poll) %>)'>
@@ -180,7 +197,7 @@
         <div class="modal-body">
           <input type="hidden" id="pollId" name="pollId">
 
-          <!-- Poll Question -->
+          <!-- Question -->
           <div class="mb-3">
             <label for="title" class="form-label">Poll Question</label>
             <input type="text" class="form-control" id="title" name="title" placeholder="Enter the poll question" required>
