@@ -74,7 +74,7 @@
 
 <div class="container my-5">
   <div class="card shadow border-0 rounded-4 p-4">
-    <h1 class="mb-4">Your Past Polls</h1>
+    <h1 class="mb-4">Your Polls</h1>
 
     <!-- Sort Controls -->
     <div class="d-flex justify-content-start gap-3 mb-3">
@@ -318,6 +318,7 @@ function confirmDelete(event, pollId) {
 // Event listener to give acknowledgement message that poll has been deleted
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
+
   if (urlParams.get('deleted') === 'true') {
     Swal.fire({
       icon: 'success',
@@ -325,7 +326,18 @@ window.addEventListener('DOMContentLoaded', () => {
       text: 'The poll was successfully deleted.',
       confirmButtonColor: '#003366'
     }).then(() => {
-      // Remove the 'deleted' parameter from the URL without reloading the page
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    });
+  }
+
+  if (urlParams.get('edited') === 'true') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Poll Edited',
+      text: 'The poll was successfully updated.',
+      confirmButtonColor: '#003366'
+    }).then(() => {
       const newUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
     });
