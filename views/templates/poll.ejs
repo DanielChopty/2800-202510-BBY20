@@ -2,7 +2,8 @@
   <div class="card-body">
     <h5 class="card-title"><%= poll.title %></h5>
 
-    <% if (poll.tags && poll.tags.length) { %>
+    <!-- Displays all of the poll's tags-->
+    <% if (poll.tags?.length) { %>
       <p>
         <% poll.tags.forEach(tag => { %>
           <span class="badge bg-secondary"><%= tag %></span>
@@ -10,31 +11,54 @@
       </p>
     <% } %>
 
-    <form action="/vote" method="POST">
-      <!-- we need to know which poll is being voted on -->
-      <input type="hidden" name="pollId" value="<%= poll._id %>">
+    <% 
+      const pollIdStr = poll._id.toString();
+      const hasVoted = (votedPolls[pollIdStr]);
+    %>
 
-      <% poll.choices.forEach((choice, idx) => { %>
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="choiceText"
-            id="choice-<%= poll._id %>-<%= idx %>"
-            value="<%= choice.text %>"
-            required
-          >
-          <label
-            class="form-check-label"
-            for="choice-<%= poll._id %>-<%= idx %>"
-          >
-            <%= choice.text %>
-            <small class="text-muted">( <%= choice.votes %> votes )</small>
-          </label>
+    <% if (hasVoted) { %>
+      <!-- Only show the results if already voted -->
+      <% 
+        const totalVotes = poll.choices.reduce((sum, c) => sum + c.votes, 0);
+      %>
+      <% poll.choices.forEach(choice => {
+           const pct = totalVotes ? ((choice.votes / totalVotes) * 100).toFixed(1) : 0;
+      %>
+        <div class="mb-2">
+          <strong><%= choice.text %></strong>
+          <span class="text-muted">
+            (<%= choice.votes %> votes, <%= pct %>%)
+          </span>
+
+            <div class="progress mt-1">
+            <div class="progress-bar" role="progressbar" style="width: <%= pct %>%;" aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
         </div>
-      <% }) %>
+      <% }); %>
 
-      <button type="submit" class="btn btn-primary mt-2">Vote</button>
-    </form>
+      <form action="/unvote" method="POST" class="mt-3">
+        <input type="hidden" name="pollId" value="<%= poll._id %>">
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+          Remove my vote
+        </button>
+      </form>
+
+    <% } else { %>
+      <!-- Voting form where you can vote -->
+      <form action="/vote" method="POST">
+        <input type="hidden" name="pollId" value="<%= poll._id %>">
+
+        <% poll.choices.forEach((choice, idx) => { %>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="choiceText" id="choice-<%= poll._id %>-<%= idx %>" value="<%= choice.text %>" required>
+            <label class="form-check-label" for="choice-<%= poll._id %>-<%= idx %>">
+              <%= choice.text %>
+            </label>
+          </div>
+        <% }) %>
+
+        <button type="submit" class="btn btn-primary mt-2">Vote</button>
+      </form>
+    <% } %>
   </div>
 </div>
