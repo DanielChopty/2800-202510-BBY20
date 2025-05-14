@@ -93,35 +93,37 @@
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
       <script>
-        <% if (created) { %>
-          Swal.fire({
-            icon: 'success',
-            title: 'Poll Created!',
-            text: 'Your poll was successfully created.',
-            confirmButtonColor: '#1ee004'
-          });
-        <% } %>
+        // Confirmation before submitting the form
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
 
-        // Event listener to give acknowledgement that poll has been created
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function (event) {
-          event.preventDefault(); // Prevent immediate submission
-
-          Swal.fire({
+        Swal.fire({
             title: 'Are you sure?',
             text: 'Do you want to create this poll?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Yes, create it!',
             cancelButtonText: 'Cancel',
-            confirmButtonColor: '#003366'
-          }).then((result) => {
+            confirmButtonColor: '#07cf00'
+        }).then((result) => {
             if (result.isConfirmed) {
-              form.submit(); // Proceed with actual submission
+                form.submit();
             }
-          });
         });
+    });
 
+    // Immediate success alert and redirect to polls page
+    <% if (typeof created !== 'undefined' && created) { %>
+        Swal.fire({
+            icon: 'success',
+            title: 'Poll Created!',
+            text: 'Your poll was successfully created.',
+            confirmButtonColor: '#003366'
+        }).then(() => {
+            window.location.href = '/polls'; // Redirect to polls page after dismissing
+        });
+    <% } %>
       </script>
 
 </body>
