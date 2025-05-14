@@ -100,7 +100,7 @@
           <div class="list-group-item list-group-item-action mb-3 rounded-3 shadow-sm p-3">
             <div class="d-flex justify-content-between align-items-center">
 
-              <div style="flex-grow: 1; max-width: 80%;">
+              <div style="flex-grow: 1; max-width: 85%;">
                 <div class="d-flex align-items-baseline mb-3">
                   <h5 class="mb-0 me-3"><%= poll.title %></h5>
                   <a href="javascript:void(0);" 
@@ -120,8 +120,8 @@
                 <p class="mb-1 text-muted description-text" id="desc-<%= poll._id %>">
                   <% if (!poll.description) { %>
                     No description provided.
-                  <% } else if (poll.description.length > 100) { %>
-                    <%= poll.description.substring(0, 100) + '...' %>
+                  <% } else if (poll.description.length > 80) { %>
+                    <%= poll.description.substring(0, 80) + '...' %>
                   <% } else { %>
                     <%= poll.description %>
                   <% } %>
@@ -280,11 +280,15 @@
   const toggleLink = document.getElementById(`toggle-${id}`);
 
   if (descElement.dataset.expanded === 'true') {
-    descElement.innerHTML = fullText.substring(0, 100) + '...';
+    // If description is longer than 80 characters, show truncated text with "..."
+    if (fullText.length > 80) {
+      descElement.innerHTML = fullText.substring(0, 80) + '...';
+    } else {
+      descElement.innerHTML = fullText;
+    }
     descElement.dataset.expanded = 'false';
     toggleLink.textContent = 'expand';
   } else {
-    // Replace newlines with <br> to preserve line breaks
     const formattedText = fullText.replace(/\n/g, '<br>');
     descElement.innerHTML = formattedText;
     descElement.dataset.expanded = 'true';
