@@ -156,7 +156,7 @@
 <!-- Edit Poll Modal -->
 <div class="modal fade" id="editPollModal" tabindex="-1" aria-labelledby="editPollModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <form id="editPollForm" method="POST">
+    <form id="editPollForm" method="POST" onsubmit="return confirmEdit(event);">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title text-primary" id="editPollModalLabel">Edit Poll</h5>
@@ -315,7 +315,26 @@ function confirmDelete(event, pollId) {
   return false;
 }
 
-// Event listener to give acknowledgement message that poll has been deleted
+// Edit poll confirmation script
+function confirmEdit(event) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to save these changes to the poll?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, save them!',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#f36f21'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById('editPollForm').submit();
+    }
+  });
+  return false;
+}
+
+// Event listener to give acknowledgement message that poll has been deleted/edited
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
 
