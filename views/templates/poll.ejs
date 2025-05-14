@@ -1,6 +1,10 @@
 <div class="card mb-3">
   <div class="card-body">
-    <h5 class="card-title"><%= poll.title %></h5>
+    <h5 class="card-title">
+      <a href="poll/<%= poll._id %>" class="text-decoration-none">
+        <%= poll.title %>
+      </a>
+    </h5>
 
     <!-- Displays all of the poll's tags-->
     <% if (poll.tags?.length) { %>
