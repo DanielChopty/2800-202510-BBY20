@@ -727,6 +727,17 @@ app.post('/unvote', async (req, res) => {
 
 // Dedicated Poll details page
 app.get('/poll/:id', async (req, res) => {
+  try {
+    const votedPolls = req.session.votedPolls || {};
+    res.render('pollDetail', {
+      titel: poll.title,
+      poll,
+      votedPolls
+    });
+  } catch (err) {
+    console.error('Error fetching poll details:', err);
+    res.status(500).send('Error fetching poll details');
+  }
 });
 
 
