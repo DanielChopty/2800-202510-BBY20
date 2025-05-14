@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title><%= title %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
 
-    <%- include('templates/header') %>
+<head>
+  <meta charset="utf-8">
+  <title>
+    <%= title %>
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <%- include('templates/header') %>
 
     <!-- Sidebar Toggle Button -->
     <div class="p-3">
@@ -25,22 +29,25 @@
         <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas"></button>
       </div>
       <div class="offcanvas-body">
-        <a href="#" class="btn btn-light btn-sm me-3 my-2">#DailyLife</a>
-        <a href="#" class="btn btn-light btn-sm me-3 my-2">#CulturalViews</a>
-        <a href="#" class="btn btn-light btn-sm me-3 my-2">#FamilyMatters</a>
-        <a href="#" class="btn btn-light btn-sm me-3 my-2">#MoralChoices</a>
-        <a href="#" class="btn btn-light btn-sm me-3 my-2">#PersonalValues</a>
-        <a href="#" class="btn btn-light btn-sm me-3 my-2">#PublicOpinion</a>
+        <div id="tag-filter-buttons">
+          <button class="btn btn-light btn-sm me-2 my-1 filter-btn" data-tag="#DailyLife">#DailyLife</button>
+          <button class="btn btn-light btn-sm me-2 my-1 filter-btn" data-tag="#CulturalViews">#CulturalViews</button>
+          <button class="btn btn-light btn-sm me-2 my-1 filter-btn" data-tag="#FamilyMatters">#FamilyMatters</button>
+          <button class="btn btn-light btn-sm me-2 my-1 filter-btn" data-tag="#MoralChoices">#MoralChoices</button>
+          <button class="btn btn-light btn-sm me-2 my-1 filter-btn" data-tag="#PersonalValues">#PersonalValues</button>
+          <button class="btn btn-light btn-sm me-2 my-1 filter-btn" data-tag="#PublicOpinion">#PublicOpinion</button>
+        </div>
       </div>
     </div>
-    
+
+
     <!-- Main Content -->
     <main class="container mt-4">
       <div class="mx-auto" style="max-width: 700px;">
         <% let i=0; %>
-		    <% for(i=0; i < polls.length; i++) { %>
-        <%- include('templates/poll', {poll: polls[i]})  %> 
-        <% } %> 
+          <% for(i=0; i < polls.length; i++) { %>
+            <%- include('templates/poll', {poll: polls[i]}) %>
+              <% } %>
       </div>
       <!-- Additional Polls -->
       </div>
@@ -48,7 +55,41 @@
 
     <%- include('templates/footer') %>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+      <!-- Bootstrap JS -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        const selectedTags = new Set();
+
+        document.querySelectorAll('.filter-btn').forEach(button => {
+          button.addEventListener('click', () => {
+            const tag = button.dataset.tag;
+
+            // Toggle tag selection
+            if (selectedTags.has(tag)) {
+              selectedTags.delete(tag);
+              button.classList.remove('btn-secondary');
+              button.classList.add('btn-light');
+            } else {
+              selectedTags.add(tag);
+              button.classList.remove('btn-light');
+              button.classList.add('btn-secondary');
+            }
+
+            filterPolls();
+          });
+        });
+
+        function filterPolls() {
+          const polls = document.querySelectorAll('.poll-card');
+
+          polls.forEach(poll => {
+            const tags = poll.dataset.tags.split(',').map(t => t.trim());
+            const matches = [...selectedTags].every(tag => tags.includes(tag));
+            poll.style.display = matches || selectedTags.size === 0 ? 'block' : 'none';
+          });
+        }
+      </script>
+
+</body>
+
 </html>
