@@ -728,9 +728,12 @@ app.post('/unvote', async (req, res) => {
 // Dedicated Poll details page
 app.get('/poll/:id', async (req, res) => {
   try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls;');
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(req.params.id)});
+
     const votedPolls = req.session.votedPolls || {};
     res.render('pollDetail', {
-      titel: poll.title,
+      title: poll.title,
       poll,
       votedPolls
     });
