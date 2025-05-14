@@ -125,7 +125,17 @@
                   <% } else { %>
                     <%= poll.description %>
                   <% } %>
-                </p>                            
+                </p>
+                <div id="details-<%= poll._id %>" style="display: none;" class="mt-3">
+                  <p class="mb-1 text-muted">Options:</p>
+                  <ul>
+                    <% poll.choices.forEach(choice => { %>
+                      <li><%= choice.text %> - <strong><%= choice.votes %></strong> votes</li>
+                    <% }); %>
+                  </ul>
+                  <p class="mb-1 text-muted">Start Date: <%= poll.startDate ? new Date(poll.startDate).toLocaleDateString() : 'Not Set' %></p>
+                  <p class="mb-1 text-muted">End Date: <%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %></p>
+                </div>                                            
                 <small>Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>               
               </div>
 
