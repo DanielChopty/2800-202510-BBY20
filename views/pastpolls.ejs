@@ -92,6 +92,7 @@
 
     <hr>
 
+    <!-- Primary polls display; displays only your polls -->
     <% if (polls.length === 0) { %>
       <p class="text-muted">You haven't created any polls yet.</p>
     <% } else { %>
@@ -101,6 +102,8 @@
             <div class="d-flex justify-content-between align-items-center">
 
               <div style="flex-grow: 1; max-width: 85%;">
+
+                <!-- Primary details (always visible) -->
                 <div class="d-flex align-items-baseline mb-3">
                   <h5 class="mb-0 me-3"><%= poll.title %></h5>
                   <a href="javascript:void(0);" 
@@ -117,6 +120,8 @@
                 <% if (poll.importance) { %>
                   <p class="mb-1 text-muted">Importance: <strong><%= poll.importance %></strong></p>
                 <% } %>
+
+                <!-- Additional details (visible only if user clicks 'expand')-->
                 <p class="mb-1 text-muted description-text" id="desc-<%= poll._id %>">
                   <% if (!poll.description) { %>
                     No description provided.
@@ -136,7 +141,7 @@
                   <p class="mb-1 text-muted">Start Date: <strong><%= poll.startDate ? new Date(poll.startDate).toLocaleDateString() : 'Not Set' %></strong></p>
                   <p class="mb-1 text-muted">End Date: <strong><%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %></strong></p>
                 </div>                                            
-                <small class="d-block mb-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>              
+                <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>              
               </div>
 
               <!-- Edit and Delete Buttons -->
