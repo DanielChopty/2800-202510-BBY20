@@ -26,6 +26,20 @@
         <div>
           <h2 class="mb-0" style="color: #003366;">Hello, <%= username %>!</h2>
           <p class="text-muted">Welcome back to your civic dashboard.</p>
+          <!-- Form for user to input their feelings -->
+      <form method="POST" action="/update-feelings">
+        <div class="mb-3">
+          <label for="feelings" class="form-label">How are you feeling?</label>
+          <input type="text" class="form-control" id="feelings" name="feelings" placeholder="Enter your feelings">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+      <% if (personalizedMessage) { %>
+        <div class="mt-4 alert alert-info">
+          <p><strong>Personalized Message:</strong> <%= personalizedMessage %></p>
+        </div>
+      <% } %>
         </div>
       </div>
 
