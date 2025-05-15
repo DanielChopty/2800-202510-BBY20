@@ -242,7 +242,7 @@ app.get('/about', (req, res) => {
 });
 
 // Main page
-app.get('/main', (req, res) =>{
+app.get('/main', (req, res) => {
   res.render('main');
 });
 
@@ -384,27 +384,27 @@ app.post('/login', async (req, res) => {
 
 // Profile page (protected route)
 app.get('/profile', async (req, res) => {
-    try {
-      if (!req.session.authenticated) {
-        return res.redirect('/');
-      }
-  
-      const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-      const user = await userCollection.findOne({ email: req.session.email });
-  
-      if (!user) return res.redirect('/');
-  
-      res.render('profile', {
-        title: 'Profile',
-        username: user.name,
-        user: user // pass the full user object
-      });      
-    } catch (error) {
-      console.error('Error rendering profile page:', error);
-      res.status(500).render('500', { title: 'Server Error' });
+  try {
+    if (!req.session.authenticated) {
+      return res.redirect('/');
     }
-  });
-  
+
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const user = await userCollection.findOne({ email: req.session.email });
+
+    if (!user) return res.redirect('/');
+
+    res.render('profile', {
+      title: 'Profile',
+      username: user.name,
+      user: user // pass the full user object
+    });
+  } catch (error) {
+    console.error('Error rendering profile page:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
 // Logout handler
 app.get('/logout', (req, res) => {
   try {
@@ -486,7 +486,7 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
 });
 
 // Page for creating a poll
-app.get('/createPoll', (req, res) =>{
+app.get('/createPoll', (req, res) => {
   res.render('createPoll');
 })
 
@@ -502,18 +502,18 @@ app.get('/createPoll', (req, res) =>{
 // Some of the fields that could be in it  (in JSON format):
 
 // {
- // "_id": ObjectId("..."),
- // "title": "Should public transport be free?",
- // "tags": ["#PublicOpinion", "#DailyLife"],
+// "_id": ObjectId("..."),
+// "title": "Should public transport be free?",
+// "tags": ["#PublicOpinion", "#DailyLife"],
 //  "available": true,
 //  "choices": [
- //   { "text": "Yes", "votes": 12 },
-  //  { "text": "No", "votes": 8 },
-  //  { "text": "Maybe", "votes": 3 }
-    // ],
-  // "createdBy": "user123",
-  // "createdAt": ISODate("2024-09-01T10:00:00Z")
-    // }
+//   { "text": "Yes", "votes": 12 },
+//  { "text": "No", "votes": 8 },
+//  { "text": "Maybe", "votes": 3 }
+// ],
+// "createdBy": "user123",
+// "createdAt": ISODate("2024-09-01T10:00:00Z")
+// }
 
 
 // "_id": ObjectId("...") - automatically generated unique identifier for this poll my MongoDB 
@@ -522,28 +522,57 @@ app.get('/createPoll', (req, res) =>{
 // "available": true - Determines whether users are able to see the poll (boolean)
 
 //"choices": [
- //   { "text": "Yes", "votes": 12 },
-  //  { "text": "No", "votes": 8 },  - An array of objects 
-  //  { "text": "Maybe", "votes": 3 } - stores each voting option and current 
-    // ]                              number of votes
+//   { "text": "Yes", "votes": 12 },
+//  { "text": "No", "votes": 8 },  - An array of objects 
+//  { "text": "Maybe", "votes": 3 } - stores each voting option and current 
+// ]                              number of votes
 
-    // "createdBy": "user123" - User who created this poll
-    //  "createdAt": ISODate("2024-09-01T10:00:00Z") - Timestampe when the poll was created
+// "createdBy": "user123" - User who created this poll
+//  "createdAt": ISODate("2024-09-01T10:00:00Z") - Timestampe when the poll was created
 
-    /* Additional Notes */
-    // Comments should be added to the list
+/* Additional Notes */
+// Comments should be added to the list
 
 
 app.get('/polls', async (req, res) => {
   try {
-    // Getting polls collection from the database using the variable MONGODB_DATABASE_POLLS
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
-    const polls = await pollsCollection.find({ available: true }).toArray();
-    // Renders the main.ejs template
+
+    // Fetch all polls regardless of their current availability
+    const allPolls = await pollsCollection.find().toArray();
+
+    const now = new Date();
+
+    const updatedPolls = await Promise.all(allPolls.map(async poll => {
+      let newAvailability;
+
+      if (now < new Date(poll.startDate)) {
+        newAvailability = 'upcoming';
+      } else if (now >= new Date(poll.startDate) && now <= new Date(poll.endDate)) {
+        newAvailability = 'active';
+      } else if (now > new Date(poll.endDate)) {
+        newAvailability = 'closed';
+      }
+
+      // If availability changed, update in DB
+      if (poll.availability !== newAvailability) {
+        await pollsCollection.updateOne(
+          { _id: poll._id },
+          { $set: { availability: newAvailability } }
+        );
+        poll.availability = newAvailability;
+      }
+
+      return poll;
+    }));
+
+    // Only show "open" polls on the frontend
+    const openPolls = updatedPolls.filter(p => p.availability === 'active');
+
     res.render('polls', {
       title: 'Available Polls',
       // passing list of polls to the template
-      polls: polls || [],
+      polls: openPolls || [],
       // Passing login status
       // Making sure a user is active and session is valid
       // If not system defaults to false / null
@@ -565,11 +594,11 @@ app.get('/polls', async (req, res) => {
 
 app.post('/vote', async (req, res) => {
 
-// Making sure user is actually logged in to vote
-if(!req.session.authenticated){
-// If they are not a 403 page gets displayed to them, not allowed them to access this feature
-  return res.status(403).render('403', { title: 'Forbidden' });
-}
+  // Making sure user is actually logged in to vote
+  if (!req.session.authenticated) {
+    // If they are not a 403 page gets displayed to them, not allowed them to access this feature
+    return res.status(403).render('403', { title: 'Forbidden' });
+  }
 
   const { pollId, choiceText } = req.body;
   // Variable to make sure user can only vote once on every poll
@@ -622,7 +651,7 @@ if(!req.session.authenticated){
 });
 
 // Page for creating a poll
-app.get('/createPoll', (req, res) =>{
+app.get('/createPoll', (req, res) => {
   res.render('createPoll');
 })
 
@@ -643,8 +672,8 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
     // Removes any empty strings and trims whitespace
     const choices = options
       .filter(text => text && text.trim().length > 0)
-      .map(text => ({ text: text.trim(), votes: 0})); // Each option starts at 0 votes
-    
+      .map(text => ({ text: text.trim(), votes: 0 })); // Each option starts at 0 votes
+
     if (choices.length < 2) {
       return res.status(400).send('Error 400: Please provide at least two options');
     }
@@ -654,17 +683,25 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       .map(t => t.trim())
       .filter(t => t.length > 0);
 
+    const now = new Date();
+    let availability = 'upcoming';
+    if (now >= new Date(startDate) && now <= new Date(endDate)) {
+      availability = 'active';
+    } else if (now > new Date(endDate)) {
+      availability = 'closed';
+    }
+
     // Creating the poll document and all its values
     const pollDoc = {
-      title:          title.trim(),
-      tags:           tagArray,
+      title: title.trim(),
+      tags: tagArray,
       importance,
-      startDate:      new Date(startDate),
-      endDate:        new Date(endDate),
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
       visibility,
-      createdBy:      req.session.email, // We could also use their user ID here instead
-      createdAt:      new Date(),
-      available:      true,
+      createdBy: req.session.email, // We could also use their user ID here instead
+      createdAt: new Date(),
+      availability,
       choices
     }
 
@@ -674,7 +711,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       .collection('polls');
 
     const result = await pollsColl.insertOne(pollDoc);
-    console.log('Inserted poll! _id:', result.insertedId); 
+    console.log('Inserted poll! _id:', result.insertedId);
 
     // Redirect back to the polls page once done
     res.redirect('/polls');
@@ -690,8 +727,9 @@ app.get('/manageTags', isAuthenticated, async (req, res) => {
   try {
     const pollsColl = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
     const myPolls = await pollsColl.find({ createdBy: req.session.email }).toArray();
-    const availableTags = ['#DailyLife', '#CulturalViews', '#FamilyMatters', '#MoralChoices', '#PersonalValues', '#PublicOpinion']; // Example list of tags
-    res.render('manageTags', { title: 'Manage Tags', polls: myPolls, availableTags });
+    const filteredPolls = myPolls.filter(p => p.availability === 'active' || p.availability === 'upcoming');
+    const availableTags = ['#DailyLife', '#CulturalViews', '#FamilyMatters', '#MoralChoices', '#PersonalValues', '#PublicOpinion'];
+    res.render('manageTags', { title: 'Manage Tags', polls: filteredPolls, availableTags });
   } catch (err) {
     console.error('Error fetching polls:', err);
     res.status(500).render('500', { title: 'Server Error' });
@@ -726,8 +764,8 @@ app.post('/updateTags/:id', isAuthenticated, async (req, res) => {
 
 // Unvote option allowing a user to remove their vote
 app.post('/unvote', async (req, res) => {
-  
-  if(!req.session.authenticated) {
+
+  if (!req.session.authenticated) {
     return res.status(403).render('403', { title: 'Forbidden' });
   }
 
@@ -742,7 +780,7 @@ app.post('/unvote', async (req, res) => {
 
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
-  
+
     const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
     if (!poll) {
       return res.redirect('/polls');
@@ -757,8 +795,8 @@ app.post('/unvote', async (req, res) => {
       );
     }
 
-    delete userVotedPolls[pollId]; 
-    req.session.votedPolls = userVotedPolls; 
+    delete userVotedPolls[pollId];
+    req.session.votedPolls = userVotedPolls;
     const returnTo = req.get('Referer') || '/polls';
     res.redirect(returnTo);
 
@@ -772,7 +810,7 @@ app.post('/unvote', async (req, res) => {
 app.get('/poll/:id', async (req, res) => {
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
-    const poll = await pollsCollection.findOne({ _id: new ObjectId(req.params.id)});
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(req.params.id) });
 
     if (!poll || !poll.available) {
       return res.status(404).render('404', { title: 'Poll Not Found' });
