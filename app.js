@@ -295,7 +295,7 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert new user with default role 'user'
-    await userCollection.insertOne({ name, email, password: hashedPassword, user_type: 'user' });
+    await userCollection.insertOne({ name, email, password: hashedPassword, user_type: 'user', votedPolls: {} });
 
     // Set session data
     req.session.authenticated = true;
@@ -364,6 +364,7 @@ app.post('/login', async (req, res) => {
       req.session.username = user.name;
       req.session.email = user.email;
       req.session.user = user;
+      req.session.votedPolls = user.votedPolls || {};
       req.session.cookie.maxAge = expireTime;
 
       res.redirect('/profile');
@@ -634,9 +635,16 @@ app.post('/vote', async (req, res) => {
     await pollsCollection.updateOne(
       { _id: new ObjectId(pollId) },
       { $set: { choices: poll.choices } }
+    );  
+
+    // Record the poll in user's votedPolls array
+    const usersColl = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
+    await usersColl.updateOne(
+      { email: req.session.email },
+      { $set: { [`votedPolls.${pollId}`]: choiceText } } // Add pollId to the user's votedPolls array only if it isn't present
     );
 
-    // Mark poll as voted
+    // Mark poll as voted in just the session
     userVotedPolls[pollId] = choiceText;
     req.session.votedPolls = userVotedPolls;
 
@@ -797,6 +805,14 @@ app.post('/unvote', async (req, res) => {
 
     delete userVotedPolls[pollId];
     req.session.votedPolls = userVotedPolls;
+    const usersColl = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
+    await usersColl.updateOne(
+      { email: req.session.email },
+      { $unset: { [`votedPolls.${pollId}`]: "" } }
+    );
+
+    delete userVotedPolls[pollId]; 
+    req.session.votedPolls = userVotedPolls; 
     const returnTo = req.get('Referer') || '/polls';
     res.redirect(returnTo);
 
