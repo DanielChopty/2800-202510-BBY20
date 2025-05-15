@@ -295,7 +295,7 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert new user with default role 'user'
-    await userCollection.insertOne({ name, email, password: hashedPassword, user_type: 'user' });
+    await userCollection.insertOne({ name, email, password: hashedPassword, user_type: 'user', votedPolls: [] });
 
     // Set session data
     req.session.authenticated = true;
