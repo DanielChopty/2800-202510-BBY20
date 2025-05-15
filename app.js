@@ -390,11 +390,15 @@ app.get('/profile', async (req, res) => {
 
     if (!user) return res.redirect('/');
 
-    // Render the profile page with user data
+    // Initialize personalizedMessage as an empty string
+    const personalizedMessage = '';  // Default value for personalized message
+
+    // Render the profile page with user data and personalizedMessage
     res.render('profile', {
       title: 'Profile',
       username: user.name,
       user: user,  // Pass the full user object
+      personalizedMessage: personalizedMessage,  // Pass personalizedMessage to the view
     });
   } catch (error) {
     console.error('Error rendering profile page:', error);
@@ -456,7 +460,7 @@ app.post('/update-feelings', async (req, res) => {
       title: 'Profile',
       username: user.name,
       user: user,  // Pass the full user object
-      personalizedMessage: personalizedMessage,
+      personalizedMessage: personalizedMessage,  // Pass the personalized message
     });
   } catch (error) {
     console.error('Error updating feelings:', error);
