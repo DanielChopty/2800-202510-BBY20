@@ -182,21 +182,29 @@
                               </strong></p>
                           </div>
                           <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
-                              </small>
+                          </small>
                     </div>
 
-                    <!-- Edit and Delete Buttons -->
+                    <!-- Edit button -->
                     <div class="d-flex flex-column gap-3 me-3" style="flex-shrink: 0;">
                       <button class="btn btn-edit-grey" title="Edit"
                         onclick='openEditModal(<%- JSON.stringify(poll) %>)'>
                         <i class="bi bi-pencil-square"></i>
                       </button>
+
+                      <!-- Delete button -->
                       <form onsubmit="return confirmDelete(event, '<%= poll._id %>')" id="delete-form-<%= poll._id %>"
                         method="POST" action="/deletepoll/<%= poll._id %>">
                         <button type="submit" class="btn btn-delete-red" title="Delete">
                           <i class="bi bi-trash"></i>
                         </button>
                       </form>
+
+                      <!-- View full poll details button -->
+                      <a href="/polldetail/<%= poll._id %>" class="btn btn-success text-white"
+                        title="View Poll Details">
+                        <i class="bi bi-arrow-bar-right"></i> View Details
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -424,4 +432,5 @@
       </script>
 
 </body>
+
 </html>
