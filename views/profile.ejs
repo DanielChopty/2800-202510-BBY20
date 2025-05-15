@@ -26,13 +26,19 @@
     .feelings-block {
       flex: 1; /* Take up remaining space */
       max-width: 40%; /* Limit width of the feelings block */
+      display: flex;
+      flex-direction: column; /* Stack form and message vertically */
     }
 
-    /* Style the personalized message to eat into available space */
+    /* Ensure the personalized message takes up space only when available */
     .personalized-message {
       margin-top: 20px; /* Space between form and personalized message */
-      flex-grow: 1; /* Ensure the message block uses available space */
-      overflow-wrap: break-word; /* Handle long text in message */
+      display: none; /* Initially hide the message */
+    }
+
+    /* Show the personalized message when available */
+    .personalized-message.show {
+      display: block; /* Show the message when it's there */
     }
   </style>
   
@@ -65,14 +71,14 @@
           <form method="POST" action="/update-feelings">
             <div class="mb-3">
               <label for="feelings" class="form-label">How are you feeling?</label>
-              <input type="text" class="form-control" id="feelings" name="feelings" placeholder="Enter here...">
+              <input type="text" class="form-control" id="feelings" name="feelings" placeholder="Enter here to receive a message!">
             </div>
             <button type="submit" class="btn btn-primary" style="background-color: #003366; color: white;">Submit</button>
           </form>
 
           <% if (personalizedMessage) { %>
-            <div class="mt-4 alert alert-info">
-              <p><strong>Your Message of the Day:</strong> <%= personalizedMessage %></p>
+            <div class="personalized-message show alert alert-info">
+              <p><strong>Personalized Message:</strong> <%= personalizedMessage %></p>
             </div>
           <% } %>
         </div>
