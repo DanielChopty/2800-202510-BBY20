@@ -413,9 +413,10 @@ app.post('/update-feelings', async (req, res) => {
     let personalizedMessage = '';
 
     if (feelings) {
-      const firstLetter = feelings.trim().charAt(0).toLowerCase(); // Get first letter of response and make it lowercase
+      // Get first letter of response and make it lowercase
+      const firstLetter = feelings.trim().charAt(0).toLowerCase(); 
 
-      // Random messages based on the first letter of the user's response
+      // Random messages based on the first letter of the user's response (AI-generated)
       const messages = {
         'a': 'An apple a day keeps the doctor away!',
         'b': 'Bouncing back from challenges makes you stronger!',
