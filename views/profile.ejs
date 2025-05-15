@@ -32,7 +32,7 @@
           <label for="feelings" class="form-label">How are you feeling?</label>
           <input type="text" class="form-control" id="feelings" name="feelings" placeholder="Enter here to receive a message!">
         </div>
-        <button type="submit" class="btn btn-primary" style="font-size: 16px; height: 40px; background-color: #003366; color: white;">Submit</button>
+        <button type="submit" class="btn btn-primary" style="background-color: #003366; color: white;">Submit</button>
       </form>
 
       <% if (personalizedMessage) { %>
@@ -47,7 +47,7 @@
 
       <form action="/upload-profile-picture" method="POST" enctype="multipart/form-data">
         <input type="file" name="profilePic" accept="image/*" required>
-        <button type="submit" class="btn btn-primary btn-sm ms-2">Upload</button>
+        <button type="submit" class="btn btn-primary btn-sm ms-2" style="background-color: #003366; color: white;">Upload</button>
       </form>
 
       <hr>
