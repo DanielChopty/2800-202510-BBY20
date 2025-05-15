@@ -27,20 +27,11 @@
     .feelings-block {
       flex: 1; /* Take up remaining space */
       max-width: 40%; /* Limit width of the feelings block */
-      display: grid;
-      grid-template-rows: auto auto; /* Set the grid to stack form and message */
-      gap: 20px; /* Space between the form and the message */
     }
 
     /* Ensure the personalized message is visible when available */
     .personalized-message {
       margin-top: 20px; /* Space between form and personalized message */
-      display: none; /* Hide message by default */
-    }
-
-    /* Show personalized message when available */
-    .personalized-message.show {
-      display: block; /* Make the message visible */
     }
   </style>
   
@@ -66,6 +57,12 @@
               <p class="text-muted">Welcome back to your civic dashboard.</p>
             </div>
           </div>
+
+          <% if (personalizedMessage) { %>
+            <div class="personalized-message alert alert-info">
+              <p><strong>Personalized Message:</strong> <%= personalizedMessage %></p>
+            </div>
+          <% } %>
         </div>
 
         <!-- Feelings input block (to the right) -->
@@ -77,12 +74,6 @@
             </div>
             <button type="submit" class="btn btn-primary" style="background-color: #003366; color: white;">Submit</button>
           </form>
-
-          <% if (personalizedMessage) { %>
-            <div class="personalized-message show alert alert-info">
-              <p><strong>Personalized Message:</strong> <%= personalizedMessage %></p>
-            </div>
-          <% } %>
         </div>
       </div>
 
