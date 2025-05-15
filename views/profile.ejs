@@ -16,6 +16,7 @@
       display: flex;
       justify-content: space-between; /* Space between the sections */
       align-items: flex-start; /* Align items to the top */
+      gap: 20px; /* Add space between profile and feelings form */
     }
 
     .profile-info {
@@ -26,19 +27,20 @@
     .feelings-block {
       flex: 1; /* Take up remaining space */
       max-width: 40%; /* Limit width of the feelings block */
-      display: flex;
-      flex-direction: column; /* Stack form and message vertically */
+      display: grid;
+      grid-template-rows: auto auto; /* Set the grid to stack form and message */
+      gap: 20px; /* Space between the form and the message */
     }
 
-    /* Ensure the personalized message takes up space only when available */
+    /* Ensure the personalized message is visible when available */
     .personalized-message {
       margin-top: 20px; /* Space between form and personalized message */
-      display: none; /* Initially hide the message */
+      display: none; /* Hide message by default */
     }
 
-    /* Show the personalized message when available */
+    /* Show personalized message when available */
     .personalized-message.show {
-      display: block; /* Show the message when it's there */
+      display: block; /* Make the message visible */
     }
   </style>
   
