@@ -380,42 +380,54 @@ app.post('/login', async (req, res) => {
 app.get('/profile', async (req, res) => {
   try {
     // Check if the user is authenticated
+    // If the user is not authenticated, redirect them to the home page
     if (!req.session.authenticated) {
       return res.redirect('/');
     }
 
-    // Get user from the database
+    // Get the user's information from the database
     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
     const user = await userCollection.findOne({ email: req.session.email });
 
+    // If the user does not exist in the database, redirect them to the home page
     if (!user) return res.redirect('/');
 
-    // Initialize personalizedMessage as an empty string
+    // Initialize personalizedMessage as an empty string (default value)
     const personalizedMessage = '';  // Default value for personalized message
 
-    // Render the profile page with user data and personalizedMessage
+    // Render the profile page with the user's data and the personalized message
+    // The personalized message will be empty initially, and later updated when the user submits their feelings
     res.render('profile', {
-      title: 'Profile',
-      username: user.name,
-      user: user,  // Pass the full user object
-      personalizedMessage: personalizedMessage,  // Pass personalizedMessage to the view
+      title: 'Profile',  // Page title
+      username: user.name,  // Username (from the user object)
+      user: user,  // Pass the full user object to the template for use
+      personalizedMessage: personalizedMessage,  // Pass the empty personalizedMessage to the view
     });
   } catch (error) {
+    // Catch any errors during the process
     console.error('Error rendering profile page:', error);
-    res.status(500).render('500', { title: 'Server Error' });
+    res.status(500).render('500', { title: 'Server Error' });  // Render a 500 error page in case of server failure
   }
 });
 
-// Route to handle form submission for feelings
+// SURPRISE CHALLENGE 2 (AI MAGIC)
+
+// The magic is that the AI generated the messages for the feelings below and helped me to
+// randomly display them based on the first letter of the user's input.
+
+// Route to handle form submission for feelings (user's emotional state)
 app.post('/update-feelings', async (req, res) => {
   try {
+    // Get the feelings input from the request body (user's feelings text)
     const feelings = req.body.feelings;
-    let personalizedMessage = '';
+    let personalizedMessage = '';  // Initialize personalizedMessage as an empty string
 
     if (feelings) {
-      const firstLetter = feelings.trim().charAt(0).toLowerCase(); // Get first letter of response and make it lowercase
+      // Get the first letter of the feelings input and convert it to lowercase
+      const firstLetter = feelings.trim().charAt(0).toLowerCase(); // Trim spaces and get first character
 
-      // Define a set of three messages for each letter
+      // Define a set of three predefined messages for each letter of the alphabet
+      // Each letter corresponds to an array of messages that can be randomly selected
       const messages = {
         'a': [
           'An apple a day keeps the doctor away!',
@@ -572,7 +584,7 @@ app.post('/update-feelings', async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating feelings:', error);
-    res.status(500).render('500', { title: 'Server Error' });
+    res.status(500).render('500', { title: 'Server Error' });  // Handle errors by showing a 500 error page
   }
 });
   
