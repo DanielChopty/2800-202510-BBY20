@@ -378,26 +378,91 @@ app.post('/login', async (req, res) => {
 
 // Profile page (protected route)
 app.get('/profile', async (req, res) => {
-    try {
-      if (!req.session.authenticated) {
-        return res.redirect('/');
-      }
-  
-      const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-      const user = await userCollection.findOne({ email: req.session.email });
-  
-      if (!user) return res.redirect('/');
-  
-      res.render('profile', {
-        title: 'Profile',
-        username: user.name,
-        user: user // pass the full user object
-      });      
-    } catch (error) {
-      console.error('Error rendering profile page:', error);
-      res.status(500).render('500', { title: 'Server Error' });
+  try {
+    // Check if the user is authenticated
+    if (!req.session.authenticated) {
+      return res.redirect('/');
     }
-  });
+
+    // Get user from the database
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const user = await userCollection.findOne({ email: req.session.email });
+
+    if (!user) return res.redirect('/');
+
+    // Render the profile page with user data
+    res.render('profile', {
+      title: 'Profile',
+      username: user.name,
+      user: user,  // Pass the full user object
+    });
+  } catch (error) {
+    console.error('Error rendering profile page:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// Route to handle form submission for feelings
+app.post('/update-feelings', async (req, res) => {
+  try {
+    const feelings = req.body.feelings;
+    let personalizedMessage = '';
+
+    if (feelings) {
+      const firstLetter = feelings.trim().charAt(0).toLowerCase(); // Get first letter of response and make it lowercase
+
+      // Random messages based on the first letter of the user's response
+      const messages = {
+        'a': 'An apple a day keeps the doctor away!',
+        'b': 'Bouncing back from challenges makes you stronger!',
+        'c': 'Creativity is the key to unlocking new possibilities.',
+        'd': 'Dare to dream big and make it happen!',
+        'e': 'Every day is a new opportunity to shine!',
+        'f': 'Feelings are like waves; they come and go.',
+        'g': 'Great things are coming your way!',
+        'h': 'Happiness is a journey, not a destination.',
+        'i': 'Inspiration is everywhere, just open your eyes!',
+        'j': 'Jump into the future with excitement and curiosity!',
+        'k': 'Keep going, the best is yet to come!',
+        'l': 'Life is a beautiful ride, enjoy the journey!',
+        'm': 'Make today amazing by making it yours.',
+        'n': 'Never give up on yourself, you’ve got this!',
+        'o': 'Opportunities are everywhere, seize them!',
+        'p': 'Positivity is a magnet for good things!',
+        'q': 'Questions lead to discovery, so keep asking!',
+        'r': 'Reach for the stars, you’re capable of greatness!',
+        's': 'Sometimes the smallest step in the right direction can end up being the biggest step of your life.',
+        't': 'Take time to appreciate the little things.',
+        'u': 'Understand that setbacks are just setups for comebacks!',
+        'v': 'Victory is sweetest when you’ve faced challenges.',
+        'w': 'Winning starts with believing in yourself.',
+        'x': 'X marks the spot where your adventure begins!',
+        'y': 'You are stronger than you think!',
+        'z': 'Zoom into the future with confidence and courage!',
+      };
+
+      // Set the message based on the first letter of the response
+      personalizedMessage = messages[firstLetter] || 'Thanks for sharing! You are unique and awesome!'; // Default message for unhandled letters
+    }
+
+    // Get user data again after the feelings update
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const user = await userCollection.findOne({ email: req.session.email });
+
+    if (!user) return res.redirect('/');
+
+    // Render the profile page again with the personalized message
+    res.render('profile', {
+      title: 'Profile',
+      username: user.name,
+      user: user,  // Pass the full user object
+      personalizedMessage: personalizedMessage,
+    });
+  } catch (error) {
+    console.error('Error updating feelings:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
   
 // Logout handler
 app.get('/logout', (req, res) => {
