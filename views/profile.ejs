@@ -27,6 +27,13 @@
       flex: 1; /* Take up remaining space */
       max-width: 40%; /* Limit width of the feelings block */
     }
+
+    /* Style the personalized message to eat into available space */
+    .personalized-message {
+      margin-top: 20px; /* Space between form and personalized message */
+      flex-grow: 1; /* Ensure the message block uses available space */
+      overflow-wrap: break-word; /* Handle long text in message */
+    }
   </style>
   
 </head>
