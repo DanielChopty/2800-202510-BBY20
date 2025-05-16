@@ -293,6 +293,36 @@
               </div>
             </div>
 
+            <!-- Tags -->
+            <div class="mb-3">
+              <label class="form-label">Tags</label>
+              <div class="btn-group" role="group" aria-label="Tag selection">
+                <input type="checkbox" class="btn-check" id="editTag1" name="tags[]" value="#DailyLife"
+                  autocomplete="off">
+                <label class="btn btn-outline-primary" for="editTag1">#DailyLife</label>
+
+                <input type="checkbox" class="btn-check" id="editTag2" name="tags[]" value="#CulturalViews"
+                  autocomplete="off">
+                <label class="btn btn-outline-primary" for="editTag2">#CulturalViews</label>
+
+                <input type="checkbox" class="btn-check" id="editTag3" name="tags[]" value="#FamilyMatters"
+                  autocomplete="off">
+                <label class="btn btn-outline-primary" for="editTag3">#FamilyMatters</label>
+
+                <input type="checkbox" class="btn-check" id="editTag4" name="tags[]" value="#MoralChoices"
+                  autocomplete="off">
+                <label class="btn btn-outline-primary" for="editTag4">#MoralChoices</label>
+
+                <input type="checkbox" class="btn-check" id="editTag5" name="tags[]" value="#PersonalValues"
+                  autocomplete="off">
+                <label class="btn btn-outline-primary" for="editTag5">#PersonalValues</label>
+
+                <input type="checkbox" class="btn-check" id="editTag6" name="tags[]" value="#PublicOpinion"
+                  autocomplete="off">
+                <label class="btn btn-outline-primary" for="editTag6">#PublicOpinion</label>
+              </div>
+            </div>
+
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-site-orange text-white">Save Changes</button>
@@ -337,6 +367,17 @@
             document.getElementById('endDate').value = endDate;
           } else {
             document.getElementById('endDate').value = '';
+          }
+
+          // Pre-select tags if poll.tags exists
+          if (poll.tags) {
+            const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(',');
+            tagsArray.forEach(tag => {
+              const checkbox = document.querySelector(`.btn-check[name="tags[]"][value="${tag.trim()}"]`);
+              if (checkbox) {
+                checkbox.checked = true;
+              }
+            });
           }
 
           // Set form action dynamically
