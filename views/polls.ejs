@@ -47,6 +47,13 @@
     </main>
 
     <%- include('templates/footer') %>
+    <!-- Keeps track of what polls the user has saved -->
+    <% if (user && user.savedPolls) { %>
+  <script id="saved-polls-data" type="application/json">
+    <%= JSON.stringify(user.savedPolls.map(p => p.toString())) %>
+  </script>
+<% } %>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
