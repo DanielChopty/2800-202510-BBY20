@@ -106,6 +106,14 @@
                             </div>
                             <p class="mt-1 mb-0"><%= c.text %></p>
                           </div>
+                          <% if (authenticated && user && user.name === c.commenter) { %>
+                            <form action="/poll/<%= poll._id %>/comment/delete" method="POST" class="ms-2">
+                              <input type="hidden" name="createdAt" value="<%= c.createdAt.toISOString() %>">
+                              <button type="submit" class="btn btn-sm btn-outline-danger">
+                                Delete
+                              </button>
+                            </form>
+                          <% } %>
                         </div>
                       <% }) %>
                     <% } else { %>

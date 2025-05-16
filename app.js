@@ -834,6 +834,38 @@ app.post('/poll/:id/comment', isAuthenticated, async (req, res) => {
   }
 });
 
+// DELETE a comment that the current user posted
+app.post('/poll/:id/comment/delete', isAuthenticated, async (req, res) => {
+  const pollId     = req.params.id;
+  const createdAt  = new Date(req.body.createdAt);   // timestamp of the comment
+  const username   = req.session.user.name;          // name of the logged-in user
+
+  try {
+    const pollsColl = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    // Only pull the comment if it was createdBy this user at exactly that timestamp
+    await pollsColl.updateOne(
+      { _id: new ObjectId(pollId) },
+      { 
+        $pull: { 
+          comments: { 
+            commenter: username, 
+            createdAt: createdAt 
+          } 
+        } 
+      }
+    );
+
+    // Redirect back to the same poll
+    res.redirect(`/poll/${pollId}#comments`);
+  } catch (err) {
+    console.error('Error deleting comment:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
 
 /* ERROR HANDLING */
 
