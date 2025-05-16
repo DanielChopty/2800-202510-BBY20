@@ -318,7 +318,7 @@ app.post('/signup', async (req, res) => {
     req.session.email = email;
     req.session.cookie.maxAge = expireTime;
 
-    res.redirect('/dashboard');
+    res.render('dashboard', { user: req.session.user });
   } catch (error) {
     console.error('Error during signup:', error);
     res.status(500).render('signup', {
@@ -411,14 +411,12 @@ app.get('/dashboard', (req, res) => {
     { type: 'Commented', description: 'Shared opinion on public transit plan', date: 'May 9, 2025' }
   ];
 
-  res.render('citizenDashboard', {
+ res.render('citizenDashboard', {
     username: user.username,
-    user: { name: req.session.username },
+    user: req.session.user, 
     recentActivity: recentActivity
-  });
 });
-
-
+});
 
 // Profile page (protected route)
 app.get('/profile', async (req, res) => {
