@@ -1,0 +1,59 @@
+/* theme.css */
+
+/* Font */
+body {
+  font-family: 'Inter', 'Roboto', 'Open Sans', sans-serif;
+  color: #1F2937; /* Dark Gray */
+  background-color: #F3F4F6; /* Light Gray */
+  margin: 0;
+  padding: 0;
+}
+
+/* Primary Buttons */
+.btn-primary {
+  background-color: #1E388A; /* Deep Blue */
+  color: #FFFFFF;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #60A5FA; /* Sky Blue */
+}
+
+/* Secondary/Warning Buttons */
+.btn-warning {
+  background-color: #F97316; /* Civic Orange */
+  color: #FFFFFF;
+}
+
+.btn-warning:hover {
+  background-color: #FACC15; /* Warm Yellow */
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: #1E388A;
+}
+
+/* Links */
+a {
+  color: #1E388A;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #60A5FA;
+  text-decoration: underline;
+}
+
+/* Poll containers */
+.poll-box {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}

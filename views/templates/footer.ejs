@@ -3,7 +3,7 @@
     <!-- Copyright notice -->
     <p class="mb-0">&copy; BBY-20, All rights reserved.</p>
 
-    <% if (weather) { %>
+    <% if (typeof weather !== 'undefined' && weather) { %>
       <!-- Weather widget (right aligned) -->
       <div class="d-flex align-items-center bg-dark rounded px-3 py-2 shadow" style="color: white;">
         <!-- Weather icon -->
@@ -13,12 +13,12 @@
         
         <!-- Temperature and description -->
         <div class="ms-2">
-          <div><strong><%= weather.main.temp %>°C</strong> — 
-            <!-- Capitalize first letter of weather description -->
+          <div>
+            <strong><%= weather.main.temp %>°C</strong> — 
             <%= weather.weather[0].description.charAt(0).toUpperCase() + weather.weather[0].description.slice(1) %>
           </div>
           <!-- Location name (using city from IP location) -->
-          <small style="color: white;"><%= city || weather.name %></small> <!-- Use city from IP if available -->
+          <small style="color: white;"><%= city || weather.name %></small>
         </div>
       </div>
     <% } %>  

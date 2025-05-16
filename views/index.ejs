@@ -3,146 +3,203 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Home</title>
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-</head>
-<body class="bg-light">
+  <title>CivIQ - Home</title>
 
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    body {
+      background: url('/images/homepage-background.png') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: white;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .hero-title {
+      font-size: 6rem;
+      font-weight: 700;
+    }
+
+    .btn-start {
+      background-color: #F97316;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    .btn-start:hover {
+      background-color: #e85c00;
+      color: white;
+    }
+
+    .feature-row {
+      margin-top: 4rem;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .feature-card {
+      border: none;
+      border-radius: 0.75rem;
+      padding: 2rem 1.5rem;
+      background-color: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      color: white;
+      text-align: center;
+      height: 100%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .navbar, footer {
+      background-color: rgba(0, 51, 102, 0.75) !important;
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+
+<body>
   <%- include('templates/header') %>
 
-  <div class="container text-center my-5">
-    <h1 class="display-1 fw-bold" style="color: #003366;">CivIQ</h1>
-    <p class="lead text-muted">Engage. Influence. Empower Your City.</p>
+  <main>
+    <h1 class="hero-title">CivIQ</h1>
+    <p class="lead">Engage. Influence. Empower Your City.</p>
 
-    <% if (authenticated) { %>
-      <h2 class="mt-5">Hello, <%= username %>!</h2>
-      <div class="d-flex gap-3 mt-3 justify-content-center">
-        <a href="/logout" class="btn text-white" style="background-color: #f36f21;">Log Out</a>
-        <a href="/profile" class="btn btn-primary">Go to Profile Page</a>
-        
-        <% if (user && user.user_type === 'admin') { %>
-          <a href="/admin" class="btn btn-primary">Go to Admin Page</a>
-        <% } %>
-      </div>
+    <% if (authenticated && username) { %>
+      <h2 class="mt-3">Hello, <%= username %>!</h2>
+      <a href="/dashboard" class="btn btn-start">Go to Dashboard</a>
     <% } else { %>
-      <h2 class="mt-5">Welcome to our awesome site!</h2>
+      <h2 class="mt-3">Welcome to CivIQ</h2>
       <div class="d-flex justify-content-center gap-3 mt-3">
         <a href="/signup" class="btn btn-warning text-dark">Sign Up</a>
-        <a href="/login" class="btn btn-outline-primary">Log In</a>
+        <a href="/login" class="btn btn-outline-light">Login</a>
       </div>
     <% } %>
-  </div>
+  </main>
 
-  <!-- First row of feature boxes -->
-<div class="container mb-5">
-  <div class="row g-4">
-    <!-- Post Polls (Admins only) -->
-    <div class="col-md-4">
-      <% if (user && user.user_type === 'admin') { %>
-        <a href="/createpoll" class="text-decoration-none">
-          <div class="card h-100 border-0 shadow text-white" style="background-color: #f36f21;">
+  <!-- Feature Cards -->
+  <div class="container mb-5">
+    <div class="row g-4">
+
+      <!-- Admin-only: Post Polls -->
+      <div class="col-md-4">
+        <% if (user && user.user_type === 'admin') { %>
+          <a href="/createpoll" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow text-white" style="background-color: #f36f21;">
+              <div class="card-body">
+                <h4 class="card-title fw-bold">Post Polls</h4>
+                <p class="card-text">City officials can easily post interactive polls to gather public input and drive informed decisions.</p>
+              </div>
+            </div>
+          </a>
+        <% } else { %>
+          <div class="card h-100 border-0 shadow text-white" style="background-color: #f36f21; opacity: 0.6; cursor: not-allowed;">
             <div class="card-body">
               <h4 class="card-title fw-bold">Post Polls</h4>
-              <p class="card-text">City officials can easily post interactive polls to gather public input and drive informed decisions.</p>
+              <p class="card-text">Log in as an admin to post polls.</p>
             </div>
           </div>
-        </a>
-      <% } else { %>
-        <div class="card h-100 border-0 shadow text-white" style="background-color: #f36f21; opacity: 0.6; cursor: not-allowed;">
-          <div class="card-body">
-            <h4 class="card-title fw-bold">Post Polls</h4>
-            <p class="card-text">Log in as an admin to post polls.</p>
-          </div>
-        </div>
-      <% } %>
-    </div>
+        <% } %>
+      </div>
 
-    <!-- Vote on Polls (Authenticated users only) -->
-    <div class="col-md-4">
-      <% if (user) { %>
-        <a href="/main" class="text-decoration-none">
-          <div class="card h-100 border-0 shadow text-white" style="background-color: #00bfff;">
+      <!-- Vote on Polls -->
+      <div class="col-md-4">
+        <% if (user) { %>
+          <a href="/polls" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow text-white" style="background-color: #00bfff;">
+              <div class="card-body">
+                <h4 class="card-title fw-bold">Vote on Local Projects</h4>
+                <p class="card-text">Citizens can cast votes on projects that matter to them, shaping the future of their communities.</p>
+              </div>
+            </div>
+          </a>
+        <% } else { %>
+          <div class="card h-100 border-0 shadow text-white" style="background-color: #00bfff; opacity: 0.6; cursor: not-allowed;">
             <div class="card-body">
               <h4 class="card-title fw-bold">Vote on Local Projects</h4>
-              <p class="card-text">Citizens can cast votes on projects that matter to them, shaping the future of their communities.</p>
+              <p class="card-text">Please log in to vote on local projects.</p>
             </div>
           </div>
-        </a>
-      <% } else { %>
-        <div class="card h-100 border-0 shadow text-white" style="background-color: #00bfff; opacity: 0.6; cursor: not-allowed;">
+        <% } %>
+      </div>
+
+      <!-- Open to All -->
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow text-dark" style="background-color: #fcd34d;">
           <div class="card-body">
-            <h4 class="card-title fw-bold">Vote on Local Projects</h4>
-            <p class="card-text">Please log in to vote on local projects.</p>
+            <h4 class="card-title fw-bold">Save & Filter Polls</h4>
+            <p class="card-text">Bookmark your favorite polls and apply filters to easily return and engage at your convenience.</p>
           </div>
         </div>
-      <% } %>
+      </div>
     </div>
+  </div>
 
-    <!-- Save & Filter Polls (Open to all for now) -->
-    <div class="col-md-4">
-      <div class="card h-100 border-0 shadow text-dark" style="background-color: #fcd34d;">
-        <div class="card-body">
-          <h4 class="card-title fw-bold">Save & Filter Polls</h4>
-          <p class="card-text">Bookmark your favorite polls and apply filters to easily return and engage at your convenience.</p>
+  <!-- Second Row -->
+  <div class="container mb-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow text-dark" style="background-color: #8dc872;">
+          <div class="card-body">
+            <h4 class="card-title fw-bold">Add Tags to Polls</h4>
+            <p class="card-text">City officials can add tags to polls to help citizens easily identify the relevance and benefits of participating.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow text-white" style="background-color: #9c27b0;">
+          <div class="card-body">
+            <h4 class="card-title fw-bold">View Past Polls</h4>
+            <p class="card-text">City officials can view past polls on their profile page for easy access and reference to previous campaigns.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow text-white" style="background-color: #3f51b5;">
+          <div class="card-body">
+            <h4 class="card-title fw-bold">Log In for Personalized Experience</h4>
+            <p class="card-text">Citizens can log in to have a personalized experience with the app, including tracking polls and preferences.</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Second row of feature boxes -->
-<div class="container mb-5">
-  <div class="row g-4">
-    <!-- Add Tags to Polls (City Workers) -->
-    <div class="col-md-4">
-      <div class="card h-100 border-0 shadow text-dark" style="background-color: #8dc872;">
-        <div class="card-body">
-          <h4 class="card-title fw-bold">Add Tags to Polls</h4>
-          <p class="card-text">City officials can add tags to polls to help citizens easily identify the relevance and benefits of participating.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- View Past Polls (City Workers) -->
-    <div class="col-md-4">
-      <div class="card h-100 border-0 shadow text-white" style="background-color: #9c27b0;">
-        <div class="card-body">
-          <h4 class="card-title fw-bold">View Past Polls</h4>
-          <p class="card-text">City officials can view past polls on their profile page for easy access and reference to previous campaigns.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Log In for Personalized Experience (Citizens) -->
-    <div class="col-md-4">
-      <div class="card h-100 border-0 shadow text-white" style="background-color: #3f51b5;">
-        <div class="card-body">
-          <h4 class="card-title fw-bold">Log In for Personalized Experience</h4>
-          <p class="card-text">Citizens can log in to have a personalized experience with the app, including tracking polls and preferences.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div><br><br>
-
-  <!-- About Us Button (bottom-left) -->
+  <!-- About Us Button -->
   <div class="container">
     <div class="row">
       <div class="col-12 text-start mb-5">
-        <a href="/about" class="btn btn-info text-white" style="position: relative; left: 0; bottom: 0;">
-          About Us
-        </a>
+        <a href="/about" class="btn btn-info text-white">About Us</a>
       </div>
     </div>
   </div>
 
   <%- include('templates/footer') %>
 
-  <!-- Bootstrap JS (optional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
