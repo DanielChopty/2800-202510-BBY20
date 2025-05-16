@@ -196,7 +196,7 @@
 
                     <!-- Edit button -->
                     <div class="d-flex flex-column gap-3 me-3" style="flex-shrink: 0;">
-                      <button class="btn btn-edit-grey" title="Edit"
+                      <button class="btn btn-edit-grey" title="Edit Poll"
                         onclick='openEditModal(<%- JSON.stringify(poll) %>)'>
                         <i class="bi bi-pencil-square"></i>
                       </button>
@@ -204,14 +204,14 @@
                       <!-- Delete button -->
                       <form onsubmit="return confirmDelete(event, '<%= poll._id %>')" id="delete-form-<%= poll._id %>"
                         method="POST" action="/deletepoll/<%= poll._id %>">
-                        <button type="submit" class="btn btn-delete-red" title="Delete">
+                        <button type="submit" class="btn btn-delete-red" title="Delete Poll">
                           <i class="bi bi-trash"></i>
                         </button>
                       </form>
 
                       <!-- Full poll detail button -->
                       <a href="/poll/<%= poll._id %>" class="btn btn-view-green text-white"
-                        title="View Poll Details">
+                        title="View Extended Details">
                         <i class="bi bi-arrow-bar-right"></i>
                       </a>
 
