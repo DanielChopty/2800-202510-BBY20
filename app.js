@@ -110,7 +110,6 @@ app.use(async (req, res, next) => {
 // Middleware for multer (used for file uploads)
 const multer = require('multer');
 const fs = require('fs');
-const path = require('path');
 
 const uploadsDir = path.join(__dirname, 'public', 'uploads');
 
