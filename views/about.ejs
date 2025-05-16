@@ -7,7 +7,6 @@
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-
   <!-- Animate.css -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
 
@@ -21,7 +20,7 @@
     }
 
     .header-section, .footer-section {
-      background-color: rgba(30, 56, 138, 0.75); /* 半透明ネイビー */
+      background-color: rgba(30, 56, 138, 0.75);
       backdrop-filter: blur(8px);
     }
 
@@ -42,17 +41,17 @@
     }
 
     .topic-dedication {
-      background-color: rgba(96, 165, 250, 0.8); /* Sky Blue */
+      background-color: rgba(96, 165, 250, 0.8);
     }
 
     .topic-creativity {
-      background-color: rgba(250, 204, 21, 0.85); /* Warm Yellow */
+      background-color: rgba(250, 204, 21, 0.85);
       color: #222;
       text-shadow: none;
     }
 
     .topic-teamwork {
-      background-color: rgba(249, 115, 22, 0.85); /* Civic Orange */
+      background-color: rgba(249, 115, 22, 0.85);
     }
 
     h1, h2, h5 {
@@ -85,6 +84,17 @@
 </head>
 
 <body>
+  <!-- Back to Landing Button -->
+  <div style="position: absolute; top: 10rem; left: -.5rem; z-index: 1000;">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-start">
+          <a href="/" class="btn btn-info text-white">Landing Page</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <%- include('templates/header') %>
 
@@ -114,30 +124,27 @@
     </div>
   </section>
 
-  <!-- Goal Section -->
+  <!-- Our Goal Section -->
   <section class="container my-5">
-  <div class="topic bg-dark bg-opacity-75 p-4 rounded-3 text-white shadow-lg">
-    <h2 class="mb-3">Our Goal</h2>
-    <p>
-      Our goal is simple: make an app that connects citizens and city officials by providing an interactive platform 
-      for one-click polls and feedback on local projects. 
-      Citizens' voices need to be heard, and this app will amplify those voices, making them an integral part of 
-      shaping a city's future.
-    </p>
-  </div>
+    <div class="topic bg-dark bg-opacity-75 p-4 rounded-3 text-white shadow-lg">
+      <h2 class="mb-3">Our Goal</h2>
+      <p>
+        Our goal is simple: make an app that connects citizens and city officials by providing an interactive platform 
+        for one-click polls and feedback on local projects. 
+        Citizens' voices need to be heard, and this app will amplify those voices, making them an integral part of 
+        shaping a city's future.
+      </p>
+    </div>
   </section>
 
-
-  <!-- Credits -->
+  <!-- Credits Section -->
   <section class="container my-5">
-  <div class="bg-dark bg-opacity-75 p-3 rounded-3 text-white text-center fw-semibold shadow" style="text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
-    Developed with dedication by Daniel, Jayden, Mykyta, Baltaj and Jun.
-  </div>
+    <div class="bg-dark bg-opacity-75 p-3 rounded-3 text-white text-center fw-semibold shadow" style="text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
+      Developed with dedication by Daniel, Jayden, Mykyta, Baltaj and Jun.
+    </div>
   </section>
-
 
   <!-- Footer -->
   <%- include('templates/footer') %>
-
 </body>
 </html>

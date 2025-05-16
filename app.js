@@ -21,13 +21,16 @@ const {
   MONGODB_DATABASE_SESSIONS,
   MONGODB_SESSION_SECRET,
   NODE_SESSION_SECRET,
-  PORT
+  PORT,
+  OPENWEATHER_API_KEY
 } = process.env;
 
 const path = require('path');
 const app = express();
+
 const port = PORT || 8080;
 const expireTime = 60 * 60 * 1000; // 1 hour session expiration
+
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
@@ -35,8 +38,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to parse form data and serve static files
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use(express.static(__dirname));
 
 // Configure session store using MongoDB
 const mongoStore = MongoStore.create({
@@ -60,22 +64,160 @@ app.use((req, res, next) => {
   next();
 });
 
+// Custom middleware to pass session data and weather to all views
+app.use(async (req, res, next) => {
+  res.locals.authenticated = req.session.authenticated || false;
+  res.locals.user = req.session.user || null;
+
+  // Always attempt to fetch weather data, regardless of authentication
+  try {
+    let weather = null;
+    let city = null;
+
+    // Get IP and use it to fetch location
+    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    if (ip === '::1' || ip === '127.0.0.1') {
+      ip = '8.8.8.8'; // Test IP for local environment
+    }
+
+    const ipApiUrl = `http://ip-api.com/json/${ip}`;
+    const ipResponse = await axios.get(ipApiUrl);
+    const location = ipResponse.data;
+
+    if (location.status === 'success') {
+      const { lat, lon, city: locationCity } = location;
+      city = locationCity;
+
+      // Fetch weather from OpenWeather
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+      const weatherResponse = await axios.get(weatherUrl);
+      weather = weatherResponse.data;
+    }
+
+    // Pass weather and city to all views
+    res.locals.weather = weather;
+    res.locals.city = city;
+
+    next();
+  } catch (err) {
+    console.error('Error fetching weather data:', err);
+    res.locals.weather = null;
+    res.locals.city = null;
+    next();
+  }
+});
+
 // Middleware for multer (used for file uploads)
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+
+// Check if the directory exists, and if not, create it
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Uploads directory created.');
+}
 
 // Set up multer storage configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/uploads'); // Directory where images will be saved
+    const uploadDir = path.join(__dirname, 'public', 'uploads'); // Use absolute path
+    console.log('Upload Directory:', uploadDir); // Log the upload directory path
+    cb(null, uploadDir); // Ensure the upload folder is correctly referenced
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Rename file to avoid conflicts
+    cb(null, Date.now() + path.extname(file.originalname)); // Use timestamp for uniqueness
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpg|jpeg|png|gif|webp/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
-/* ROUTES */
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only images are allowed'));
+  }
+});
+
+// 
+app.use((req, res, next) => {
+  res.locals.votedPolls = req.session.votedPolls || {};
+  next();
+});
+
+/* NORMAL ROUTES */
+
+// Location + weather and index
+app.get('/', async (req, res) => {
+  try {
+    let weather = null;
+    let city = null;
+
+    // Always attempt to fetch weather data, regardless of authentication
+    let ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+    if (ip === '::1' || ip === '127.0.0.1') {
+      ip = '8.8.8.8'; // Test IP for local environment
+    }
+
+    const ipApiUrl = `http://ip-api.com/json/${ip}`;
+    const ipResponse = await axios.get(ipApiUrl);
+    const location = ipResponse.data;
+
+    if (location.status === 'success') {
+      const { lat, lon, city: locationCity } = location;
+      city = locationCity;
+
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+      const weatherResponse = await axios.get(weatherUrl);
+      weather = weatherResponse.data;
+    }
+
+    // Render index page with weather, city, and session data
+    res.render('index', {
+      title: 'Home',
+      authenticated: req.session.authenticated || false,
+      username: req.session.username || null,
+      user: req.session.user || null,
+      weather: weather,
+      city: city || null
+    });
+  } catch (err) {
+    console.error('Error fetching weather data:', err);
+    res.render('index', { weather: null, city: null });
+  }
+});
+
+// Upload profile picture
+app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res) => {
+  console.log('File Upload Attempt:', req.file); // Log the file upload details
+  if (req.file) {
+    const profilePicPath = 'uploads/' + req.file.filename;
+    console.log('Profile Pic Path:', profilePicPath); // Log the final file path
+
+    try {
+      const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+      await userCollection.updateOne(
+        { email: req.session.email }, // Find the logged-in user by email
+        { $set: { profilePic: profilePicPath } } // Update the profilePic field
+      );
+      res.redirect('/profile'); // Redirect back to profile page
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      res.status(500).send('Error updating profile picture');
+    }
+  } else {
+    res.send('Please upload a valid image file');
+  }
+});
+
+
 
 // Home page
 app.get('/', (req, res) => {
@@ -92,6 +234,22 @@ app.get('/', (req, res) => {
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
+
+// route to render about.ejs
+app.get('/about', (req, res) => {
+  res.render('about', {
+    title: 'About',
+    authenticated: req.session.authenticated || false,
+    username: req.session.username || null,
+    user: req.session.user || null
+  });
+});
+
+// Main page
+app.get('/main', (req, res) =>{
+  res.render('main');
+});
+
 
 // Signup form
 app.get('/signup', (req, res) => {
@@ -141,7 +299,7 @@ app.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert new user with default role 'user'
-    await userCollection.insertOne({ name, email, password: hashedPassword, user_type: 'user' });
+    await userCollection.insertOne({ name, email, password: hashedPassword, user_type: 'user', votedPolls: {} });
 
     // Set session data
     req.session.authenticated = true;
@@ -210,6 +368,7 @@ app.post('/login', async (req, res) => {
       req.session.username = user.name;
       req.session.email = user.email;
       req.session.user = user;
+      req.session.votedPolls = user.votedPolls || {};
       req.session.cookie.maxAge = expireTime;
 
       res.redirect('/dashboard');
@@ -252,25 +411,215 @@ app.get('/dashboard', (req, res) => {
 
 // Profile page (protected route)
 app.get('/profile', async (req, res) => {
-    try {
-      if (!req.session.authenticated) {
-        return res.redirect('/');
-      }
-  
-      const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-      const user = await userCollection.findOne({ email: req.session.email });
-  
-      if (!user) return res.redirect('/');
-  
-      res.render('profile', {
-        title: 'Profile',
-        username: user.name
-      });
-    } catch (error) {
-      console.error('Error rendering profile page:', error);
-      res.status(500).render('500', { title: 'Server Error' });
+  try {
+    // Check if the user is authenticated
+    // If the user is not authenticated, redirect them to the home page
+    if (!req.session.authenticated) {
+      return res.redirect('/');
     }
-  });
+
+    // Get the user's information from the database
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const user = await userCollection.findOne({ email: req.session.email });
+
+    // If the user does not exist in the database, redirect them to the home page
+    if (!user) return res.redirect('/');
+
+    // Initialize personalizedMessage as an empty string (default value)
+    const personalizedMessage = '';  // Default value for personalized message
+
+    // Render the profile page with the user's data and the personalized message
+    // The personalized message will be empty initially, and later updated when the user submits their feelings
+    res.render('profile', {
+      title: 'Profile',  // Page title
+      username: user.name,  // Username (from the user object)
+      user: user,  // Pass the full user object to the template for use
+      personalizedMessage: personalizedMessage,  // Pass the empty personalizedMessage to the view
+    });
+  } catch (error) {
+    // Catch any errors during the process
+    console.error('Error rendering profile page:', error);
+    res.status(500).render('500', { title: 'Server Error' });  // Render a 500 error page in case of server failure
+  }
+});
+
+// SURPRISE CHALLENGE 2 (AI MAGIC)
+
+// The magic is that the AI generated the messages for the feelings below and helped me to
+// randomly display them based on the first letter of the user's input.
+
+// Route to handle form submission for feelings (user's emotional state)
+app.post('/update-feelings', async (req, res) => {
+  try {
+    // Get the feelings input from the request body (user's feelings text)
+    const feelings = req.body.feelings;
+    let personalizedMessage = '';  // Initialize personalizedMessage as an empty string
+
+    if (feelings) {
+      // Get the first letter of the feelings input and convert it to lowercase
+      const firstLetter = feelings.trim().charAt(0).toLowerCase(); // Trim spaces and get first character
+
+      // Define a set of three predefined messages for each letter of the alphabet
+      // Each letter corresponds to an array of messages that can be randomly selected
+      const messages = {
+        'a': [
+          'An apple a day keeps the doctor away!',
+          'Always aim for the stars!',
+          'Adversity builds character.'
+        ],
+        'b': [
+          'Bouncing back from challenges makes you stronger!',
+          'Be the change you wish to see.',
+          'Bravery is not the absence of fear, but the strength to face it.'
+        ],
+        'c': [
+          'Creativity is the key to unlocking new possibilities.',
+          'Change is the only constant in life.',
+          'Courage is resistance to fear, mastery of fear, not absence of fear.'
+        ],
+        'd': [
+          'Dare to dream big and make it happen!',
+          'Determination is the key to success.',
+          'Don’t let yesterday take up too much of today.'
+        ],
+        'e': [
+          'Every day is a new opportunity to shine!',
+          'Embrace the journey, not just the destination.',
+          'Energy and persistence conquer all things.'
+        ],
+        'f': [
+          'Feelings are like waves; they come and go.',
+          'Fear is a natural reaction to moving closer to the truth.',
+          'Follow your dreams, they know the way.'
+        ],
+        'g': [
+          'Great things are coming your way!',
+          'Growth is the key to progress.',
+          'Good things come to those who hustle.'
+        ],
+        'h': [
+          'Happiness is a journey, not a destination.',
+          'Hard work beats talent when talent doesn’t work hard.',
+          'Hope is the thing with feathers.'
+        ],
+        'i': [
+          'Inspiration is everywhere, just open your eyes!',
+          'It always seems impossible until it’s done.',
+          'Imagination is more important than knowledge.'
+        ],
+        'j': [
+          'Jump into the future with excitement and curiosity!',
+          'Just keep going; don’t stop.',
+          'Joy is the simplest form of gratitude.'
+        ],
+        'k': [
+          'Keep going, the best is yet to come!',
+          'Kindness is a language which the deaf can hear and the blind can see.',
+          'Knowledge is power.'
+        ],
+        'l': [
+          'Life is a beautiful ride, enjoy the journey!',
+          'Learn as if you will live forever.',
+          'Love yourself first and everything else falls into line.'
+        ],
+        'm': [
+          'Make today amazing by making it yours.',
+          'Motivation is what gets you started. Habit is what keeps you going.',
+          'Mistakes are proof that you are trying.'
+        ],
+        'n': [
+          'Never give up on yourself, you’ve got this!',
+          'Nothing worth having comes easy.',
+          'No one is you and that is your power.'
+        ],
+        'o': [
+          'Opportunities are everywhere, seize them!',
+          'Only in the darkness can you see the stars.',
+          'One day or day one. You decide.'
+        ],
+        'p': [
+          'Positivity is a magnet for good things!',
+          'Push yourself because no one else is going to do it for you.',
+          'Patience is not the ability to wait, but the ability to keep a good attitude while waiting.'
+        ],
+        'q': [
+          'Questions lead to discovery, so keep asking!',
+          'Quality over quantity.',
+          'Quick minds think alike.'
+        ],
+        'r': [
+          'Reach for the stars, you’re capable of greatness!',
+          'Relax and let it flow.',
+          'Resilience is the key to overcoming any obstacle.'
+        ],
+        's': [
+          'Sometimes the smallest step in the right direction can end up being the biggest step of your life.',
+          'Success is the sum of small efforts, repeated day in and day out.',
+          'Start where you are. Use what you have. Do what you can.'
+        ],
+        't': [
+          'Take time to appreciate the little things.',
+          'The best time to plant a tree was 20 years ago. The second best time is now.',
+          'The only way to do great work is to love what you do.'
+        ],
+        'u': [
+          'Understand that setbacks are just setups for comebacks!',
+          'Use your power to create a life you love.',
+          'Unity is strength.'
+        ],
+        'v': [
+          'Victory is sweetest when you’ve faced challenges.',
+          'Vision without action is merely a dream.',
+          'Value the moments that make you smile.'
+        ],
+        'w': [
+          'Winning starts with believing in yourself.',
+          'With hard work and determination, everything is possible.',
+          'What we think, we become.'
+        ],
+        'x': [
+          'X marks the spot where your adventure begins!',
+          'Xcellence is the key to success.',
+          'Xplore new possibilities every day.'
+        ],
+        'y': [
+          'You are stronger than you think!',
+          'You miss 100% of the shots you don’t take.',
+          'You are what you believe yourself to be.'
+        ],
+        'z': [
+          'Zoom into the future with confidence and courage!',
+          'Zest for life is the key to happiness.',
+          'Zero regrets, just lessons learned.'
+        ],
+      };
+
+      // Pick a random message from the array of messages for the first letter
+      const letterMessages = messages[firstLetter] || ['Thanks for sharing! You are unique and awesome!']; // Default message
+      const randomMessage = letterMessages[Math.floor(Math.random() * letterMessages.length)];
+
+      // Set the personalized message
+      personalizedMessage = randomMessage;
+    }
+
+    // Get user data again after the feelings update
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const user = await userCollection.findOne({ email: req.session.email });
+
+    if (!user) return res.redirect('/');
+
+    // Render the profile page again with the personalized message
+    res.render('profile', {
+      title: 'Profile',
+      username: user.name,
+      user: user,  // Pass the full user object
+      personalizedMessage: personalizedMessage,  // Pass the personalized message
+    });
+  } catch (error) {
+    console.error('Error updating feelings:', error);
+    res.status(500).render('500', { title: 'Server Error' });  // Handle errors by showing a 500 error page
+  }
+});
   
 // About page (public or protected, choose based on need)
 app.get('/about', (req, res) => {
@@ -300,9 +649,19 @@ function isAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-// Middleware to check if a user is an admin
+// Middleware to check if a user is authenticated and an admin
 function isAdmin(req, res, next) {
-  if (req.session.user && req.session.user.user_type === 'admin') return next();
+  // Check if the user is not authenticated
+  if (!req.session.authenticated) {
+    return res.redirect('/login'); // Redirect to login page if not authenticated
+  }
+
+  // If authenticated, check if the user is an admin
+  if (req.session.user && req.session.user.user_type === 'admin') {
+    return next(); // Proceed to the next middleware or route handler if user is an admin
+  }
+
+  // If authenticated but not an admin, show the 403 Forbidden page
   res.status(403).render('403', { title: 'Forbidden' });
 }
 
@@ -348,6 +707,412 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
   } catch (error) {
     console.error('Error demoting user:', error);
     res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// Page for creating a poll
+app.get('/createPoll', isAuthenticated, (req, res) => {
+  const created = req.query.created === 'true';
+  res.render('createPoll', { created });
+});
+
+// Adding a route to fetch all available polls from the database
+
+/*Important details  */
+// Database can be named anything (Ex. polls)
+// corresponds to the MONGODB_DATABASE_POLLS variable in the .env file
+// Collection should be named 'polls'
+// Each document in the polls collection should represent one poll
+// Some of the fields that could be in it  (in JSON format):
+
+// {
+ // "_id": ObjectId("..."),
+ // "title": "Should public transport be free?",
+ // "tags": ["#PublicOpinion", "#DailyLife"],
+//  "available": true,
+//  "choices": [
+ //   { "text": "Yes", "votes": 12 },
+  //  { "text": "No", "votes": 8 },
+  //  { "text": "Maybe", "votes": 3 }
+    // ],
+  // "createdBy": "user123",
+  // "createdAt": ISODate("2024-09-01T10:00:00Z")
+    // }
+
+
+// "_id": ObjectId("...") - automatically generated unique identifier for this poll my MongoDB 
+// "title": "Should public transport be free?" - the title of the poll (a string)
+// "tags": ["#PublicOpinion", "#DailyLife"] - an array of tags for the poll (strings)
+// "available": true - Determines whether users are able to see the poll (boolean)
+
+//"choices": [
+ //   { "text": "Yes", "votes": 12 },
+  //  { "text": "No", "votes": 8 },  - An array of objects 
+  //  { "text": "Maybe", "votes": 3 } - stores each voting option and current 
+    // ]                              number of votes
+
+    // "createdBy": "user123" - User who created this poll
+    //  "createdAt": ISODate("2024-09-01T10:00:00Z") - Timestampe when the poll was created
+
+    /* Additional Notes */
+    // Comments should be added to the list
+
+
+app.get('/polls', async (req, res) => {
+  try {
+    // Getting polls collection from the database using the variable MONGODB_DATABASE_POLLS
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const polls = await pollsCollection.find({ available: true }).toArray();
+    // Renders the main.ejs template
+    res.render('polls', {
+      title: 'Available Polls',
+      // passing list of polls to the template
+      polls: polls || [],
+      // Passing login status
+      // Making sure a user is active and session is valid
+      // If not system defaults to false / null
+      authenticated: req.session.authenticated || false,
+      username: req.session.username || null,
+      user: req.session.user || null,
+      votedPolls: req.session.votedPolls || []
+    });
+
+  } catch (error) {
+    // Error handling if the main.ejs page doesn't exist
+    console.error('Error fetching polls:', error);
+    res.status(404).render('404', { title: 'Page Not Found' });
+  }
+});
+
+
+// Adding a route to handle the submission of a vote on a poll
+
+app.post('/vote', async (req, res) => {
+
+// Making sure user is actually logged in to vote
+if(!req.session.authenticated){
+// If they are not a 403 page gets displayed to them, not allowed them to access this feature
+  return res.status(403).render('403', { title: 'Forbidden' });
+}
+
+  const { pollId, choiceText } = req.body;
+  // Variable to make sure user can only vote once on every poll
+  const userVotedPolls = req.session.votedPolls || {};
+
+  // Check if already voted on this poll
+  if (userVotedPolls[pollId]) {
+    return res.status(403).send('You have already voted on this poll.');
+  }
+
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+
+    // Find the poll
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
+
+    // Check if the poll exists
+    if (!poll) {
+      return res.status(404).send('Poll not found');
+    }
+
+    // Find the index of the selected choice
+    const choiceIndex = poll.choices.findIndex(c => c.text === choiceText);
+
+    if (choiceIndex === -1) {
+      return res.status(400).send('Invalid choice');
+    }
+
+    // Increment the vote count for the selected choice
+    poll.choices[choiceIndex].votes += 1;
+
+    // Update the poll document in the database
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(pollId) },
+      { $set: { choices: poll.choices } }
+    );  
+
+    // Record the poll in user's votedPolls array
+    const usersColl = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
+    await usersColl.updateOne(
+      { email: req.session.email },
+      { $set: { [`votedPolls.${pollId}`]: choiceText } } // Add pollId to the user's votedPolls array only if it isn't present
+    );
+
+    // Mark poll as voted in just the session
+    userVotedPolls[pollId] = choiceText;
+    req.session.votedPolls = userVotedPolls;
+
+    // Redirecting the user to the main.ejs page
+    const returnTo = req.get('Referer') || '/polls';
+    res.redirect(returnTo);
+
+  } catch (err) {
+    console.err('Error processing vote:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// Handle creating a new poll
+app.post('/createPoll', isAuthenticated, async (req, res) => {
+  console.log('POST /createPoll hit', req.body);
+  try {
+    const {
+      title,
+      tags = '',
+      options = [],
+      importance,
+      startDate,
+      endDate,
+      visibility,
+      description
+    } = req.body;
+
+    // Removes any empty strings and trims whitespace
+    const choices = options
+      .filter(text => text && text.trim().length > 0)
+      .map(text => ({ text: text.trim(), votes: 0})); // Each option starts at 0 votes
+    
+    if (choices.length < 2) {
+      return res.status(400).send('Error 400: Please provide at least two options');
+    }
+
+    const tagArray = tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    // Creating the poll document and all its values
+    const pollDoc = {
+      title:          title.trim(),
+      tags:           tagArray,
+      importance,
+      startDate:      new Date(startDate),
+      endDate:        new Date(endDate),
+      visibility,
+      description: description?.trim() || '',
+      createdBy:      req.session.email, // We could also use their user ID here instead
+      createdAt:      new Date(),
+      available:      true,
+      choices
+    }
+
+    // Inserting the values into our database
+    const pollsColl = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const result = await pollsColl.insertOne(pollDoc);
+    console.log('Inserted poll! _id:', result.insertedId); 
+
+    // Redirect back to the polls page once done
+    res.render('createPoll', { created: true });
+
+  } catch (err) {
+    console.error('Error creating poll:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// Past polls page route
+app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const sortOption = req.query.sort || 'all';
+
+    let polls = await pollsCollection
+      .find({ createdBy: req.session.email })
+      .toArray();
+
+    // Manual sorting if importance sort is selected
+    if (sortOption === 'importance') {
+      // Mapping importance to numbers (because they are strings in database)
+      const importanceMap = { high: 3, medium: 2, low: 1 };
+
+      polls.sort((a, b) => {
+        const aVal = importanceMap[a.importance?.toLowerCase()] || 0;
+        const bVal = importanceMap[b.importance?.toLowerCase()] || 0;
+        return bVal - aVal; // Descending order; High > Medium > Low
+      });
+    } else {
+      // Default to alphabetical order by title
+      polls.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    res.render('pastPolls', {
+      title: 'Past Polls',
+      user: req.session.user,
+      polls: polls,
+      sort: sortOption
+    });
+  } catch (err) {
+    console.error('Error fetching past polls:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Delete poll route (used in pastPolls.ejs)
+app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    await pollsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect('/pastpolls?deleted=true');
+  } catch (err) {
+    console.error('Error deleting poll:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Edit poll route (used in pastPolls.ejs)
+app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const { title, importance, available, options = [], description } = req.body;
+
+    // Validate options: Remove empty/whitespace-only options
+    const choices = Array.isArray(options)
+      ? options.filter(opt => opt && opt.trim().length > 0).map(opt => ({ text: opt.trim(), votes: 0 }))
+      : [];
+
+    // Ensure at least two valid options are provided
+    if (choices.length < 2) {
+      return res.status(400).send('Please provide at least two valid options.');
+    }
+
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    // Update the poll document
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      {
+        $set: {
+          title: title.trim(),
+          importance,
+          available: available === 'true',
+          description: description?.trim() || '',
+          choices
+        }
+      }
+    );
+
+    res.redirect('/pastpolls?edited=true');
+  } catch (err) {
+    console.error('Error updating poll:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// GET: Display all user's polls and their tags
+app.get('/manageTags', isAuthenticated, async (req, res) => {
+  try {
+    const pollsColl = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const myPolls = await pollsColl.find({ createdBy: req.session.email }).toArray();
+    const availableTags = ['#DailyLife', '#CulturalViews', '#FamilyMatters', '#MoralChoices', '#PersonalValues', '#PublicOpinion']; // Example list of tags
+    res.render('manageTags', { title: 'Manage Tags', polls: myPolls, availableTags });
+  } catch (err) {
+    console.error('Error fetching polls:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+
+
+// POST: Handle updating specific tags of a poll
+app.post('/updateTags/:id', isAuthenticated, async (req, res) => {
+  try {
+    const pollId = req.params.id;
+    const selectedTags = req.body.selectedTags || []; // Get selected tags from the form
+
+    // If no tags were selected, do nothing
+    if (selectedTags.length === 0) {
+      return res.redirect('/manageTags');
+    }
+
+    const pollsColl = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    await pollsColl.updateOne(
+      { _id: new ObjectId(pollId), createdBy: req.session.email },
+      { $set: { tags: selectedTags } } // Update tags to the selected ones
+    );
+
+    res.redirect('/manageTags'); // Redirect back to the manage tags page
+  } catch (err) {
+    console.error('Error updating tags:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// Unvote option allowing a user to remove their vote
+app.post('/unvote', async (req, res) => {
+  
+  if(!req.session.authenticated) {
+    return res.status(403).render('403', { title: 'Forbidden' });
+  }
+
+  const { pollId } = req.body;
+  const userVotedPolls = req.session.votedPolls || {};
+  const choiceText = userVotedPolls[pollId];
+
+  // If they never voted on this poll, just redirect back
+  if (!choiceText) {
+    return res.redirect('/polls');
+  }
+
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+  
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(pollId) });
+    if (!poll) {
+      return res.redirect('/polls');
+    }
+
+    const idx = poll.choices.findIndex(c => c.text === choiceText);
+    if (idx > -1 && poll.choices[idx].votes > 0) {
+      poll.choices[idx].votes -= 1;
+      await pollsCollection.updateOne(
+        { _id: new ObjectId(pollId) },
+        { $set: { choices: poll.choices } }
+      );
+    }
+
+    const usersColl = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
+    await usersColl.updateOne(
+      { email: req.session.email },
+      { $unset: { [`votedPolls.${pollId}`]: "" } }
+    );
+
+    delete userVotedPolls[pollId]; 
+    req.session.votedPolls = userVotedPolls; 
+    const returnTo = req.get('Referer') || '/polls';
+    res.redirect(returnTo);
+
+  } catch (err) {
+    console.error('Error unvoting:', err);
+    res.status(500).send('Error unvoting');
+  }
+});
+
+// Dedicated poll details page
+app.get('/poll/:id', async (req, res) => {
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const poll = await pollsCollection.findOne({ _id: new ObjectId(req.params.id)});
+
+    if (!poll || !poll.available) {
+      return res.status(404).render('404', { title: 'Poll Not Found' });
+    }
+
+    const votedPolls = req.session.votedPolls || {};
+    res.render('pollDetail', {
+      title: poll.title,
+      poll,
+      votedPolls
+    });
+  } catch (err) {
+    console.error('Error fetching poll details:', err);
+    res.status(500).send('Error fetching poll details');
   }
 });
 

@@ -12,6 +12,8 @@
 </head>
 <body class="bg-light">
 
+  <%- include('templates/header') %>
+
   <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow border-0 p-4 rounded-4" style="max-width: 400px; width: 100%;">
       <h2 class="text-center mb-4" style="color: #003366;">Log In</h2> <!-- Deep Blue -->
@@ -50,13 +52,14 @@
             type="submit"
             class="btn text-white"
             style="background-color: #f36f21;" <!-- Civic Orange -->
-          >
             Log In
           </button>
         </div>
       </form>
     </div>
   </div>
+
+  <%- include('templates/footer') %>
 
   <!-- Bootstrap JS (optional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
