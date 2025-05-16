@@ -127,18 +127,25 @@
         <!-- Sort Controls -->
         <div class="d-flex justify-content-start gap-3 mb-3">
 
-          <!-- Sort alphabetically -->
-          <a href="/pastpolls?sort=all" class="btn btn-site-blue text-white"
-            style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-            Sort Alphabetically
-          </a>
+  <!-- Sort alphabetically -->
+  <a href="/pastpolls?sort=all" class="btn btn-site-blue text-white"
+    style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+    Sort Alphabetically
+  </a>
 
-          <!-- Sort by importance -->
-          <a href="/pastpolls?sort=importance" class="btn btn-site-orange text-white"
-            style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-            Sort by Importance
-          </a>
-        </div>
+  <!-- Sort by importance -->
+  <a href="/pastpolls?sort=importance" class="btn btn-site-orange text-white"
+    style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+    Sort by Importance
+  </a>
+
+  <!-- Sort by creation date -->
+  <a href="/pastpolls?sort=date" class="btn btn-maroon text-white"
+    style="<%= (sort === 'date') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+    Sort by Creation Date
+  </a>
+
+</div>
 
         <hr>
 
