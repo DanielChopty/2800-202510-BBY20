@@ -321,6 +321,7 @@
                   autocomplete="off">
                 <label class="btn btn-outline-primary" for="editTag6">#PublicOpinion</label>
               </div>
+              <div id="editSelectedTags" class="mt-2"></div>
             </div>
 
             <div class="modal-footer">
@@ -369,16 +370,46 @@
             document.getElementById('endDate').value = '';
           }
 
-          // Pre-select tags if poll.tags exists
+          // Pre-select tags and display selected badges
+          const editTagCheckboxes = document.querySelectorAll('.btn-check[name="tags[]"]');
+          const editSelectedTagsContainer = document.getElementById('editSelectedTags');
+
+          // Clear previous selections
+          editTagCheckboxes.forEach(cb => cb.checked = false);
+          editSelectedTagsContainer.innerHTML = '';
+
           if (poll.tags) {
             const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(',');
             tagsArray.forEach(tag => {
-              const checkbox = document.querySelector(`.btn-check[name="tags[]"][value="${tag.trim()}"]`);
+              const trimmedTag = tag.trim();
+              const checkbox = document.querySelector(`.btn-check[name="tags[]"][value="${trimmedTag}"]`);
               if (checkbox) {
                 checkbox.checked = true;
+
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-info text-dark me-1';
+                badge.textContent = trimmedTag;
+                editSelectedTagsContainer.appendChild(badge);
               }
             });
           }
+
+          // Update badges when checkboxes change
+          editTagCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+              const selected = Array.from(editTagCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+              editSelectedTagsContainer.innerHTML = '';
+              selected.forEach(tag => {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-info text-dark me-1';
+                badge.textContent = tag;
+                editSelectedTagsContainer.appendChild(badge);
+              });
+            });
+          });
 
           // Set form action dynamically
           const editForm = document.getElementById('editPollForm');
