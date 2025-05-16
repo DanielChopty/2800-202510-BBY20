@@ -88,32 +88,18 @@
       /* Prevent vertical alignment issues */
     }
 
-    /* Improve Tag Checkbox Layout */
-    .btn-group {
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
+    .btn-group[role="group"] {
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 0;
+    }
+
+    #editPollModal .modal-body .btn-group[role="group"] {
+      margin-left: 0.25rem;
     }
 
     .btn-outline-primary {
-      padding: 0.5rem 1rem;
-      border-radius: 1.5rem;
-    }
-
-    /* Selected Tag Badges */
-    #selectedTags,
-    #editSelectedTags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-      justify-content: center;
-    }
-
-    .badge {
-      padding: 0.5rem 1rem;
-      border-radius: 1.5rem;
-      font-weight: 600;
+      text-align: center;
     }
 
     .poll-content {
@@ -323,33 +309,36 @@
 
             <!-- Tags -->
             <div class="mb-3">
-              <label class="form-label">Tags</label>
-              <div class="btn-group" role="group" aria-label="Tag selection">
-                <input type="checkbox" class="btn-check" id="editTag1" name="tags[]" value="#DailyLife"
-                  autocomplete="off">
-                <label class="btn btn-outline-primary" for="editTag1">#DailyLife</label>
+              <div class="form-control p-3">
+                <label class="form-label">Tags</label>
+                <div class="btn-group" role="group" aria-label="Tag selection">
+                  <!-- Tag Checkboxes -->
+                  <input type="checkbox" class="btn-check" id="editTag1" name="tags[]" value="#DailyLife"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag1">#DailyLife</label>
 
-                <input type="checkbox" class="btn-check" id="editTag2" name="tags[]" value="#CulturalViews"
-                  autocomplete="off">
-                <label class="btn btn-outline-primary" for="editTag2">#CulturalViews</label>
+                  <input type="checkbox" class="btn-check" id="editTag2" name="tags[]" value="#CulturalViews"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag2">#CulturalViews</label>
 
-                <input type="checkbox" class="btn-check" id="editTag3" name="tags[]" value="#FamilyMatters"
-                  autocomplete="off">
-                <label class="btn btn-outline-primary" for="editTag3">#FamilyMatters</label>
+                  <input type="checkbox" class="btn-check" id="editTag3" name="tags[]" value="#FamilyMatters"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag3">#FamilyMatters</label>
 
-                <input type="checkbox" class="btn-check" id="editTag4" name="tags[]" value="#MoralChoices"
-                  autocomplete="off">
-                <label class="btn btn-outline-primary" for="editTag4">#MoralChoices</label>
+                  <input type="checkbox" class="btn-check" id="editTag4" name="tags[]" value="#MoralChoices"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag4">#MoralChoices</label>
 
-                <input type="checkbox" class="btn-check" id="editTag5" name="tags[]" value="#PersonalValues"
-                  autocomplete="off">
-                <label class="btn btn-outline-primary" for="editTag5">#PersonalValues</label>
+                  <input type="checkbox" class="btn-check" id="editTag5" name="tags[]" value="#PersonalValues"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag5">#PersonalValues</label>
 
-                <input type="checkbox" class="btn-check" id="editTag6" name="tags[]" value="#PublicOpinion"
-                  autocomplete="off">
-                <label class="btn btn-outline-primary" for="editTag6">#PublicOpinion</label>
+                  <input type="checkbox" class="btn-check" id="editTag6" name="tags[]" value="#PublicOpinion"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag6">#PublicOpinion</label>
+                </div>
+                <div id="editSelectedTags" class="mt-2"></div>
               </div>
-              <div id="editSelectedTags" class="mt-2"></div>
             </div>
 
             <div class="modal-footer">
