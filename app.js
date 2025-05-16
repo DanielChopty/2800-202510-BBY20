@@ -818,6 +818,7 @@ app.post('/poll/:id/comment', isAuthenticated, async (req, res) => {
 
     const comment = {
       commenter:  req.session.user.name,   // display name
+      commenterPFP: req.session.user.profilePic || 'default.jpg', // default profile picture
       text,
       createdAt:  new Date()
     };

@@ -87,8 +87,17 @@
                       <% poll.comments.forEach((c, i) => { %>
                         <div class="d-flex mb-3<% if (i > 0) { %> border-top pt-3<% } %>">
                           <div class="me-3">
-                            <!-- User avatar placeholder -->
-                            <div class="rounded-circle bg-secondary" style="width:40px; height:40px;"></div>
+                            <% if (c.commenterPFP) { %>
+                              <img src="/<%= c.commenterPFP %>"
+                                   alt="Profile Picture"
+                                   class="rounded-circle"
+                                   style="width:40px; height:40px; object-fit:cover;">
+                            <% } else { %>
+                              <img src="/images/default.jpg"
+                                   alt="Default Avatar"
+                                   class="rounded-circle"
+                                   style="width:40px; height:40px; object-fit:cover;">
+                            <% } %>
                           </div>
                           <div class="flex-grow-1">
                             <div class="d-flex justify-content-between">
