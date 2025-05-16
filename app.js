@@ -673,7 +673,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       createdBy:      req.session.email, // We could also use their user ID here instead
       createdAt:      new Date(),
       available:      true,
-      comments:     [],
+      comments:       [],
       choices
     }
 
@@ -805,7 +805,33 @@ app.get('/poll/:id', async (req, res) => {
   }
 });
 
+// Add a new comment on a poll
+app.post('/poll/:id/comment', isAuthenticated, async (req, res) => {
+  const pollId = req.params.id;
+  const text   = (req.body.commentText || "").trim();
+  if (!text) return res.redirect(`/poll/${pollId}`);
 
+  try {
+    const pollsColl = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const comment = {
+      commenter:  req.session.user.name,   // display name
+      text,
+      createdAt:  new Date()
+    };
+
+    await pollsColl.updateOne(
+      { _id: new ObjectId(pollId) },
+      { $push: { comments: comment } }
+    );
+    res.redirect(`/poll/${pollId}#comments`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
 
 
 /* ERROR HANDLING */
