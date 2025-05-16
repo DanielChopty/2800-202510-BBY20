@@ -1059,7 +1059,7 @@ app.post('/unvote', async (req, res) => {
   }
 });
 
-// Dedicated Poll details page
+// Dedicated poll details page
 app.get('/poll/:id', async (req, res) => {
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
