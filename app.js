@@ -880,6 +880,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
 });
 
 // Past polls page route
+// Past polls page route
 app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const pollsCollection = database
@@ -895,15 +896,23 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
     const importanceMap = { high: 3, medium: 2, low: 1 };
 
     if (sortOption === 'importance') {
-      // Sort by importance descending
+      // Sort by importance descending, then alphabetically by title
       polls.sort((a, b) => {
-        const aVal = importanceMap[a.importance?.toLowerCase()] || 0;
-        const bVal = importanceMap[b.importance?.toLowerCase()] || 0;
-        return bVal - aVal;
+        const aImportance = importanceMap[a.importance?.toLowerCase()] || 0;
+        const bImportance = importanceMap[b.importance?.toLowerCase()] || 0;
+
+        if (bImportance !== aImportance) {
+          return bImportance - aImportance;
+        } else {
+          return a.title.localeCompare(b.title);
+        }
       });
     } else if (sortOption === 'date') {
-      // Sort by createdAt descending (newest first)
-      polls.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // Sort by createdAt descending, then alphabetically by title
+      polls.sort((a, b) => {
+        const dateDiff = new Date(b.createdAt) - new Date(a.createdAt);
+        return dateDiff !== 0 ? dateDiff : a.title.localeCompare(b.title);
+      });
     } else {
       // Default: Sort alphabetically by title
       polls.sort((a, b) => a.title.localeCompare(b.title));
