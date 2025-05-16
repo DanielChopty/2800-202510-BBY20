@@ -203,6 +203,18 @@
                             <p class="mb-1 text-muted">End Date: <strong>
                                 <%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %>
                               </strong></p>
+                              <!-- Tags Section -->
+  <p class="mt-3 mb-1 text-muted">Tags:</p>
+<div class="mb-2">
+  <% if (poll.tags && poll.tags.length > 0) { 
+       const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(','); 
+       tagsArray.forEach(tag => { %>
+        <span class="badge bg-info text-dark me-1 mb-1"><%= tag.trim() %></span>
+  <% }); 
+     } else { %>
+    <span class="text-muted">No tags provided.</span>
+  <% } %>
+</div>
                           </div>
                           <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
                           </small>
