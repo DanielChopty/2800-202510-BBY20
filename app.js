@@ -19,6 +19,7 @@ const {
   MONGODB_HOST,
   MONGODB_DATABASE_USERS,
   MONGODB_DATABASE_SESSIONS,
+  MONGODB_DATABASE_POLLS,
   MONGODB_SESSION_SECRET,
   NODE_SESSION_SECRET,
   PORT,
@@ -206,6 +207,14 @@ app.post('/upload-profile-picture', upload.single('profilePic'), async (req, res
       await userCollection.updateOne(
         { email: req.session.email }, // Find the logged-in user by email
         { $set: { profilePic: profilePicPath } } // Update the profilePic field
+      );
+
+      req.session.user.profilePic = profilePicPath; // Update session data with new profile picture path
+      const pollsColl = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+      await pollsColl.updateMany(
+        { "comments.commenter": req.session.user.name },
+        { $set: { "comments.$[c].commenterPFP": profilePicPath } }, // Update all comments made by the user
+        { arrayFilters: [{ "c.commenter": req.session.user.name }] } // Filter to update only the user's comments
       );
       res.redirect('/profile'); // Redirect back to profile page
     } catch (error) {
