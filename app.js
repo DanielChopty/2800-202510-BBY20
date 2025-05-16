@@ -946,6 +946,11 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
       return res.status(400).send('Please provide at least two valid options.');
     }
 
+    // Handle tags input
+    const tags = Array.isArray(req.body.tags) 
+      ? req.body.tags 
+      : (req.body.tags ? [req.body.tags] : []);
+
     const pollsCollection = database
       .db(process.env.MONGODB_DATABASE_POLLS)
       .collection('polls');
@@ -959,15 +964,16 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
           importance,
           available: available === 'true',
           description: description?.trim() || '',
-          choices
+          choices,
+          tags 
         }
       }
     );
 
     res.redirect('/pastpolls?edited=true');
-  } catch (err) {
-    console.error('Error updating poll:', err);
-    res.status(500).send('Server Error');
+  } catch (error) {
+    console.error('Error editing poll:', error);
+    res.status(500).render('500', { title: 'Server Error' });
   }
 });
 
