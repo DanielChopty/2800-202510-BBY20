@@ -673,6 +673,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       createdBy:      req.session.email, // We could also use their user ID here instead
       createdAt:      new Date(),
       available:      true,
+      comments:     [],
       choices
     }
 
