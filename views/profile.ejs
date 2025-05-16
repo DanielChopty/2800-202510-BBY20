@@ -9,6 +9,17 @@
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
   />
+<!-- Boostrap for icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+
+    .save-toggle-btn{
+      cursor:pointer;
+    }
+
+  </style>
+
 </head>
 <body class="bg-light">
 
@@ -46,6 +57,30 @@
         </div>
       </a>
 
+      <!-- Section for the saved polls to show on the page -->
+
+      <h3 class="mt-4">Saved Polls</h3>
+  <% if (savedPolls && savedPolls.length > 0) { %>
+  <ul class="list-group">
+    <% savedPolls.forEach(poll => { %>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="/poll/<%= poll._id %>" class="text-decoration-none"><%= poll.title %></a>
+        <div>
+          <button class="btn btn-outline-warning btn-sm save-toggle-btn saved" data-poll-id="<%= poll._id %>">
+            <i class="bi bi-star-fill"></i>
+          </button>
+        </div>
+      </li>
+    <% }); %>
+  </ul>
+  <% } else { %>
+  <p>You haven't saved any polls yet.</p>
+<% } %>
+
+
+      <hr>
+
+
       <a href="/logout" class="btn text-white" style="background-color: #f36f21;">
         Log Out
       </a>
@@ -56,5 +91,7 @@
 
   <!-- Bootstrap JS (optional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- The javascript code related to saving polls on the profile.ejs page -->
+  <script src="profile.js"></script>
 </body>
 </html>
