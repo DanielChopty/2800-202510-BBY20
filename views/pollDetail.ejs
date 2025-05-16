@@ -84,25 +84,21 @@
                     <h5 class="card-title">Comments</h5>
 
                     <% if (poll.comments && poll.comments.length) { %>
-                      <ul class="list-group list-group-flush">
-                        <% poll.comments.forEach(comment => { %>
-                          <li class="list-group-item">
-                            <div class="d-flex align-items-start">
-                              <div class="me-3">
-                                <!-- User avatar placeholder -->
-                                <div class="rounded-circle bg-secondary" style="width:40px; height:40px;"></div>
-                              </div>
-                              <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between">
-                                  <strong><%= comment.commenter %></strong>
-                                  <small class="text-muted"><%= new Date(comment.createdAt).toLocaleString() %></small>
-                                </div>
-                                <p class="mb-0 mt-1"><%= comment.text %></p>
-                              </div>
+                      <% poll.comments.forEach((c, i) => { %>
+                        <div class="d-flex mb-3<% if (i > 0) { %> border-top pt-3<% } %>">
+                          <div class="me-3">
+                            <!-- User avatar placeholder -->
+                            <div class="rounded-circle bg-secondary" style="width:40px; height:40px;"></div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                              <strong><%= c.commenter %></strong>
+                              <small class="text-muted"><%= new Date(c.createdAt).toLocaleString() %></small>
                             </div>
-                          </li>
-                        <% }) %>
-                      </ul>
+                            <p class="mt-1 mb-0"><%= c.text %></p>
+                          </div>
+                        </div>
+                      <% }) %>
                     <% } else { %>
                       <p class="text-muted">No comments yet. Be the first to comment!</p>
                     <% } %>
@@ -114,7 +110,7 @@
                             class="form-control"
                             name="commentText"
                             rows="2"
-                            placeholder="Write a comment..."
+                            placeholder="Write a comment…"
                             required></textarea>
                           <button class="btn btn-primary" type="submit">Reply</button>
                         </div>
