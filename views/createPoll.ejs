@@ -25,6 +25,14 @@
               <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question">
             </div>
 
+<<<<<<< HEAD
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3"
+                placeholder="Enter a short description for the poll..."></textarea>
+            </div>
+
             <!-- Options -->
             <div class="mb-3">
               <label class="form-label">Options (Enter at least two)</label>
@@ -57,6 +65,40 @@
               </div>
             </div>
 
+=======
+            <!-- Options -->
+            <div class="mb-3">
+              <label class="form-label">Options (Enter at least two)</label>
+              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 1">
+              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 2">
+              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 3 (optional)">
+              <input type="text" name="options[]" class="form-control" placeholder="Option 4 (optional)">
+            </div>
+
+            <!-- Importance -->
+            <div class="mb-3">
+              <label for="importance" class="form-label">Importance</label>
+              <select class="form-select" name="importance" id="importance">
+                <option selected disabled>Choose importance</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
+
+            <!-- Start and End Dates -->
+            <div class="row mb-3">
+              <div class="col">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input type="date" name="startDate" class="form-control" id="startDate">
+              </div>
+              <div class="col">
+                <label for="endDate" class="form-label">End Date</label>
+                <input type="date" name="endDate" class="form-control" id="endDate">
+              </div>
+            </div>
+
+>>>>>>> 62356f7b5acd71b269d8e94478c8e3fff797a5dc
             <!-- Visibility -->
             <div class="mb-3">
               <label for="visibility" class="form-label">Visibility</label>
@@ -67,6 +109,8 @@
               </select>
             </div>
 
+<<<<<<< HEAD
+=======
             <div class="mb-3">
               <label class="form-label">Tags</label>
               <div class="btn-group" role="group" aria-label="Tag selection">
@@ -94,6 +138,7 @@
             </div>
 
 
+>>>>>>> 62356f7b5acd71b269d8e94478c8e3fff797a5dc
             <!-- Submit Button -->
             <div class="text-center">
               <button type="submit" class="btn btn-primary">Submit Poll</button>
@@ -109,6 +154,43 @@
       <!-- Bootstrap JS (Optional for functionality like dropdowns) -->
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<<<<<<< HEAD
+      <!-- SweetAlert scripts (for poll creation confirmation and acknowledgement) -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+      <script>
+        // Confirmation before submitting the form
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to create this poll?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, create it!',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#07cf00'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+
+    // Immediate success alert and redirect to polls page
+    <% if (typeof created !== 'undefined' && created) { %>
+        Swal.fire({
+            icon: 'success',
+            title: 'Poll Created!',
+            text: 'Your poll was successfully created.',
+            confirmButtonColor: '#003366'
+        }).then(() => {
+            window.location.href = '/polls'; // Redirect to polls page after dismissing
+        });
+    <% } %>
+=======
       <script>
         const tagCheckboxes = document.querySelectorAll('.btn-check');
         const tagsInput = document.getElementById('tagsInput');
@@ -131,6 +213,7 @@
         }
 
         tagCheckboxes.forEach(cb => cb.addEventListener('change', updateSelectedTags));
+>>>>>>> 62356f7b5acd71b269d8e94478c8e3fff797a5dc
       </script>
 
 </body>

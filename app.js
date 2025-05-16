@@ -28,7 +28,7 @@ const {
 const app = express();
 const axios = require('axios');
 const port = PORT || 3000;
-const expireTime = 60 * 60 * 1000; // 1 hour session expiration
+const expireTime = 60 * 60 * 24 * 1000; // 1 day session expiration
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
@@ -383,10 +383,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Profile page (protected route)
+    // Profile page (protected route)
 app.get('/profile', async (req, res) => {
   try {
-    // If there is no active session redirect to index.ejs page
+    // Check if the user is authenticated
     if (!req.session.authenticated) {
       return res.redirect('/');
     }
@@ -397,7 +397,7 @@ app.get('/profile', async (req, res) => {
 
     // Fetch the user based on their email
     const user = await userCollection.findOne({ email: req.session.email });
-
+    // If the user does not exist in the database, redirect them to the home page
     if (!user) {
       return res.redirect('/');
     }
@@ -410,15 +410,197 @@ app.get('/profile', async (req, res) => {
         .toArray();
     }
 
-    // Render profile with the saved polls
+    // Initialize personalizedMessage as empty string by default
+    const personalizedMessage = '';
+
+    // Render profile with the saved polls and personalized message
     res.render('profile', {
       title: 'Profile',
       username: user.name,
       user: user,
-      savedPolls: savedPollsData
+      savedPolls: savedPollsData,
+      personalizedMessage: personalizedMessage
     });
   } catch (error) {
     console.error('Error rendering profile page:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// SURPRISE CHALLENGE 2 (AI MAGIC)
+
+// The magic is that the AI generated the messages for the feelings below and helped me to
+// randomly display them based on the first letter of the user's input.
+
+// Route to handle form submission for feelings 
+app.post('/update-feelings', async (req, res) => {
+  try {
+    // Get the feelings input from the request body (user's feelings text)
+    const feelings = req.body.feelings;
+    let personalizedMessage = ''; // Initialize personalizedMessage as an empty string
+
+    if (feelings) {
+      // Get the first letter of the feelings input and convert it to lowercase
+      // Trim spaces and get first character
+      const firstLetter = feelings.trim().charAt(0).toLowerCase();
+
+       // Define a set of three predefined messages for each letter of the alphabet
+      // Each letter corresponds to an array of messages that can be randomly selected
+      const messages = {
+        'a': [
+          'An apple a day keeps the doctor away!',
+          'Always aim for the stars!',
+          'Adversity builds character.'
+        ],
+        'b': [
+          'Bouncing back from challenges makes you stronger!',
+          'Be the change you wish to see.',
+          'Bravery is not the absence of fear, but the strength to face it.'
+        ],
+        'c': [
+          'Creativity is the key to unlocking new possibilities.',
+          'Change is the only constant in life.',
+          'Courage is resistance to fear, mastery of fear, not absence of fear.'
+        ],
+        'd': [
+          'Dare to dream big and make it happen!',
+          'Determination is the key to success.',
+          'Don’t let yesterday take up too much of today.'
+        ],
+        'e': [
+          'Every day is a new opportunity to shine!',
+          'Embrace the journey, not just the destination.',
+          'Energy and persistence conquer all things.'
+        ],
+        'f': [
+          'Feelings are like waves; they come and go.',
+          'Fear is a natural reaction to moving closer to the truth.',
+          'Follow your dreams, they know the way.'
+        ],
+        'g': [
+          'Great things are coming your way!',
+          'Growth is the key to progress.',
+          'Good things come to those who hustle.'
+        ],
+        'h': [
+          'Happiness is a journey, not a destination.',
+          'Hard work beats talent when talent doesn’t work hard.',
+          'Hope is the thing with feathers.'
+        ],
+        'i': [
+          'Inspiration is everywhere, just open your eyes!',
+          'It always seems impossible until it’s done.',
+          'Imagination is more important than knowledge.'
+        ],
+        'j': [
+          'Jump into the future with excitement and curiosity!',
+          'Just keep going; don’t stop.',
+          'Joy is the simplest form of gratitude.'
+        ],
+        'k': [
+          'Keep going, the best is yet to come!',
+          'Kindness is a language which the deaf can hear and the blind can see.',
+          'Knowledge is power.'
+        ],
+        'l': [
+          'Life is a beautiful ride, enjoy the journey!',
+          'Learn as if you will live forever.',
+          'Love yourself first and everything else falls into line.'
+        ],
+        'm': [
+          'Make today amazing by making it yours.',
+          'Motivation is what gets you started. Habit is what keeps you going.',
+          'Mistakes are proof that you are trying.'
+        ],
+        'n': [
+          'Never give up on yourself, you’ve got this!',
+          'Nothing worth having comes easy.',
+          'No one is you and that is your power.'
+        ],
+        'o': [
+          'Opportunities are everywhere, seize them!',
+          'Only in the darkness can you see the stars.',
+          'One day or day one. You decide.'
+        ],
+        'p': [
+          'Positivity is a magnet for good things!',
+          'Push yourself because no one else is going to do it for you.',
+          'Patience is not the ability to wait, but the ability to keep a good attitude while waiting.'
+        ],
+        'q': [
+          'Questions lead to discovery, so keep asking!',
+          'Quality over quantity.',
+          'Quick minds think alike.'
+        ],
+        'r': [
+          'Reach for the stars, you’re capable of greatness!',
+          'Relax and let it flow.',
+          'Resilience is the key to overcoming any obstacle.'
+        ],
+        's': [
+          'Sometimes the smallest step in the right direction can end up being the biggest step of your life.',
+          'Success is the sum of small efforts, repeated day in and day out.',
+          'Start where you are. Use what you have. Do what you can.'
+        ],
+        't': [
+          'Take time to appreciate the little things.',
+          'The best time to plant a tree was 20 years ago. The second best time is now.',
+          'The only way to do great work is to love what you do.'
+        ],
+        'u': [
+          'Understand that setbacks are just setups for comebacks!',
+          'Use your power to create a life you love.',
+          'Unity is strength.'
+        ],
+        'v': [
+          'Victory is sweetest when you’ve faced challenges.',
+          'Vision without action is merely a dream.',
+          'Value the moments that make you smile.'
+        ],
+        'w': [
+          'Winning starts with believing in yourself.',
+          'With hard work and determination, everything is possible.',
+          'What we think, we become.'
+        ],
+        'x': [
+          'X marks the spot where your adventure begins!',
+          'Xcellence is the key to success.',
+          'Xplore new possibilities every day.'
+        ],
+        'y': [
+          'You are stronger than you think!',
+          'You miss 100% of the shots you don’t take.',
+          'You are what you believe yourself to be.'
+        ],
+        'z': [
+          'Zoom into the future with confidence and courage!',
+          'Zest for life is the key to happiness.',
+          'Zero regrets, just lessons learned.'
+        ],
+      };
+       // Pick a random message from the array of messages for the first letter
+      const letterMessages = messages[firstLetter] || ['Thanks for sharing! You are unique and awesome!']; // Default message
+      personalizedMessage = letterMessages[Math.floor(Math.random() * letterMessages.length)];
+
+    
+
+    }
+
+    // Get user data again after the feelings update
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const user = await userCollection.findOne({ email: req.session.email });
+
+    if (!user) return res.redirect('/');
+
+    res.render('profile', {
+      title: 'Profile',
+      username: user.name,
+      user: user,
+       savedPolls: user.savedPolls || [],
+      personalizedMessage: personalizedMessage,
+    });
+  } catch (error) {
+    console.error('Error updating feelings:', error);
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
@@ -505,13 +687,12 @@ app.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
 });
 
 // Page for creating a poll
-app.get('/createPoll', (req, res) =>{
-  res.render('createPoll');
-})
-
+app.get('/createPoll', isAuthenticated, (req, res) => {
+  const created = req.query.created === 'true';
+  res.render('createPoll', { created });
+});
 
 // Adding a route to fetch all available polls from the database
-
 
 /*Important details  */
 // Database can be named anything (Ex. polls)
@@ -647,11 +828,6 @@ if(!req.session.authenticated){
   }
 });
 
-// Page for creating a poll
-app.get('/createPoll', (req, res) =>{
-  res.render('createPoll');
-})
-
 // Handle creating a new poll
 app.post('/createPoll', isAuthenticated, async (req, res) => {
   console.log('POST /createPoll hit', req.body);
@@ -663,7 +839,8 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       importance,
       startDate,
       endDate,
-      visibility
+      visibility,
+      description
     } = req.body;
 
     // Removes any empty strings and trims whitespace
@@ -688,6 +865,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       startDate:      new Date(startDate),
       endDate:        new Date(endDate),
       visibility,
+      description: description?.trim() || '',
       createdBy:      req.session.email, // We could also use their user ID here instead
       createdAt:      new Date(),
       available:      true,
@@ -703,11 +881,103 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
     console.log('Inserted poll! _id:', result.insertedId); 
 
     // Redirect back to the polls page once done
-    res.redirect('/polls');
+    res.render('createPoll', { created: true });
 
   } catch (err) {
     console.error('Error creating poll:', err);
     res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// Past polls page route
+app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const sortOption = req.query.sort || 'all';
+
+    let polls = await pollsCollection
+      .find({ createdBy: req.session.email })
+      .toArray();
+
+    // Manual sorting if importance sort is selected
+    if (sortOption === 'importance') {
+      // Mapping importance to numbers (because they are strings in database)
+      const importanceMap = { high: 3, medium: 2, low: 1 };
+
+      polls.sort((a, b) => {
+        const aVal = importanceMap[a.importance?.toLowerCase()] || 0;
+        const bVal = importanceMap[b.importance?.toLowerCase()] || 0;
+        return bVal - aVal; // Descending order; High > Medium > Low
+      });
+    } else {
+      // Default to alphabetical order by title
+      polls.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    res.render('pastPolls', {
+      title: 'Past Polls',
+      user: req.session.user,
+      polls: polls,
+      sort: sortOption
+    });
+  } catch (err) {
+    console.error('Error fetching past polls:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Delete poll route (used in pastPolls.ejs)
+app.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    await pollsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+    res.redirect('/pastpolls?deleted=true');
+  } catch (err) {
+    console.error('Error deleting poll:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Edit poll route (used in pastPolls.ejs)
+app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const { title, importance, available, options = [], description } = req.body;
+
+    // Validate options: Remove empty/whitespace-only options
+    const choices = Array.isArray(options)
+      ? options.filter(opt => opt && opt.trim().length > 0).map(opt => ({ text: opt.trim(), votes: 0 }))
+      : [];
+
+    // Ensure at least two valid options are provided
+    if (choices.length < 2) {
+      return res.status(400).send('Please provide at least two valid options.');
+    }
+
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    // Update the poll document
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      {
+        $set: {
+          title: title.trim(),
+          importance,
+          available: available === 'true',
+          description: description?.trim() || '',
+          choices
+        }
+      }
+    );
+
+    res.redirect('/pastpolls?edited=true');
+  } catch (err) {
+    console.error('Error updating poll:', err);
+    res.status(500).send('Server Error');
   }
 });
 
@@ -800,7 +1070,7 @@ app.post('/unvote', async (req, res) => {
   }
 });
 
-// Dedicated Poll details page
+// Dedicated poll details page
 app.get('/poll/:id', async (req, res) => {
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
@@ -915,9 +1185,6 @@ app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
     res.status(500).json({ message: 'Failed to unsave poll' });
   }
 });
-
-
-
 
 /* ERROR HANDLING */
 
