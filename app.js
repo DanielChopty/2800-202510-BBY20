@@ -61,6 +61,7 @@ app.use(session({
 app.use((req, res, next) => {
   res.locals.authenticated = req.session.authenticated || false;
   res.locals.user = req.session.user || null;
+  res.locals.username = req.session.username || null;
   next();
 });
 
