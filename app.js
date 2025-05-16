@@ -892,18 +892,20 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
       .find({ createdBy: req.session.email })
       .toArray();
 
-    // Manual sorting if importance sort is selected
-    if (sortOption === 'importance') {
-      // Mapping importance to numbers (because they are strings in database)
-      const importanceMap = { high: 3, medium: 2, low: 1 };
+    const importanceMap = { high: 3, medium: 2, low: 1 };
 
+    if (sortOption === 'importance') {
+      // Sort by importance descending
       polls.sort((a, b) => {
         const aVal = importanceMap[a.importance?.toLowerCase()] || 0;
         const bVal = importanceMap[b.importance?.toLowerCase()] || 0;
-        return bVal - aVal; // Descending order; High > Medium > Low
+        return bVal - aVal;
       });
+    } else if (sortOption === 'date') {
+      // Sort by createdAt descending (newest first)
+      polls.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else {
-      // Default to alphabetical order by title
+      // Default: Sort alphabetically by title
       polls.sort((a, b) => a.title.localeCompare(b.title));
     }
 
