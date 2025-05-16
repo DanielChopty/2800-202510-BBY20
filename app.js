@@ -738,6 +738,7 @@ app.get('/createPoll', isAuthenticated, (req, res) => {
   res.render('createPoll', { created });
 });
 
+
 // Adding a route to fetch all available polls from the database
 
 /*Important details  */
@@ -937,6 +938,7 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
 });
 
 // Past polls page route
+// Past polls page route
 app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const pollsCollection = database
@@ -949,18 +951,28 @@ app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
       .find({ createdBy: req.session.email })
       .toArray();
 
-    // Manual sorting if importance sort is selected
-    if (sortOption === 'importance') {
-      // Mapping importance to numbers (because they are strings in database)
-      const importanceMap = { high: 3, medium: 2, low: 1 };
+    const importanceMap = { high: 3, medium: 2, low: 1 };
 
+    if (sortOption === 'importance') {
+      // Sort by importance descending, then alphabetically by title
       polls.sort((a, b) => {
-        const aVal = importanceMap[a.importance?.toLowerCase()] || 0;
-        const bVal = importanceMap[b.importance?.toLowerCase()] || 0;
-        return bVal - aVal; // Descending order; High > Medium > Low
+        const aImportance = importanceMap[a.importance?.toLowerCase()] || 0;
+        const bImportance = importanceMap[b.importance?.toLowerCase()] || 0;
+
+        if (bImportance !== aImportance) {
+          return bImportance - aImportance;
+        } else {
+          return a.title.localeCompare(b.title);
+        }
+      });
+    } else if (sortOption === 'date') {
+      // Sort by createdAt descending, then alphabetically by title
+      polls.sort((a, b) => {
+        const dateDiff = new Date(b.createdAt) - new Date(a.createdAt);
+        return dateDiff !== 0 ? dateDiff : a.title.localeCompare(b.title);
       });
     } else {
-      // Default to alphabetical order by title
+      // Default: Sort alphabetically by title
       polls.sort((a, b) => a.title.localeCompare(b.title));
     }
 
@@ -1003,6 +1015,11 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
       return res.status(400).send('Please provide at least two valid options.');
     }
 
+    // Handle tags input
+    const tags = Array.isArray(req.body.tags) 
+      ? req.body.tags 
+      : (req.body.tags ? [req.body.tags] : []);
+
     const pollsCollection = database
       .db(process.env.MONGODB_DATABASE_POLLS)
       .collection('polls');
@@ -1016,15 +1033,16 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
           importance,
           available: available === 'true',
           description: description?.trim() || '',
-          choices
+          choices,
+          tags 
         }
       }
     );
 
     res.redirect('/pastpolls?edited=true');
-  } catch (err) {
-    console.error('Error updating poll:', err);
-    res.status(500).send('Server Error');
+  } catch (error) {
+    console.error('Error editing poll:', error);
+    res.status(500).render('500', { title: 'Server Error' });
   }
 });
 

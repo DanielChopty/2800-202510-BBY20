@@ -33,6 +33,17 @@
       background-color: #d95e18 !important;
     }
 
+    .btn-maroon {
+  background-color: #800000 !important; /* Maroon */
+  color: #ffffff !important;
+  border: none !important;
+  transition: background-color 0.3s ease;
+}
+
+.btn-maroon:hover {
+  background-color: #660000 !important; /* Darker maroon on hover */
+}
+
     /* Action Buttons (Edit/Delete/Details) */
     .btn-edit-grey,
     .btn-delete-red,
@@ -88,6 +99,20 @@
       /* Prevent vertical alignment issues */
     }
 
+    .btn-group[role="group"] {
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 0;
+    }
+
+    #editPollModal .modal-body .btn-group[role="group"] {
+      margin-left: 0.25rem;
+    }
+
+    .btn-outline-primary {
+      text-align: center;
+    }
+
     .poll-content {
       flex: 1;
       min-width: 0;
@@ -113,18 +138,25 @@
         <!-- Sort Controls -->
         <div class="d-flex justify-content-start gap-3 mb-3">
 
-          <!-- Sort alphabetically -->
-          <a href="/pastpolls?sort=all" class="btn btn-site-blue text-white"
-            style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-            Sort Alphabetically
-          </a>
+  <!-- Sort alphabetically -->
+  <a href="/pastpolls?sort=all" class="btn btn-site-blue text-white"
+    style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+    Sort Alphabetically
+  </a>
 
-          <!-- Sort by importance -->
-          <a href="/pastpolls?sort=importance" class="btn btn-site-orange text-white"
-            style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-            Sort by Importance
-          </a>
-        </div>
+  <!-- Sort by importance -->
+  <a href="/pastpolls?sort=importance" class="btn btn-site-orange text-white"
+    style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+    Sort by Importance
+  </a>
+
+  <!-- Sort by creation date -->
+  <a href="/pastpolls?sort=date" class="btn btn-maroon text-white"
+    style="<%= (sort === 'date') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+    Sort by Creation Date
+  </a>
+
+</div>
 
         <hr>
 
@@ -189,6 +221,18 @@
                             <p class="mb-1 text-muted">End Date: <strong>
                                 <%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %>
                               </strong></p>
+                              <!-- Tags Section -->
+  <p class="mt-3 mb-1 text-muted">Tags:</p>
+<div class="mb-2">
+  <% if (poll.tags && poll.tags.length > 0) { 
+       const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(','); 
+       tagsArray.forEach(tag => { %>
+        <span class="badge bg-info text-dark me-1 mb-1"><%= tag.trim() %></span>
+  <% }); 
+     } else { %>
+    <span class="text-muted">No tags provided.</span>
+  <% } %>
+</div>
                           </div>
                           <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
                           </small>
@@ -196,7 +240,7 @@
 
                     <!-- Edit button -->
                     <div class="d-flex flex-column gap-3 me-3" style="flex-shrink: 0;">
-                      <button class="btn btn-edit-grey" title="Edit"
+                      <button class="btn btn-edit-grey" title="Edit Poll"
                         onclick='openEditModal(<%- JSON.stringify(poll) %>)'>
                         <i class="bi bi-pencil-square"></i>
                       </button>
@@ -204,14 +248,14 @@
                       <!-- Delete button -->
                       <form onsubmit="return confirmDelete(event, '<%= poll._id %>')" id="delete-form-<%= poll._id %>"
                         method="POST" action="/deletepoll/<%= poll._id %>">
-                        <button type="submit" class="btn btn-delete-red" title="Delete">
+                        <button type="submit" class="btn btn-delete-red" title="Delete Poll">
                           <i class="bi bi-trash"></i>
                         </button>
                       </form>
 
                       <!-- Full poll detail button -->
                       <a href="/poll/<%= poll._id %>" class="btn btn-view-green text-white"
-                        title="View Poll Details">
+                        title="View Extended Details">
                         <i class="bi bi-arrow-bar-right"></i>
                       </a>
 
@@ -293,6 +337,40 @@
               </div>
             </div>
 
+            <!-- Tags -->
+            <div class="mb-3">
+              <div class="form-control p-3">
+                <label class="form-label">Tags</label>
+                <div class="btn-group" role="group" aria-label="Tag selection">
+                  <!-- Tag Checkboxes -->
+                  <input type="checkbox" class="btn-check" id="editTag1" name="tags[]" value="#DailyLife"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag1">#DailyLife</label>
+
+                  <input type="checkbox" class="btn-check" id="editTag2" name="tags[]" value="#CulturalViews"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag2">#CulturalViews</label>
+
+                  <input type="checkbox" class="btn-check" id="editTag3" name="tags[]" value="#FamilyMatters"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag3">#FamilyMatters</label>
+
+                  <input type="checkbox" class="btn-check" id="editTag4" name="tags[]" value="#MoralChoices"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag4">#MoralChoices</label>
+
+                  <input type="checkbox" class="btn-check" id="editTag5" name="tags[]" value="#PersonalValues"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag5">#PersonalValues</label>
+
+                  <input type="checkbox" class="btn-check" id="editTag6" name="tags[]" value="#PublicOpinion"
+                    autocomplete="off">
+                  <label class="btn btn-outline-primary" for="editTag6">#PublicOpinion</label>
+                </div>
+                <div id="editSelectedTags" class="mt-2"></div>
+              </div>
+            </div>
+
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-site-orange text-white">Save Changes</button>
@@ -338,6 +416,47 @@
           } else {
             document.getElementById('endDate').value = '';
           }
+
+          // Pre-select tags and display selected badges
+          const editTagCheckboxes = document.querySelectorAll('.btn-check[name="tags[]"]');
+          const editSelectedTagsContainer = document.getElementById('editSelectedTags');
+
+          // Clear previous selections
+          editTagCheckboxes.forEach(cb => cb.checked = false);
+          editSelectedTagsContainer.innerHTML = '';
+
+          if (poll.tags) {
+            const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(',');
+            tagsArray.forEach(tag => {
+              const trimmedTag = tag.trim();
+              const checkbox = document.querySelector(`.btn-check[name="tags[]"][value="${trimmedTag}"]`);
+              if (checkbox) {
+                checkbox.checked = true;
+
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-info text-dark me-1';
+                badge.textContent = trimmedTag;
+                editSelectedTagsContainer.appendChild(badge);
+              }
+            });
+          }
+
+          // Update badges when checkboxes change
+          editTagCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+              const selected = Array.from(editTagCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+              editSelectedTagsContainer.innerHTML = '';
+              selected.forEach(tag => {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-info text-dark me-1';
+                badge.textContent = tag;
+                editSelectedTagsContainer.appendChild(badge);
+              });
+            });
+          });
 
           // Set form action dynamically
           const editForm = document.getElementById('editPollForm');
