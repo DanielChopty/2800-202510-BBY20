@@ -681,6 +681,7 @@ app.get('/createPoll', isAuthenticated, (req, res) => {
   res.render('createPoll', { created });
 });
 
+
 // Adding a route to fetch all available polls from the database
 
 /*Important details  */
