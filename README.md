@@ -81,7 +81,7 @@ essential.
  Node.js (v18 or later)
  npm (comes with Node.js)
 
- b. IDE's:
+  b. IDE's:
  Visual Studio Code (VS Code) is recommended, but any code editor will work.
 
  c. Database(s): 
@@ -91,7 +91,75 @@ essential.
  polls database.
 
  d. Other Software:
- Some sort of command line tool to interact with Git.
+ Some sort of command line tool to interact with Git. 
+ This can be command line, terminal or git bash.
+ Sourcetree can also be used for a more visual option.
+
+ 2. 3rd Party API's
+ OpenWeather API is needed to run this project.
+
+ 3. API keys?
+ Yes, APi keys are needed to run this project.
+ Required API keys:
+ MongoDB Atlas credentials for connecting to the database.
+ OpenWeather API Key – Get it from https://openweathermap.org/api
+
+4. Order of installation / location
+Generally, the order of installation / location does not matter when installing all the software required for 
+this project. However, make sure you always remember where everything is installed on your computer, if something
+goes wrong. Therefore, whenever choosing an install location, the default location on your computer is recommended
+so you have easy access to everything.
+
+5. Detailed configuration instructions
+Below is a list of detailed instructions on how to get the project up and running:
+
+Create .env file in the root of the project.
+Copy and paste the following into .env, then fill in your values:
+
+MONGODB_USER=your_mongodb_user
+MONGODB_PASSWORD=your_mongodb_password
+MONGODB_HOST=your_cluster.mongodb.net
+MONGODB_DATABASE_USERS=users
+MONGODB_DATABASE_SESSIONS=sessions
+MONGODB_DATABASE_POLLS=polls
+MONGODB_SESSION_SECRET=your_session_secret
+NODE_SESSION_SECRET=your_node_secret
+PORT=8080
+OPENWEATHER_API_KEY=your_openweather_api_key
+
+Set up your MongoDB Atlas cluster:
+Create user with matching credentials
+Enable access for your IP
+Create the users, sessions, and polls databases manually
+
+Install dependencies:
+Using npm install
+
+Run the server to start the app:
+
+Using this command on any Command Line Tool -> Node app.js
+This will start the server and you can Visit http://localhost:8080 in your browser to view the app.
+
+
+6. Link to Testing Plan:
+https://docs.google.com/spreadsheets/d/1TInocgFaGGg3ralL2IxeDMfRh3M9i10RcjcwIO0CjXw/edit?gid=0#gid=0
+
+
+7. Passwords.txt 
+File will be submitted alongside 
+
+# How to use the product (features)
+
+The core idea of this app is that City officials can post polls for local city projects 
+and local citizens can vote on them, and leave comments, leaving their valuable opinions
+so City Officials can collect their data.
+
+By making a citizen account in the app you have access to vote on any poll in the home page. Citizens can filter polls
+by the tag(s) a poll is given for easy navigation.
+
+
+
+
 
 
 
