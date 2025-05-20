@@ -1074,8 +1074,10 @@ const maxComments = Math.max(...userPolls.map(p => (p.comments?.length || 0)), a
       sort: sortOption,
       averageViews: averageViews.toFixed(2),
       averageSaves: averageSaves.toFixed(2),
+      averageComments: averageComments.toFixed(2),
       maxViews,
-      maxSaves
+      maxSaves,
+      maxComments
     });
   } catch (err) {
     console.error('Error fetching poll statistics:', err);
