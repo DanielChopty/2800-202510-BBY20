@@ -46,6 +46,23 @@
     .progress {
       height: 20px;
     }
+
+    .btn-view-green {
+      background-color: #198754 !important;
+      color: #ffffff !important;
+      border: none !important;
+      transition: background-color 0.3s ease;
+      font-size: 1.25rem;
+      border-radius: 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 0.8rem;
+    }
+
+    .btn-view-green:hover {
+      background-color: #146c43 !important;
+    }
   </style>
 </head>
 
@@ -71,53 +88,63 @@
       <% } else { %>
         <div class="list-group">
           <% polls.forEach(poll => { 
-  const views = poll.views || 0;
-  const pollPercentRaw = maxValue > 0 ? (views / maxValue) * 100 : 0;
-  <!-- Ensures that bar is still visible and red if 0 views -->
-  const pollPercent = views === 0 ? 3 : Math.max(pollPercentRaw, 3); 
-  const avgPercent = maxValue > 0 ? (averageViews / maxValue) * 100 : 0;
+            const views = poll.views || 0;
+            const pollPercentRaw = maxValue > 0 ? (views / maxValue) * 100 : 0;
+            const pollPercent = views === 0 ? 3 : Math.max(pollPercentRaw, 3); 
+            const avgPercent = maxValue > 0 ? (averageViews / maxValue) * 100 : 0;
 
-  // Color logic
-  let pollBarColor = '#fcd34d'; // yellow by default
-  if (views > averageViews) pollBarColor = '#198754'; // green
-  else if (views < averageViews || views === 0) pollBarColor = '#dc3545'; // red for < avg or 0
-%>
-  <div class="list-group-item list-group-item-action card-box">
-    <div class="poll-title mb-3"><%= poll.title %></div>
+            let pollBarColor = '#fcd34d'; // yellow by default
+            if (views > averageViews) pollBarColor = '#198754'; // green
+            else if (views < averageViews || views === 0) pollBarColor = '#dc3545'; // red
+          %>
+            <div class="list-group-item list-group-item-action card-box">
+              <div class="d-flex justify-content-between align-items-start">
+                <div style="flex: 1;">
+                  <div class="poll-title mb-3"><%= poll.title %></div>
 
-    <div class="stat-info mb-2 fw-bold">
-      Views: This Poll vs. Your Average
-    </div>
+                  <div class="stat-info mb-2 fw-bold">
+                    Views: This Poll vs. Your Average
+                  </div>
 
-    <div class="d-flex flex-column gap-2">
-      <!-- Bar for this poll -->
-      <div>
-        <div class="progress-label text-muted mb-1">This Poll</div>
-        <div class="progress">
-          <div class="progress-bar" role="progressbar"
-            style="width: <%= pollPercent %>%; background-color: <%= pollBarColor %>;"
-            aria-valuenow="<%= views %>" aria-valuemin="0" aria-valuemax="<%= maxValue %>">
-            <%= views %>
-          </div>
-        </div>
-      </div>
+                  <div class="d-flex flex-column gap-2">
+                    <!-- Bar for this poll -->
+                    <div>
+                      <div class="progress-label text-muted mb-1">This Poll</div>
+                      <div class="progress">
+                        <div class="progress-bar" role="progressbar"
+                          style="width: <%= pollPercent %>%; background-color: <%= pollBarColor %>;"
+                          aria-valuenow="<%= views %>" aria-valuemin="0" aria-valuemax="<%= maxValue %>">
+                          <%= views %>
+                        </div>
+                      </div>
+                    </div>
 
-      <!-- Bar for average -->
-      <div>
-        <div class="progress-label text-muted mb-1">Your Average</div>
-        <div class="progress">
-          <div class="progress-bar bg-secondary" role="progressbar"
-            style="width: <%= avgPercent %>%;" aria-valuenow="<%= averageViews %>"
-            aria-valuemin="0" aria-valuemax="<%= maxValue %>">
-            <%= averageViews %>
-          </div>
-        </div>
-      </div>
-    </div>
+                    <!-- Bar for average -->
+                    <div>
+                      <div class="progress-label text-muted mb-1">Your Average</div>
+                      <div class="progress">
+                        <div class="progress-bar bg-secondary" role="progressbar"
+                          style="width: <%= avgPercent %>%;" aria-valuenow="<%= averageViews %>"
+                          aria-valuemin="0" aria-valuemax="<%= maxValue %>">
+                          <%= averageViews %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-    <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
-  </div>
-<% }); %>
+                  <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
+                </div>
+
+                <!-- Full poll detail button -->
+                <div class="ms-3">
+                  <a href="/poll/<%= poll._id %>" class="btn btn-view-green text-white"
+                    title="View Extended Details">
+                    <i class="bi bi-arrow-bar-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          <% }); %>
         </div>
       <% } %>
     </div>
