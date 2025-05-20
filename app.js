@@ -1043,21 +1043,26 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
-// Render the poll stats page
 app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
   try {
+    const sortOption = req.query.sort || 'all';
+
     const pollsCollection = database
       .db(process.env.MONGODB_DATABASE_POLLS)
       .collection('polls');
 
-    const polls = await pollsCollection
+    let polls = await pollsCollection
       .find({ createdBy: req.session.email })
       .toArray();
+
+    // Sort alphabetically by default
+    polls.sort((a, b) => a.title.localeCompare(b.title));
 
     res.render('pollstats', {
       title: 'Poll Statistics',
       user: req.session.user,
-      polls
+      polls,
+      sort: sortOption
     });
   } catch (err) {
     console.error('Error fetching poll statistics:', err);
