@@ -12,7 +12,7 @@
   <style>
     .btn-site-blue {
       background-color: #003366 !important;
-      color: #ffffff !important;
+      color: #060505 !important;
       border: none !important;
       transition: background-color 0.3s ease;
     }
@@ -97,7 +97,7 @@
         <!-- Sort Alphabetically -->
         <div class="d-flex justify-content-start gap-3 mb-3">
           <a href="/pollstats?sort=all" class="btn btn-site-blue text-white"
-            style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+            style="<%= (!sort || sort === 'all') ? 'color: #ffffff !important; outline: 3px solid #FFD700; outline-offset: 2px;' : 'color: #ffffff !important;' %>">
             Sort Alphabetically
           </a>
         </div>
@@ -109,133 +109,128 @@
           <% } else { %>
             <div class="list-group">
               <% polls.forEach(poll=> {
+                // Views
                 const views = poll.views || 0;
                 const pollPercentRaw = maxViews > 0 ? (views / maxViews) * 100 : 0;
                 const pollPercent = views === 0 ? 3 : Math.max(pollPercentRaw, 3);
                 const avgPercentRaw = maxViews > 0 ? (averageViews / maxViews) * 100 : 0;
                 const avgPercent = averageViews === 0 ? 3 : Math.max(avgPercentRaw, 3);
-
-                // Determine view bar color
                 let pollBarColor = '#fcd34d';
                 if (views > averageViews) pollBarColor = '#198754';
-                else if (views < averageViews && averageViews !==0) pollBarColor='#dc3545' ; const
+                else if (views < averageViews && averageViews !==0) pollBarColor='#dc3545' ; // Saves const
                   saves=poll.savedBy?.length || 0; const savePercentRaw=maxSaves> 0 ? (saves / maxSaves) * 100 : 0;
                   const savePercent = saves === 0 ? 3 : Math.max(savePercentRaw, 3);
                   const avgSavePercentRaw = maxSaves > 0 ? (averageSaves / maxSaves) * 100 : 0;
                   const avgSavePercent = averageSaves === 0 ? 3 : Math.max(avgSavePercentRaw, 3);
-
-                  // Determine save bar color
                   let saveBarColor = '#fcd34d';
                   if (saves > averageSaves) saveBarColor = '#198754';
-                  else if (saves < averageSaves && averageSaves !==0) saveBarColor='#dc3545' ; %>
+                  else if (saves < averageSaves && averageSaves !==0) saveBarColor='#dc3545' ; // Comments const
+                    comments=poll.comments?.length || 0; const commentPercentRaw=maxComments> 0 ? (comments /
+                    maxComments) * 100 : 0;
+                    const commentPercent = comments === 0 ? 3 : Math.max(commentPercentRaw, 3);
+                    const avgCommentPercentRaw = maxComments > 0 ? (averageComments / maxComments) * 100 : 0;
+                    const avgCommentPercent = averageComments === 0 ? 3 : Math.max(avgCommentPercentRaw, 3);
+                    let commentBarColor = '#fcd34d';
+                    if (comments > averageComments) commentBarColor = '#198754';
+                    else if (comments < averageComments && averageComments !==0) commentBarColor='#dc3545' ; %>
 
-                    <div class="list-group-item list-group-item-action card-box">
-                      <div class="d-flex justify-content-between align-items-start">
-                        <div style="flex: 1;">
-                          <div class="poll-title mb-3">
-                            <%= poll.title %>
-                          </div>
+                      <div class="list-group-item list-group-item-action card-box">
+                        <div class="d-flex justify-content-between align-items-start">
+                          <div style="flex: 1;">
+                            <div class="poll-title mb-3">
+                              <%= poll.title %>
+                            </div>
 
-                          <!-- Views -->
-                          <div class="stat-info mb-2 fw-bold">
-                              Views: This Poll vs. Your Average
-                          </div>
-                          <div class="d-flex flex-column gap-2">
-                            <div>
-                              <div class="progress-label text-muted mb-1">This Poll</div>
-                              <div class="progress">
-                                <div class="progress-bar" role="progressbar"
-                                  style="width: <%= pollPercent %>%; background-color: <%= pollBarColor %>;"
-                                  aria-valuenow="<%= views %>" aria-valuemin="0" aria-valuemax="<%= maxViews %>">
-                                  <%= views %>
+                            <!-- Views -->
+                            <div class="stat-info mb-2 fw-bold">Views: This Poll vs. Your Average</div>
+                            <div class="d-flex flex-column gap-2">
+                              <div>
+                                <div class="progress-label text-muted mb-1">This Poll</div>
+                                <div class="progress">
+                                  <div class="progress-bar" role="progressbar"
+                                    style="width: <%= pollPercent %>%; background-color: <%= pollBarColor %>;"
+                                    aria-valuenow="<%= views %>" aria-valuemin="0" aria-valuemax="<%= maxViews %>">
+                                    <%= views %>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <div>
-                              <div class="progress-label text-muted mb-1">Your Average</div>
-                              <div class="progress">
-                                <div class="progress-bar bg-secondary" role="progressbar"
-                                  style="width: <%= avgPercent %>%;" aria-valuenow="<%= averageViews %>"
-                                  aria-valuemin="0" aria-valuemax="<%= maxViews %>">
-                                  <%= averageViews %>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Saves -->
-                          <div class="stat-info mt-4 mb-2 fw-bold">
-                              Saves: This Poll vs. Your Average
-                          </div>
-                          <div class="d-flex flex-column gap-2">
-                            <div>
-                              <div class="progress-label text-muted mb-1">This Poll</div>
-                              <div class="progress">
-                                <div class="progress-bar" role="progressbar"
-                                  style="width: <%= savePercent %>%; background-color: <%= saveBarColor %>;"
-                                  aria-valuenow="<%= saves %>" aria-valuemin="0" aria-valuemax="<%= maxSaves %>">
-                                  <%= saves %>
-                                </div>
-                              </div>
-                            </div>
-                            <div>
-                              <div class="progress-label text-muted mb-1">Your Average</div>
-                              <div class="progress">
-                                <div class="progress-bar bg-secondary" role="progressbar"
-                                  style="width: <%= avgSavePercent %>%;" aria-valuenow="<%= averageSaves %>"
-                                  aria-valuemin="0" aria-valuemax="<%= maxSaves %>">
-                                  <%= averageSaves %>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Comments -->
-                          <div class="stat-info mt-4 mb-2 fw-bold">
-                            Comments: This Poll vs. Your Average
-                          </div>
-                          <div class="d-flex flex-column gap-2">
-                            <div>
-                              <div class="progress-label text-muted mb-1">This Poll</div>
-                              <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: <%= (poll.comments?.length || 0) === 0 ? 3 : Math.max(((poll.comments?.length || 0) / maxComments) * 100, 3) %>%; background-color: 
-        <%= (poll.comments?.length || 0) > averageComments 
-              ? '#198754' 
-              : (poll.comments?.length || 0) < averageComments && averageComments !== 0 
-                ? '#dc3545' 
-                : '#fcd34d' %>;" aria-valuenow="<%= poll.comments?.length || 0 %>" aria-valuemin="0"
-                                  aria-valuemax="<%= maxComments %>">
-                                  <%= poll.comments?.length || 0 %>
+                              <div>
+                                <div class="progress-label text-muted mb-1">Your Average</div>
+                                <div class="progress">
+                                  <div class="progress-bar bg-secondary" role="progressbar"
+                                    style="width: <%= avgPercent %>%;" aria-valuenow="<%= averageViews %>"
+                                    aria-valuemin="0" aria-valuemax="<%= maxViews %>">
+                                    <%= averageViews %>
+                                  </div>
                                 </div>
                               </div>
                             </div>
 
-                            <div>
-                              <div class="progress-label text-muted mb-1">Your Average</div>
-                              <div class="progress">
-                                <div class="progress-bar bg-secondary" role="progressbar"
-                                  style="width: <%= averageComments === 0 ? 3 : Math.max((averageComments / maxComments) * 100, 3) %>%;"
-                                  aria-valuenow="<%= averageComments %>" aria-valuemin="0"
-                                  aria-valuemax="<%= maxComments %>">
-                                  <%= averageComments %>
+                            <!-- Saves -->
+                            <div class="stat-info mt-4 mb-2 fw-bold">Saves: This Poll vs. Your Average</div>
+                            <div class="d-flex flex-column gap-2">
+                              <div>
+                                <div class="progress-label text-muted mb-1">This Poll</div>
+                                <div class="progress">
+                                  <div class="progress-bar" role="progressbar"
+                                    style="width: <%= savePercent %>%; background-color: <%= saveBarColor %>;"
+                                    aria-valuenow="<%= saves %>" aria-valuemin="0" aria-valuemax="<%= maxSaves %>">
+                                    <%= saves %>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div class="progress-label text-muted mb-1">Your Average</div>
+                                <div class="progress">
+                                  <div class="progress-bar bg-secondary" role="progressbar"
+                                    style="width: <%= avgSavePercent %>%;" aria-valuenow="<%= averageSaves %>"
+                                    aria-valuemin="0" aria-valuemax="<%= maxSaves %>">
+                                    <%= averageSaves %>
+                                  </div>
                                 </div>
                               </div>
                             </div>
+
+                            <!-- Comments -->
+                            <div class="stat-info mt-4 mb-2 fw-bold">Comments: This Poll vs. Your Average</div>
+                            <div class="d-flex flex-column gap-2">
+                              <div>
+                                <div class="progress-label text-muted mb-1">This Poll</div>
+                                <div class="progress">
+                                  <div class="progress-bar" role="progressbar"
+                                    style="width: <%= commentPercent %>%; background-color: <%= commentBarColor %>;"
+                                    aria-valuenow="<%= comments %>" aria-valuemin="0"
+                                    aria-valuemax="<%= maxComments %>">
+                                    <%= comments %>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div class="progress-label text-muted mb-1">Your Average</div>
+                                <div class="progress">
+                                  <div class="progress-bar bg-secondary" role="progressbar"
+                                    style="width: <%= avgCommentPercent %>%;" aria-valuenow="<%= averageComments %>"
+                                    aria-valuemin="0" aria-valuemax="<%= maxComments %>">
+                                    <%= averageComments %>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <small class="d-block mt-4">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
+                            </small>
                           </div>
 
-                          <small class="d-block mt-4">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
-                          </small>
-                        </div>
-
-                        <!-- View details button -->
-                        <div class="ms-3">
-                          <a href="/poll/<%= poll._id %>" class="btn btn-view-square" title="View Extended Details">
-                            <i class="bi bi-arrow-bar-right"></i>
-                          </a>
+                          <!-- View details button -->
+                          <div class="ms-3">
+                            <a href="/poll/<%= poll._id %>" class="btn btn-view-square" title="View Extended Details">
+                              <i class="bi bi-arrow-bar-right"></i>
+                            </a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <% }); %>
+                      <% }) %>
+
             </div>
             <% } %>
       </div>
@@ -243,4 +238,5 @@
 
     <%- include('templates/footer') %>
 </body>
+
 </html>
