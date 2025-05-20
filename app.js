@@ -446,6 +446,10 @@ app.get('/profile', async (req, res) => {
         .toArray();
     }
 
+    const userPolls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
+const totalViews = userPolls.reduce((sum, p) => sum + (p.views || 0), 0);
+const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
+
     // Read the personalized message from the session
     const personalizedMessage = req.session.personalizedMessage || '';
     req.session.personalizedMessage = ''; // Clear it after using
@@ -458,11 +462,7 @@ app.get('/profile', async (req, res) => {
       savedPolls: savedPollsData,
       personalizedMessage: personalizedMessage
     });
-
-    const userPolls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
-const totalViews = userPolls.reduce((sum, p) => sum + (p.views || 0), 0);
-const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
-
+    
   } catch (error) {
     console.error('Error rendering profile page:', error);
     res.status(500).render('500', { title: 'Server Error' });
