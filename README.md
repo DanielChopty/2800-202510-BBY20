@@ -160,8 +160,8 @@ citizens to feel more engaged with the experience including profile pages where 
 As well, the app offers citizens to be able to save polls to their profile page, for easy access to the polls they want to 
 vote on later, or keep track of. 
 
-On the other hand City Officials have a slightly different experience. When you create a City Official account, you are able to post
-polls for the citizens to vote on. Tags can be added to these polls so that they are better filtered and stand out. Also, City Officials have their own dashboard to view stats like which option citizens voted the most on their poll, and how many citizens saved their poll. 
+On the other hand City Officials have a slightly different experience. When you create a City Official account, you are able to 
+post polls for the citizens to vote on. Tags can be added to these polls so that they are better filtered and stand out. Also, City Officials have their own dashboard to view stats like which option citizens voted the most on their poll, and how many citizens saved their poll. These important insights help City Officials plan and optomize their ideas.
 
 
 
