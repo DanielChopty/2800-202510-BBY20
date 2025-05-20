@@ -432,6 +432,7 @@ app.get('/profile', async (req, res) => {
 
     // Fetch the user based on their email
     const user = await userCollection.findOne({ email: req.session.email });
+
     // If the user does not exist in the database, redirect them to the home page
     if (!user) {
       return res.redirect('/');
@@ -445,8 +446,9 @@ app.get('/profile', async (req, res) => {
         .toArray();
     }
 
-    // Initialize personalizedMessage as empty string by default
-    const personalizedMessage = '';
+    // ✅ Read the personalized message from the session
+    const personalizedMessage = req.session.personalizedMessage || '';
+    req.session.personalizedMessage = ''; // ✅ Clear it after using
 
     // Render profile with the saved polls and personalized message
     res.render('profile', {
@@ -613,33 +615,22 @@ app.post('/update-feelings', async (req, res) => {
           'Zero regrets, just lessons learned.'
         ],
       };
-       // Pick a random message from the array of messages for the first letter
-      const letterMessages = messages[firstLetter] || ['Thanks for sharing! You are unique and awesome!']; // Default message
+
+      // Pick a random message from the array of messages for the first letter
+      const letterMessages = messages[firstLetter] || ['Thanks for sharing! You are unique and awesome!'];
       personalizedMessage = letterMessages[Math.floor(Math.random() * letterMessages.length)];
-
-    
-
     }
 
-    // Get user data again after the feelings update
-    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-    const user = await userCollection.findOne({ email: req.session.email });
+    // Store in session for the redirected GET /profile route
+    req.session.personalizedMessage = personalizedMessage;
 
-    if (!user) return res.redirect('/');
-
-    res.render('profile', {
-      title: 'Profile',
-      username: user.name,
-      user: user,
-       savedPolls: user.savedPolls || [],
-      personalizedMessage: personalizedMessage,
-    });
+    // Redirect to trigger fresh GET request and preserve full session behavior
+    res.redirect('/profile');
   } catch (error) {
     console.error('Error updating feelings:', error);
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
-
   
 // About page (public or protected, choose based on need)
 app.get('/about', (req, res) => {
