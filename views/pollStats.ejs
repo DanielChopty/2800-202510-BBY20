@@ -71,24 +71,46 @@
       <% } else { %>
         <div class="list-group">
           <% polls.forEach(poll => { 
-              const views = poll.views || 0;
-              const percent = averageViews > 0 ? Math.min((views / averageViews) * 100, 100) : 0;
-          %>
-            <div class="list-group-item list-group-item-action card-box">
-              <div class="poll-title mb-3"><%= poll.title %></div>
+  const views = poll.views || 0;
+  const pollPercent = maxValue > 0 ? (views / maxValue) * 100 : 0;
+  const avgPercent = maxValue > 0 ? (averageViews / maxValue) * 100 : 0;
+%>
+  <div class="list-group-item list-group-item-action card-box">
+    <div class="poll-title mb-3"><%= poll.title %></div>
 
-              <div class="progress-label text-muted">
-                <%= views %> views (vs. avg <%= averageViews %>)
-              </div>
-              <div class="progress mb-2">
-                <div class="progress-bar bg-info" role="progressbar"
-                  style="width: <%= percent %>%;" aria-valuenow="<%= percent %>"
-                  aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
+    <div class="stat-info mb-2 fw-bold">
+      Views for This Poll vs. Your Average:
+    </div>
 
-              <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
-            </div>
-          <% }); %>
+    <div class="d-flex flex-column gap-2">
+      <!-- Bar for this poll -->
+      <div>
+        <div class="progress-label text-muted mb-1">This Poll</div>
+        <div class="progress">
+          <div class="progress-bar bg-primary" role="progressbar"
+            style="width: <%= pollPercent %>%;" aria-valuenow="<%= views %>"
+            aria-valuemin="0" aria-valuemax="<%= maxValue %>">
+            <%= views %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar for average -->
+      <div>
+        <div class="progress-label text-muted mb-1">Your Average</div>
+        <div class="progress">
+          <div class="progress-bar bg-secondary" role="progressbar"
+            style="width: <%= avgPercent %>%;" aria-valuenow="<%= averageViews %>"
+            aria-valuemin="0" aria-valuemax="<%= maxValue %>">
+            <%= averageViews %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
+  </div>
+<% }); %>
         </div>
       <% } %>
     </div>
