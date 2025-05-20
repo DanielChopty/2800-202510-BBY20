@@ -58,7 +58,8 @@
         <div class="list-group">
           <% polls.forEach(poll => { %>
             <div class="list-group-item list-group-item-action card-box">
-              <div class="poll-title"><%= poll.title %></div>
+              <div class="poll-title mb-2"><%= poll.title %></div>
+              <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
             </div>
           <% }); %>
         </div>
