@@ -218,7 +218,7 @@
                             </div>
 
                             <!-- Pie Chart Header -->
-                            <div class="stat-info mt-4 mb-2 fw-bold"><strong>Results: Poll Options Breakdown</strong></div>
+                            <div class="stat-info mt-4 mb-2 fw-bold">Results: Poll Options Breakdown</div>
 
                             <!-- Pie Chart Canvas -->
                             <canvas id="chart-<%= poll._id %>" width="400" height="300"></canvas>
@@ -246,51 +246,54 @@
     <%- include('templates/footer') %>
 
       <!-- Chart.js CDN -->
-      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-      <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    <% polls.forEach(poll => {
-          const chartId = `chart-${poll._id}`;
-          const labels = poll.choices.map(choice => choice.text);
-          const votes = poll.choices.map(choice => choice.votes);
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    <% polls.forEach(poll => { 
+      const chartId = `chart-${poll._id}`;
+      const labels = poll.choices.map(choice => choice.text);
+      const votes = poll.choices.map(choice => choice.votes);
     %>
-      const ctx_<%= poll._id %> = document.getElementById("<%= chartId %>");
-          if (ctx_ <%= poll._id %>) {
-            new Chart(ctx_ <%= poll._id %>, {
-              type: 'pie',
-              data: {
-                labels: <% - JSON.stringify(labels) %>,
-                datasets: [{
-                  label: 'Votes',
-                  data: <% - JSON.stringify(votes) %>,
-                  backgroundColor: [
-                    '#007bff', '#dc3545', '#ffc107', '#28a745',
-                    '#6610f2', '#fd7e14', '#6f42c1', '#20c997'
-                  ],
-                  borderColor: '#ffffff',
-                  borderWidth: 1
-                }]
-              },
-              options: {
-                responsive: true,
-                plugins: {
-                  legend: { position: 'bottom' },
-                  tooltip: {
-                    callbacks: {
-                      label: function (context) {
-                        const label = context.label || '';
-                        const value = context.parsed || 0;
-                        return `${label}: ${value} vote${value === 1 ? '' : 's'}`;
-                      }
+      (function () {
+        const ctx = document.getElementById("<%= chartId %>");
+        if (ctx) {
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: <%- JSON.stringify(labels) %>,
+              datasets: [{
+                label: 'Votes',
+                data: <%- JSON.stringify(votes) %>,
+                backgroundColor: [
+                  '#007bff', '#dc3545', '#ffc107', '#28a745',
+                  '#6610f2', '#fd7e14', '#6f42c1', '#20c997'
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      const label = context.label || '';
+                      const value = context.parsed || 0;
+                      return `${label}: ${value} vote${value === 1 ? '' : 's'}`;
                     }
                   }
                 }
               }
-            });
-          }
+            }
+          });
+        }
+      })();
     <% }); %>
   });
-      </script>
+</script>
 
 </body>
 
