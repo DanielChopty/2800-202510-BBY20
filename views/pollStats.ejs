@@ -89,9 +89,9 @@
         <div class="list-group">
           <% polls.forEach(poll => { 
             const views = poll.views || 0;
-            const pollPercentRaw = maxValue > 0 ? (views / maxValue) * 100 : 0;
+            const pollPercentRaw = maxViews > 0 ? (views / maxViews) * 100 : 0;
             const pollPercent = views === 0 ? 3 : Math.max(pollPercentRaw, 3); 
-            const avgPercent = maxValue > 0 ? (averageViews / maxValue) * 100 : 0;
+            const avgPercent = maxViews > 0 ? (averageViews / maxViews) * 100 : 0;
 
             let pollBarColor = '#fcd34d'; // yellow by default
             if (views > averageViews) pollBarColor = '#198754'; // green
@@ -107,13 +107,14 @@
                   </div>
 
                   <div class="d-flex flex-column gap-2">
+
                     <!-- Bar for this poll -->
                     <div>
                       <div class="progress-label text-muted mb-1">This Poll</div>
                       <div class="progress">
                         <div class="progress-bar" role="progressbar"
                           style="width: <%= pollPercent %>%; background-color: <%= pollBarColor %>;"
-                          aria-valuenow="<%= views %>" aria-valuemin="0" aria-valuemax="<%= maxValue %>">
+                          aria-valuenow="<%= views %>" aria-valuemin="0" aria-valuemax="<%= maxViews %>">
                           <%= views %>
                         </div>
                       </div>
@@ -125,12 +126,53 @@
                       <div class="progress">
                         <div class="progress-bar bg-secondary" role="progressbar"
                           style="width: <%= avgPercent %>%;" aria-valuenow="<%= averageViews %>"
-                          aria-valuemin="0" aria-valuemax="<%= maxValue %>">
+                          aria-valuemin="0" aria-valuemax="<%= maxViews %>">
                           <%= averageViews %>
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  <% 
+  const saves = poll.savedBy?.length || 0;
+  const savePercentRaw = maxSaves > 0 ? (saves / maxSaves) * 100 : 0;
+  const savePercent = saves === 0 ? 3 : Math.max(savePercentRaw, 3);
+  const avgSavePercent = maxSaves > 0 ? (averageSaves / maxSaves) * 100 : 0;
+
+  let saveBarColor = '#fcd34d'; // yellow by default
+  if (saves > averageSaves) saveBarColor = '#198754'; // green
+  else if (saves < averageSaves || saves === 0) saveBarColor = '#dc3545'; // red
+%>
+
+<div class="stat-info mt-4 mb-2 fw-bold">
+  Saves: This Poll vs. Your Average
+</div>
+
+<div class="d-flex flex-column gap-2">
+  <!-- Bar for this poll -->
+  <div>
+    <div class="progress-label text-muted mb-1">This Poll</div>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar"
+        style="width: <%= savePercent %>%; background-color: <%= saveBarColor %>;"
+        aria-valuenow="<%= saves %>" aria-valuemin="0" aria-valuemax="<%= maxSaves %>">
+        <%= saves %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bar for average -->
+  <div>
+    <div class="progress-label text-muted mb-1">Your Average</div>
+    <div class="progress">
+      <div class="progress-bar bg-secondary" role="progressbar"
+        style="width: <%= avgSavePercent %>%;" aria-valuenow="<%= averageSaves %>"
+        aria-valuemin="0" aria-valuemax="<%= maxSaves %>">
+        <%= averageSaves %>
+      </div>
+    </div>
+  </div>
+</div>
 
                   <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
                 </div>
