@@ -936,7 +936,6 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
 });
 
 // Past polls page route
-// Past polls page route
 app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const pollsCollection = database
@@ -1040,6 +1039,28 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
     res.redirect('/pastpolls?edited=true');
   } catch (error) {
     console.error('Error editing poll:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// Render the poll stats page
+app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    const polls = await pollsCollection
+      .find({ createdBy: req.session.email })
+      .toArray();
+
+    res.render('pollstats', {
+      title: 'Poll Statistics',
+      user: req.session.user,
+      polls
+    });
+  } catch (err) {
+    console.error('Error fetching poll statistics:', err);
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
