@@ -32,6 +32,11 @@
       font-size: 1.25rem;
       font-weight: bold;
     }
+
+    .stat-info {
+      font-size: 0.95rem;
+      color: #6c757d;
+    }
   </style>
 </head>
 
@@ -58,7 +63,18 @@
         <div class="list-group">
           <% polls.forEach(poll => { %>
             <div class="list-group-item list-group-item-action card-box">
-              <div class="poll-title mb-2"><%= poll.title %></div>
+              <div class="poll-title mb-3"><%= poll.title %></div>
+
+              <div class="stat-info mb-1">
+                Views: <%= poll.views || 0 %> — 
+                <%= (poll.views || 0) > averageViews
+                      ? 'Above Average'
+                      : (poll.views || 0) < averageViews
+                        ? 'Below Average'
+                        : 'Equal to Average' %>
+                (<%= averageViews %> avg)
+              </div>
+
               <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
             </div>
           <% }); %>
