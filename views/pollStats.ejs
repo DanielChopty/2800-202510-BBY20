@@ -72,19 +72,21 @@
         <div class="list-group">
           <% polls.forEach(poll => { 
   const views = poll.views || 0;
-  const pollPercent = maxValue > 0 ? (views / maxValue) * 100 : 0;
+  const pollPercentRaw = maxValue > 0 ? (views / maxValue) * 100 : 0;
+  <!-- Ensures that bar is still visible and red if 0 views -->
+  const pollPercent = views === 0 ? 3 : Math.max(pollPercentRaw, 3); 
   const avgPercent = maxValue > 0 ? (averageViews / maxValue) * 100 : 0;
 
-  // Dynamic color assignment
-  let pollBarColor = '#fcd34d'; // yellow (equal by default)
+  // Color logic
+  let pollBarColor = '#fcd34d'; // yellow by default
   if (views > averageViews) pollBarColor = '#198754'; // green
-  else if (views < averageViews) pollBarColor = '#dc3545'; // red
+  else if (views < averageViews || views === 0) pollBarColor = '#dc3545'; // red for < avg or 0
 %>
   <div class="list-group-item list-group-item-action card-box">
     <div class="poll-title mb-3"><%= poll.title %></div>
 
-    <div class="stat-info mb-2">
-      Your Poll: <%= views %> views &nbsp; | &nbsp; Average: <%= averageViews %>
+    <div class="stat-info mb-2 fw-bold">
+      Views: This Poll vs. Your Average
     </div>
 
     <div class="d-flex flex-column gap-2">
