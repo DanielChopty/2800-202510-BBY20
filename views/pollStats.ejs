@@ -221,7 +221,7 @@
                             <div class="stat-info mt-4 mb-2 fw-bold">Results: Breakdown of Votes</div>
 
                             <!-- Pie Chart Canvas -->
-                            <canvas id="chart-<%= poll._id %>" style="max-width: 250px; max-height: 250px;"></canvas>
+                            <canvas id="chart-<%= poll._id %>" style="max-width: 250px; max-height: 250px; margin-top: 0.75rem"></canvas>
 
                             <small class="d-block mt-4">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
                             </small>
@@ -287,12 +287,15 @@
                 }
               },
               datalabels: {
-                color: '#fff',
-                font: { weight: 'bold' },
-                formatter: function (value) {
-                  return value;
-                }
-              }
+  color: '#fff',
+  font: {
+    weight: 'bold',
+    size: 16 
+  },
+  formatter: function (value) {
+    return value;
+  }
+}
             }
           },
           plugins: [ChartDataLabels]
