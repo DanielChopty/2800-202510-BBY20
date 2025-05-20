@@ -1048,10 +1048,15 @@ app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
       .find({ createdBy: req.session.email })
       .toArray();
 
-      const userPolls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
-const totalViews = userPolls.reduce((sum, p) => sum + (p.views || 0), 0);
-const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
-const maxValue = Math.max(...polls.map(p => p.views || 0), averageViews);
+    // Views calculations
+const totalViews = polls.reduce((sum, p) => sum + (p.views || 0), 0);
+const averageViews = polls.length ? totalViews / polls.length : 0;
+const maxViews = Math.max(...polls.map(p => p.views || 0), averageViews);
+
+// Saves calculations
+const totalSaves = polls.reduce((sum, p) => sum + (p.savedBy?.length || 0), 0);
+const averageSaves = polls.length ? totalSaves / polls.length : 0;
+const maxSaves = Math.max(...polls.map(p => p.savedBy?.length || 0), averageSaves);
 
     // Sort alphabetically by default
     polls.sort((a, b) => a.title.localeCompare(b.title));
