@@ -460,7 +460,8 @@ const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
       username: user.name,
       user: user,
       savedPolls: savedPollsData,
-      personalizedMessage: personalizedMessage
+      personalizedMessage: personalizedMessage,
+      averageViews: averageViews.toFixed(2)
     });
     
   } catch (error) {
