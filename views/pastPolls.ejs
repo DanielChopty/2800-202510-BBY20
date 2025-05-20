@@ -229,11 +229,11 @@
                               <% if (poll.tags && poll.tags.length> 0) {
                                 const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(',');
                                 tagsArray.forEach(tag => { %>
-                                <span class="badge bg-info text-dark">
+                                <span class="badge bg-info text-dark mb-1">
                                   <%= tag.trim() %>
                                 </span>
                                 <% }); } else { %>
-                                  <span class="text-muted">No tags provided.</span>
+                                  <span class="text-muted mb-1">No tags provided.</span>
                                   <% } %>
                             </div>
                           </div>
