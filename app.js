@@ -32,7 +32,7 @@ const path = require('path');
 const app = express();
 
 const port = PORT || 8080;
-const expireTime = 60 * 60 * 1000; // 1 hour session expiration
+const expireTime = 60 * 60 * 1000 * 24; // 24 hour session expiration
 
 
 // Set EJS as the templating engine
@@ -1050,22 +1050,26 @@ app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
       .toArray();
 
     // Views calculations
-const totalViews = polls.reduce((sum, p) => sum + (p.views || 0), 0);
-const averageViews = polls.length ? totalViews / polls.length : 0;
-const maxViews = Math.max(...polls.map(p => p.views || 0), averageViews);
+    const totalViews = polls.reduce((sum, p) => sum + (p.views || 0), 0);
+    const averageViews = polls.length ? totalViews / polls.length : 0;
+    const maxViews = Math.max(...polls.map(p => p.views || 0), averageViews);
 
-// Saves calculations
-const totalSaves = polls.reduce((sum, p) => sum + (p.savedBy?.length || 0), 0);
-const averageSaves = polls.length ? totalSaves / polls.length : 0;
-const maxSaves = Math.max(...polls.map(p => p.savedBy?.length || 0), averageSaves);
+    // Saves calculations
+    const totalSaves = polls.reduce((sum, p) => sum + (p.savedBy?.length || 0), 0);
+    const averageSaves = polls.length ? totalSaves / polls.length : 0;
+    const maxSaves = Math.max(...polls.map(p => p.savedBy?.length || 0), averageSaves);
 
-// Comments calculations
-const totalComments = polls.reduce((sum, p) => sum + (p.comments?.length || 0), 0);
-const averageComments = polls.length ? totalComments / polls.length : 0;
-const maxComments = Math.max(...polls.map(p => (p.comments?.length || 0)), averageComments);
+    // Comments calculations
+    const totalComments = polls.reduce((sum, p) => sum + (p.comments?.length || 0), 0);
+    const averageComments = polls.length ? totalComments / polls.length : 0;
+    const maxComments = Math.max(...polls.map(p => (p.comments?.length || 0)), averageComments);
 
-    // Sort alphabetically by default
-    polls.sort((a, b) => a.title.localeCompare(b.title));
+    // Sorting
+    if (sortOption === 'views') {
+      polls.sort((a, b) => (b.views || 0) - (a.views || 0));
+    } else {
+      polls.sort((a, b) => a.title.localeCompare(b.title));
+    }
 
     res.render('pollStats', {
       title: 'Poll Statistics',
