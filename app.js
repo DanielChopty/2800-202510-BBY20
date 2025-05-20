@@ -906,7 +906,8 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       createdAt:      new Date(),
       available:      true,
       comments:       [],
-      choices
+      choices,
+      views: 0
     }
 
     // Inserting the values into our database
