@@ -1065,16 +1065,30 @@ app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
     const averageComments = polls.length ? totalComments / polls.length : 0;
     const maxComments = Math.max(...polls.map(p => (p.comments?.length || 0)), averageComments);
 
-    // Sort by most viewed, favourited, commented, or alphabetical
+    // Sorting logic (most viewed, favourited, commented, or alphabetical)
     if (sortOption === 'views') {
-  polls.sort((a, b) => (b.views || 0) - (a.views || 0));
-} else if (sortOption === 'saves') {
-  polls.sort((a, b) => (b.savedBy?.length || 0) - (a.savedBy?.length || 0));
-} else if (sortOption === 'comments') {
-  polls.sort((a, b) => (b.comments?.length || 0) - (a.comments?.length || 0));
-} else {
-  polls.sort((a, b) => a.title.localeCompare(b.title));
-}
+      polls.sort((a, b) => {
+        const diff = (b.views || 0) - (a.views || 0);
+        return diff !== 0 ? diff : a.title.localeCompare(b.title);
+      });
+    } else if (sortOption === 'saves') {
+      polls.sort((a, b) => {
+        const aSaves = a.savedBy?.length || 0;
+        const bSaves = b.savedBy?.length || 0;
+        const diff = bSaves - aSaves;
+        return diff !== 0 ? diff : a.title.localeCompare(b.title);
+      });
+    } else if (sortOption === 'comments') {
+      polls.sort((a, b) => {
+        const aComments = a.comments?.length || 0;
+        const bComments = b.comments?.length || 0;
+        const diff = bComments - aComments;
+        return diff !== 0 ? diff : a.title.localeCompare(b.title);
+      });
+    } else {
+      // Default alphabetical
+      polls.sort((a, b) => a.title.localeCompare(b.title));
+    }
 
     res.render('pollStats', {
       title: 'Poll Statistics',
