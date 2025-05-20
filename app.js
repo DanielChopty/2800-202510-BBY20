@@ -1051,6 +1051,7 @@ app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
       const userPolls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
 const totalViews = userPolls.reduce((sum, p) => sum + (p.views || 0), 0);
 const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
+const maxValue = Math.max(...polls.map(p => p.views || 0), averageViews);
 
     // Sort alphabetically by default
     polls.sort((a, b) => a.title.localeCompare(b.title));
@@ -1060,7 +1061,8 @@ const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
       user: req.session.user,
       polls,
       sort: sortOption,
-      averageViews: averageViews.toFixed(2)
+      averageViews: averageViews.toFixed(2),
+      maxValue
     });
   } catch (err) {
     console.error('Error fetching poll statistics:', err);
