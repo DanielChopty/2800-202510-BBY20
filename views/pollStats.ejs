@@ -221,7 +221,8 @@
                             <div class="stat-info mt-4 mb-2 fw-bold">Results: Breakdown of Votes</div>
 
                             <!-- Pie Chart Canvas -->
-                            <canvas id="chart-<%= poll._id %>" style="max-width: 275px; max-height: 275px; margin-top: 0.8rem"></canvas>
+                            <canvas id="chart-<%= poll._id %>"
+                              style="max-width: 275px; max-height: 275px; margin-top: 0.6rem"></canvas>
 
                             <small class="d-block mt-4">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
                             </small>
@@ -246,27 +247,24 @@
 
       <!-- Chart.js CDN -->
       <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+      <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
-<script>
+      <script>
   document.addEventListener('DOMContentLoaded', function () {
     Chart.register(ChartDataLabels);
 
-    <% polls.forEach(poll => {
-      const chartId = `chart-${poll._id}`;
-      const labels = JSON.stringify(poll.choices.map(choice => choice.text));
-      const votes = JSON.stringify(poll.choices.map(choice => choice.votes));
-    %>
+    <% polls.forEach(poll => { const chartId = `chart-${poll._id}`; %>
     (function () {
       const ctx = document.getElementById('<%= chartId %>');
       if (ctx) {
         new Chart(ctx, {
           type: 'pie',
           data: {
-            labels: <%- labels %>,
+            labels: <%- JSON.stringify(poll.choices.map(choice => choice.text)) %>,
             datasets: [{
               label: 'Votes',
-              data: <%- votes %>,
+              data: <%- JSON.stringify(poll.choices.map(choice => choice.votes)) %>,
               backgroundColor: ['#003366', '#f36f21', '#800000', '#fcd34d'],
               borderColor: '#000000',
               borderWidth: 1
@@ -287,15 +285,15 @@
                 }
               },
               datalabels: {
-  color: '#fff',
-  font: {
-    weight: 'bold',
-    size: 16 
-  },
-  formatter: function (value) {
-    return value;
-  }
-}
+                color: '#fff',
+                font: {
+                  weight: 'bold',
+                  size: 16
+                },
+                formatter: function (value) {
+                  return value;
+                }
+              }
             }
           },
           plugins: [ChartDataLabels]
