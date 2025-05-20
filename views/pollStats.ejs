@@ -254,17 +254,22 @@
   document.addEventListener('DOMContentLoaded', function () {
     Chart.register(ChartDataLabels);
 
-    <% polls.forEach(poll => { const chartId = `chart-${poll._id}`; %>
-    (function () {
-      const ctx = document.getElementById('<%= chartId %>');
+    const chartConfigs = <%- JSON.stringify(polls.map(poll => ({
+      id: `chart-${poll._id}`,
+      labels: poll.choices.map(choice => choice.text),
+      data: poll.choices.map(choice => choice.votes)
+    }))) %>;
+
+    chartConfigs.forEach(config => {
+      const ctx = document.getElementById(config.id);
       if (ctx) {
         new Chart(ctx, {
           type: 'pie',
           data: {
-            labels: <%- JSON.stringify(poll.choices.map(choice => choice.text)) %>,
+            labels: config.labels,
             datasets: [{
               label: 'Votes',
-              data: <%- JSON.stringify(poll.choices.map(choice => choice.votes)) %>,
+              data: config.data,
               backgroundColor: ['#003366', '#f36f21', '#800000', '#fcd34d'],
               borderColor: '#000000',
               borderWidth: 1
@@ -299,8 +304,7 @@
           plugins: [ChartDataLabels]
         });
       }
-    })();
-    <% }); %>
+    });
   });
 </script>
 
