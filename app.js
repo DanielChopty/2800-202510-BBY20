@@ -908,7 +908,8 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       available:      true,
       comments:       [],
       choices,
-      views: 0
+      views: 0,
+      savedBy: []
     }
 
     // Inserting the values into our database
@@ -1207,17 +1208,14 @@ function requireLogin(req, res, next) {
   next();
 }
 
-
-// Route to save a poll to a user's profile
 app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
   try {
     const pollId = req.params.pollId;
     const userId = req.session.user._id;
 
-     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
 
-    // Validate if pollId is a valid ObjectId
     if (!ObjectId.isValid(pollId)) {
       return res.status(400).json({ message: 'Invalid poll ID' });
     }
@@ -1229,43 +1227,44 @@ app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
       return res.status(404).json({ message: 'User or poll not found' });
     }
 
-    // Check if savedPolls array exists, if not create it
     if (!user.savedPolls) {
       await userCollection.updateOne(
         { _id: new ObjectId(userId) },
         { $set: { savedPolls: [] } }
       );
-      user.savedPolls = []; // Update local user object
+      user.savedPolls = [];
     }
 
-    // Check if the poll is already saved
     if (!user.savedPolls.some(savedId => savedId.equals(new ObjectId(pollId)))) {
       await userCollection.updateOne(
         { _id: new ObjectId(userId) },
         { $push: { savedPolls: new ObjectId(pollId) } }
       );
+
+      // Also update the poll document to track who saved it
+      await pollsCollection.updateOne(
+        { _id: new ObjectId(pollId) },
+        { $addToSet: { savedBy: req.session.email } }
+      );
+
       return res.status(200).json({ message: 'Poll saved successfully' });
     } else {
       return res.status(200).json({ message: 'Poll already saved' });
     }
-    // When there is an error saving a poll
   } catch (error) {
     console.error('Error saving poll:', error);
     res.status(500).json({ message: 'Failed to save poll' });
   }
 });
 
-
-// Route to unsave a poll from a user's profile
 app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
   try {
     const pollId = req.params.pollId;
     const userId = req.session.user._id;
 
-     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
 
-    // Validate if pollId is a valid ObjectId
     if (!ObjectId.isValid(pollId)) {
       return res.status(400).json({ message: 'Invalid poll ID' });
     }
@@ -1276,11 +1275,17 @@ app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove the poll ID from the savedPolls array
     await userCollection.updateOne(
       { _id: new ObjectId(userId) },
       { $pull: { savedPolls: new ObjectId(pollId) } }
     );
+
+    // Also update the poll document to remove user from savedBy
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(pollId) },
+      { $pull: { savedBy: req.session.email } }
+    );
+
     return res.status(200).json({ message: 'Poll unsaved successfully' });
   } catch (error) {
     console.error('Error unsaving poll:', error);
