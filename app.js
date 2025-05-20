@@ -446,10 +446,6 @@ app.get('/profile', async (req, res) => {
         .toArray();
     }
 
-    const userPolls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
-const totalViews = userPolls.reduce((sum, p) => sum + (p.views || 0), 0);
-const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
-
     // Read the personalized message from the session
     const personalizedMessage = req.session.personalizedMessage || '';
     req.session.personalizedMessage = ''; // Clear it after using
@@ -460,8 +456,7 @@ const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
       username: user.name,
       user: user,
       savedPolls: savedPollsData,
-      personalizedMessage: personalizedMessage,
-      averageViews: averageViews.toFixed(2)
+      personalizedMessage: personalizedMessage
     });
     
   } catch (error) {
@@ -1053,6 +1048,10 @@ app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
       .find({ createdBy: req.session.email })
       .toArray();
 
+      const userPolls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
+const totalViews = userPolls.reduce((sum, p) => sum + (p.views || 0), 0);
+const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
+
     // Sort alphabetically by default
     polls.sort((a, b) => a.title.localeCompare(b.title));
 
@@ -1060,7 +1059,8 @@ app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
       title: 'Poll Statistics',
       user: req.session.user,
       polls,
-      sort: sortOption
+      sort: sortOption,
+      averageViews: averageViews.toFixed(2)
     });
   } catch (err) {
     console.error('Error fetching poll statistics:', err);
