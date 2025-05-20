@@ -623,7 +623,16 @@ app.post('/update-feelings', async (req, res) => {
 
     // Get user data again after the feelings update
     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
     const user = await userCollection.findOne({ email: req.session.email });
+
+     // Fetch saved polls if any exist (again after user clicks on the random message button)
+    let savedPollsData = [];
+    if (user.savedPolls && user.savedPolls.length > 0) {
+      savedPollsData = await pollsCollection
+        .find({ _id: { $in: user.savedPolls.map(id => new ObjectId(id)) } })
+        .toArray();
+    }
 
     if (!user) return res.redirect('/');
 
@@ -631,7 +640,7 @@ app.post('/update-feelings', async (req, res) => {
       title: 'Profile',
       username: user.name,
       user: user,
-       savedPolls: user.savedPolls || [],
+       savedPolls: savedPollsData,
       personalizedMessage: personalizedMessage,
     });
   } catch (error) {
@@ -784,6 +793,15 @@ app.get('/polls', async (req, res) => {
     // Getting polls collection from the database using the variable MONGODB_DATABASE_POLLS
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
     const polls = await pollsCollection.find({ available: true }).toArray();
+
+    polls.forEach(poll => {
+  if (typeof poll.tags === 'string') {
+    poll.tags = poll.tags.split(',').map(tag => tag.trim());
+  } else if (!Array.isArray(poll.tags)) {
+    poll.tags = [];
+  }
+});
+
     // Renders the main.ejs template
     res.render('polls', {
       title: 'Available Polls',
@@ -1138,6 +1156,15 @@ app.get('/poll/:id', async (req, res) => {
   try {
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
     const poll = await pollsCollection.findOne({ _id: new ObjectId(req.params.id)});
+      // Making sure the tags are an array
+    if (poll) {
+  if (typeof poll.tags === 'string') {
+    poll.tags = poll.tags.split(',').map(tag => tag.trim());
+  } else if (!Array.isArray(poll.tags)) {
+    poll.tags = [];
+  }
+}
+
   
     if (!poll || !poll.available) {
       return res.status(404).render('404', { title: 'Poll Not Found' });
