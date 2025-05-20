@@ -1060,9 +1060,9 @@ const averageSaves = polls.length ? totalSaves / polls.length : 0;
 const maxSaves = Math.max(...polls.map(p => p.savedBy?.length || 0), averageSaves);
 
 // Comments calculations
-const totalComments = userPolls.reduce((sum, p) => sum + (p.comments?.length || 0), 0);
-const averageComments = userPolls.length ? totalComments / userPolls.length : 0;
-const maxComments = Math.max(...userPolls.map(p => (p.comments?.length || 0)), averageComments);
+const totalComments = polls.reduce((sum, p) => sum + (p.comments?.length || 0), 0);
+const averageComments = polls.length ? totalComments / polls.length : 0;
+const maxComments = Math.max(...polls.map(p => (p.comments?.length || 0)), averageComments);
 
     // Sort alphabetically by default
     polls.sort((a, b) => a.title.localeCompare(b.title));
