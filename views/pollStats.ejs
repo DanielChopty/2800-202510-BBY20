@@ -37,6 +37,15 @@
       font-size: 0.95rem;
       color: #6c757d;
     }
+
+    .progress-label {
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .progress {
+      height: 20px;
+    }
   </style>
 </head>
 
@@ -61,18 +70,20 @@
         <p class="text-muted">You haven't created any polls yet.</p>
       <% } else { %>
         <div class="list-group">
-          <% polls.forEach(poll => { %>
+          <% polls.forEach(poll => { 
+              const views = poll.views || 0;
+              const percent = averageViews > 0 ? Math.min((views / averageViews) * 100, 100) : 0;
+          %>
             <div class="list-group-item list-group-item-action card-box">
               <div class="poll-title mb-3"><%= poll.title %></div>
 
-              <div class="stat-info mb-1">
-                Views: <%= poll.views || 0 %> — 
-                <%= (poll.views || 0) > averageViews
-                      ? 'Above Average'
-                      : (poll.views || 0) < averageViews
-                        ? 'Below Average'
-                        : 'Equal to Average' %>
-                (<%= averageViews %> avg)
+              <div class="progress-label text-muted">
+                <%= views %> views (vs. avg <%= averageViews %>)
+              </div>
+              <div class="progress mb-2">
+                <div class="progress-bar bg-info" role="progressbar"
+                  style="width: <%= percent %>%;" aria-valuenow="<%= percent %>"
+                  aria-valuemin="0" aria-valuemax="100"></div>
               </div>
 
               <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %></small>
