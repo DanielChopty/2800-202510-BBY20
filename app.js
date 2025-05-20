@@ -446,9 +446,9 @@ app.get('/profile', async (req, res) => {
         .toArray();
     }
 
-    // ✅ Read the personalized message from the session
+    // Read the personalized message from the session
     const personalizedMessage = req.session.personalizedMessage || '';
-    req.session.personalizedMessage = ''; // ✅ Clear it after using
+    req.session.personalizedMessage = ''; // Clear it after using
 
     // Render profile with the saved polls and personalized message
     res.render('profile', {
@@ -458,6 +458,11 @@ app.get('/profile', async (req, res) => {
       savedPolls: savedPollsData,
       personalizedMessage: personalizedMessage
     });
+
+    const userPolls = await pollsCollection.find({ createdBy: req.session.email }).toArray();
+const totalViews = userPolls.reduce((sum, p) => sum + (p.views || 0), 0);
+const averageViews = userPolls.length ? totalViews / userPolls.length : 0;
+
   } catch (error) {
     console.error('Error rendering profile page:', error);
     res.status(500).render('500', { title: 'Server Error' });
@@ -1160,7 +1165,7 @@ app.get('/poll/:id', async (req, res) => {
     if (!poll || !poll.available) {
       return res.status(404).render('404', { title: 'Poll Not Found' });
     }
-    
+
     await pollsCollection.updateOne(
   { _id: new ObjectId(req.params.id) },
   { $inc: { views: 1 } }
