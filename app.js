@@ -1160,6 +1160,12 @@ app.get('/poll/:id', async (req, res) => {
     if (!poll || !poll.available) {
       return res.status(404).render('404', { title: 'Poll Not Found' });
     }
+    
+    await pollsCollection.updateOne(
+  { _id: new ObjectId(req.params.id) },
+  { $inc: { views: 1 } }
+);
+
 
     const votedPolls = req.session.votedPolls || {};
     res.render('pollDetail', {
