@@ -1067,7 +1067,9 @@ const maxSaves = Math.max(...polls.map(p => p.savedBy?.length || 0), averageSave
       polls,
       sort: sortOption,
       averageViews: averageViews.toFixed(2),
-      maxValue
+      averageSaves: averageSaves.toFixed(2),
+      maxViews,
+      maxSaves
     });
   } catch (err) {
     console.error('Error fetching poll statistics:', err);
