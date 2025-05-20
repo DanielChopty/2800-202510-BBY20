@@ -17,7 +17,6 @@ Other: OpenWeather API was used for user's location
 README.md
 app.js
 databaseConnection.js
-git
 images/Logo.png
 images/default.jpg
 package-lock.json
@@ -155,7 +154,14 @@ and local citizens can vote on them, and leave comments, leaving their valuable 
 so City Officials can collect their data.
 
 By making a citizen account in the app you have access to vote on any poll in the home page. Citizens can filter polls
-by the tag(s) a poll is given for easy navigation.
+by the tag(s) a poll is given for easy navigation. Furthermore, a citizen can vote on a poll and even leave a comment
+on what they think on the topic by clicking on the poll in the main page. Also, the app has personalization features for
+citizens to feel more engaged with the experience including profile pages where citizens can upload their own profile photo. 
+As well, the app offers citizens to be able to save polls to their profile page, for easy access to the polls they want to 
+vote on later, or keep track of. 
+
+On the other hand City Officials have a slightly different experience. When you create a City Official account, you are able to post
+polls for the citizens to vote on. Tags can be added to these polls so that they are better filtered and stand out. Also, City Officials have their own dashboard to view stats like which option citizens voted the most on their poll, and how many citizens saved their poll. 
 
 
 

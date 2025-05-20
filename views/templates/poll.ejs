@@ -69,9 +69,13 @@
 
     <!-- Save/Star Button -->
     <div class="ms-3">
-      <button class="btn btn-outline-warning btn-sm save-toggle-btn" data-poll-id="<%= poll._id %>" data-saved="false" title="Save Poll">
-        <i class="bi bi-star"></i>
-      </button>
+      <%
+  const isSaved = savedPollIds.includes(poll._id.toString());
+%>
+<button class="btn btn-outline-warning btn-sm save-toggle-btn" data-poll-id="<%= poll._id %>" title="<%= isSaved ? 'Unsave Poll' : 'Save Poll' %>">
+  <i class="bi <%= isSaved ? 'bi-star-fill' : 'bi-star' %>"></i>
+</button>
+
     </div>
   </div>
 </div>

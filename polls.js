@@ -46,7 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initially set the correct star icon based on user's saved polls (if logged in)
-    const savedPolls = JSON.parse(document.getElementById('saved-polls-data')?.textContent || '[]');
+   const savedPollsScript = document.getElementById('saved-polls-data');
+let savedPolls = [];
+
+if (savedPollsScript?.textContent) {
+  try {
+    savedPolls = JSON.parse(savedPollsScript.textContent);
+  } catch (err) {
+    console.error('Could not parse saved polls data:', err);
+  }
+}
+
     saveToggleButtons.forEach(button => {
       const pollId = button.dataset.pollId;
       const icon = button.querySelector('i');

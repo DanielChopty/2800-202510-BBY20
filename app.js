@@ -802,7 +802,7 @@ app.get('/polls', async (req, res) => {
   }
 });
 
-    // Renders the main.ejs template
+    // Renders the polls.ejs template
     res.render('polls', {
       title: 'Available Polls',
       // passing list of polls to the template
@@ -810,10 +810,12 @@ app.get('/polls', async (req, res) => {
       // Passing login status
       // Making sure a user is active and session is valid
       // If not system defaults to false / null
+      // making sure polls already saved are marked
       authenticated: req.session.authenticated || false,
       username: req.session.username || null,
       user: req.session.user || null,
-      votedPolls: req.session.votedPolls || []
+      votedPolls: req.session.votedPolls || [],
+      savedPollIds: req.session.user?.savedPolls?.map(p => p.toString()) || []
     });
 
   } catch (error) {
@@ -1232,6 +1234,12 @@ app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
         { _id: new ObjectId(userId) },
         { $push: { savedPolls: new ObjectId(pollId) } }
       );
+      // Also update the session object
+    if (!req.session.user.savedPolls) {
+      req.session.user.savedPolls = [];
+        }
+          req.session.user.savedPolls.push(pollId);
+
       return res.status(200).json({ message: 'Poll saved successfully' });
     } else {
       return res.status(200).json({ message: 'Poll already saved' });
@@ -1269,6 +1277,14 @@ app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
       { _id: new ObjectId(userId) },
       { $pull: { savedPolls: new ObjectId(pollId) } }
     );
+
+    // Also remove from session
+    if (Array.isArray(req.session.user.savedPolls)) {
+      req.session.user.savedPolls = req.session.user.savedPolls.filter(
+        id => id.toString() !== pollId.toString()
+      );
+    }
+    
     return res.status(200).json({ message: 'Poll unsaved successfully' });
   } catch (error) {
     console.error('Error unsaving poll:', error);
