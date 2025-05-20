@@ -94,11 +94,19 @@
       <div class="card shadow border-0 rounded-4 p-4">
         <h1 class="mb-4">Poll Statistics</h1>
 
-        <!-- Sort Alphabetically -->
+        <!-- Sort Buttons -->
         <div class="d-flex justify-content-start gap-3 mb-3">
+
+          <!-- Alphabetical -->
           <a href="/pollstats?sort=all" class="btn btn-site-blue text-white"
             style="<%= (!sort || sort === 'all') ? 'color: #ffffff !important; outline: 3px solid #FFD700; outline-offset: 2px;' : 'color: #ffffff !important;' %>">
             Sort Alphabetically
+          </a>
+
+          <!-- Most Viewed -->
+          <a href="/pollstats?sort=views" class="btn text-white"
+            style="background-color: #6f42c1; border: none; <%= (sort === 'views') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+            Most Viewed
           </a>
         </div>
 
