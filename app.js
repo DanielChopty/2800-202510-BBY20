@@ -1062,7 +1062,7 @@ const maxSaves = Math.max(...polls.map(p => p.savedBy?.length || 0), averageSave
     // Sort alphabetically by default
     polls.sort((a, b) => a.title.localeCompare(b.title));
 
-    res.render('pollstats', {
+    res.render('pollStats', {
       title: 'Poll Statistics',
       user: req.session.user,
       polls,
