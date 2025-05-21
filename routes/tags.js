@@ -3,10 +3,9 @@ const express = require('express');
 const { ObjectId } = require('mongodb');
 const router = express.Router();
 const { database } = require('../config/databaseConnection');
-const { isAuthenticated } = require('../middleware/auth');
-
+const { isAuthenticated, isAdmin } = require('../middleware/auth');
 // GET /manageTags - Show tag management page
-router.get('/manageTags', isAuthenticated, async (req, res) => {
+router.get('/manageTags', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const pollsColl = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
     const myPolls = await pollsColl.find({ createdBy: req.session.email }).toArray();

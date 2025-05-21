@@ -3,7 +3,7 @@ const express = require('express');
 const { ObjectId } = require('mongodb');
 const router = express.Router();
 const { database } = require('../config/databaseConnection');
-const { isAuthenticated } = require('../middleware/auth');
+const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
 // GET all available polls
 router.get('/polls', async (req, res) => {
@@ -145,7 +145,7 @@ router.get('/poll/:id', async (req, res) => {
   }
 });
 
-router.get('/createPoll', isAuthenticated, (req, res) => {
+router.get('/createPoll', isAuthenticated, isAdmin, (req, res) => {
   const created = req.query.created === 'true';
   res.render('createPoll', { created });
 });
