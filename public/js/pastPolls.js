@@ -122,9 +122,51 @@ function confirmDelete(event, pollId) {
   return false;
 }
 
+// Enforce at least two valid option inputs before form submission
+function validateOptions() {
+  const optionInputs = document.querySelectorAll('#editPollForm .option-input');
+  let validCount = 0;
+
+  optionInputs.forEach(input => {
+    if (input.value.trim().length > 0) {
+      validCount++;
+    }
+  });
+
+  // Clear previous validation state
+  optionInputs.forEach(input => {
+    input.setCustomValidity('');
+  });
+
+  if (validCount < 2) {
+    // Set error on first two inputs
+    optionInputs[0].setCustomValidity('Please enter at least two valid options.');
+    optionInputs[1].setCustomValidity('Please enter at least two valid options.');
+    return false;
+  }
+
+  return true;
+}
+
 // Edit poll confirmation script
 function confirmEdit(event) {
   event.preventDefault();
+
+  const optionInputs = document.querySelectorAll('.option-input');
+  const filledOptions = Array.from(optionInputs).filter(input => input.value.trim() !== '');
+
+  if (filledOptions.length < 2) {
+    // Find the first option input and show native tooltip
+    optionInputs[0].setCustomValidity('Please enter at least two options.');
+    optionInputs[0].reportValidity();
+
+    // Clear the error after a short delay
+    setTimeout(() => {
+      optionInputs[0].setCustomValidity('');
+    }, 2000);
+    return false;
+  }
+
   Swal.fire({
     title: 'Are you sure?',
     text: 'Do you want to save these changes to the poll?',
@@ -138,6 +180,7 @@ function confirmEdit(event) {
       document.getElementById('editPollForm').submit();
     }
   });
+
   return false;
 }
 
