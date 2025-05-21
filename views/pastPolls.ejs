@@ -42,7 +42,7 @@
 
         </div>
 
-        <hr>
+        <hr />
 
         <!-- Primary polls display; displays only your polls -->
         <% if (polls.length===0) { %>
@@ -88,7 +88,11 @@
                                     <%= poll.description %>
                                       <% } %>
                           </p>
+
                           <div id="details-<%= poll._id %>" style="display: none;" class="mt-3">
+
+                            <hr />
+
                             <p class="mb-1 text-muted">Answer Options:</p>
                             <ul>
                               <% poll.choices.forEach(choice=> { %>
@@ -99,12 +103,18 @@
                                 </li>
                                 <% }); %>
                             </ul>
+
+                            <hr />
+
                             <p class="mb-1 text-muted">Start Date: <strong>
                                 <%= poll.startDate ? new Date(poll.startDate).toLocaleDateString() : 'Not Set' %>
                               </strong></p>
                             <p class="mb-1 text-muted">End Date: <strong>
                                 <%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %>
                               </strong></p>
+
+                              <hr />
+                              
                             <!-- Tags Section -->
                             <p class="mt-3 text-muted mb-1">Tags:</p>
                             <div class="mb-2">
