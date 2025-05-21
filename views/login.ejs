@@ -20,7 +20,7 @@
 
       <form action="/login" method="POST">
         <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
+          <label for="email" class="form-label">Email address <span class="text-danger">*</span></label>
           <input
             type="email"
             class="form-control"
@@ -31,7 +31,7 @@
         </div>
 
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
+          <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
           <input
             type="password"
             class="form-control"
@@ -51,7 +51,7 @@
           <button
             type="submit"
             class="btn text-white"
-            style="background-color: #f36f21;" <!-- Civic Orange -->
+            style="background-color: #f36f21;">
             Log In
           </button>
         </div>
