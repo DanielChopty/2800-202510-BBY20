@@ -240,10 +240,19 @@ spent on the debugging process.
 # Contact Information
 
 Daniel Chopty: 
+dchopty@my.bcit.ca
+
 Jayden Bergstrome: 
-Mykyta Bozhanov:  
-Baltaj Bhandal: bbhandal5@my.bcit.ca
+jbergstrome@my.bcit.ca
+
+Mykyta Bozhanov: 
+mbozhanov@my.bcit.ca
+
+Baltaj Bhandal: 
+bbhandal5@my.bcit.ca
+
 Jun Morimoto: 
+Jmorimoto@my.bcit.ca
 
 
 
