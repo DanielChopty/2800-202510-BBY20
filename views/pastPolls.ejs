@@ -17,7 +17,14 @@
 
     <div class="container my-5">
       <div class="card shadow border-0 rounded-4 p-4">
-        <h1 class="mb-4">Your Polls</h1>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h1 class="mb-0">Your Polls</h1>
+          <form method="POST" action="/delete-all-polls" onsubmit="return confirmDeleteAll()">
+            <button type="submit" class="btn btn-danger btn-sm">
+              <i class="bi bi-trash-fill me-1"></i> Delete All
+            </button>
+          </form>
+        </div>
 
         <!-- Sort Controls -->
         <div class="d-flex justify-content-start gap-3 mb-3">
@@ -285,5 +292,4 @@
       <script src="/js/pastPolls.js"></script>
 
 </body>
-
 </html>
