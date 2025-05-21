@@ -19,7 +19,7 @@
       <div class="card shadow border-0 rounded-4 p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h1 class="mb-0">Your Polls</h1>
-          <form method="POST" action="/delete-all-polls" onsubmit="return confirmDeleteAll()" class="ms-auto">
+          <form id="deleteAllForm" method="POST" action="/delete-all-polls" class="ms-auto">
             <button type="submit" class="btn btn-danger d-flex justify-content-center align-items-center"
               style="width: 48px; height: 48px; border-radius: 0.5rem;" title="Delete All Polls">
               <i class="bi bi-trash-fill fs-4"></i>

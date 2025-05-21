@@ -256,6 +256,29 @@ function confirmEdit(event) {
   return false;
 }
 
+function setupDeleteAllListener() {
+  const form = document.getElementById('deleteAllForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); // Stop form from submitting immediately
+
+    Swal.fire({
+      title: 'Delete All Polls?',
+      text: 'This will permanently delete all polls you’ve created.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete all!',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc3545'
+    }).then(result => {
+      if (result.isConfirmed) {
+        form.submit(); // Only submit if confirmed
+      }
+    });
+  });
+}
+
 // Event listener to give acknowledgement message that poll has been deleted/edited
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -284,9 +307,43 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  if (urlParams.get('deletedAll') === 'true') {
+    Swal.fire({
+      icon: 'success',
+      title: 'All Polls Deleted',
+      text: 'All your polls have been removed.',
+      confirmButtonColor: '#003366'
+    }).then(() => {
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    });
+  }
+
   // Attach reset button listener
   const resetBtn = document.getElementById('resetEditBtn');
   if (resetBtn) {
     resetBtn.addEventListener('click', resetEditPollForm);
+  }
+
+  // Attach delete all polls confirmation listener
+  const deleteAllForm = document.getElementById('deleteAllForm');
+  if (deleteAllForm) {
+    deleteAllForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      Swal.fire({
+        title: 'Delete All Polls?',
+        text: 'This will permanently delete all polls you’ve created.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete all!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc3545'
+      }).then(result => {
+        if (result.isConfirmed) {
+          deleteAllForm.submit();
+        }
+      });
+    });
   }
 });
