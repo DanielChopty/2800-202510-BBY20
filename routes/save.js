@@ -5,7 +5,7 @@ const router = express.Router();
 const { database } = require('../config/databaseConnection');
 const { isAuthenticated } = require('../middleware/auth');
 
-// POST /save-poll/:pollId
+// POST /save-poll/:pollId - Save a poll to the current user's list
 router.post('/save-poll/:pollId', isAuthenticated, async (req, res) => {
   try {
     const pollId = req.params.pollId;
@@ -37,6 +37,11 @@ router.post('/save-poll/:pollId', isAuthenticated, async (req, res) => {
         { $push: { savedPolls: new ObjectId(pollId) } }
       );
 
+      await pollsCollection.updateOne(
+        { _id: new ObjectId(pollId) },
+        { $addToSet: { savedBy: req.session.email } } // Add user to savedBy array
+      );
+
       if (!req.session.user.savedPolls) {
         req.session.user.savedPolls = [];
       }
@@ -59,6 +64,7 @@ router.delete('/unsave-poll/:pollId', isAuthenticated, async (req, res) => {
     const userId = req.session.user._id;
 
     const userCollection = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
 
     if (!ObjectId.isValid(pollId)) {
       return res.status(400).json({ message: 'Invalid poll ID' });
@@ -67,6 +73,11 @@ router.delete('/unsave-poll/:pollId', isAuthenticated, async (req, res) => {
     await userCollection.updateOne(
       { _id: new ObjectId(userId) },
       { $pull: { savedPolls: new ObjectId(pollId) } }
+    );
+
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(pollId) },
+      { $pull: { savedBy: req.session.email } } // Remove user from savedBy
     );
 
     if (Array.isArray(req.session.user.savedPolls)) {
