@@ -1,0 +1,30 @@
+/* CSS FOR 404 PAGE */
+
+.emoji {
+  font-size: 6rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.btn-home {
+  background-color: #f36f21;
+  color: white;
+  border: none;
+}
+
+.btn-home:hover {
+  background-color: #d95e18;
+  color: white;
+}
+
+.error-container {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
