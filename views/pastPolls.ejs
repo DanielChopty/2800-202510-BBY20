@@ -177,37 +177,39 @@
               <input type="hidden" id="pollId" name="pollId">
 
               <!-- Question -->
-<div class="mb-3">
-  <label for="title" class="form-label">Poll Question <span class="text-danger">*</span></label>
-  <input type="text" class="form-control" id="title" name="title" placeholder="Enter the poll question" required>
-</div>
+              <div class="mb-3">
+                <label for="title" class="form-label">Poll Question <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Enter the poll question"
+                  required>
+              </div>
 
-<!-- Description -->
-<div class="mb-3">
-  <label for="description" class="form-label">Description</label>
-  <textarea class="form-control" id="description" name="description" rows="3"
-    placeholder="Enter a short description for the poll..."></textarea>
-</div>
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3"
+                  placeholder="Enter a short description for the poll..."></textarea>
+              </div>
 
-<!-- Options -->
-<div class="mb-3">
-  <label class="form-label">Options (Enter at least two) <span class="text-danger">*</span></label>
-  <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 1">
-  <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 2">
-  <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 3 (optional)">
-  <input type="text" name="options[]" class="form-control option-input" placeholder="Option 4 (optional)">
-</div>
+              <!-- Options -->
+              <div class="mb-3">
+                <label class="form-label">Options (Enter at least two) <span class="text-danger">*</span></label>
+                <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 1">
+                <input type="text" name="options[]" class="form-control mb-2 option-input" placeholder="Option 2">
+                <input type="text" name="options[]" class="form-control mb-2 option-input"
+                  placeholder="Option 3 (optional)">
+                <input type="text" name="options[]" class="form-control option-input" placeholder="Option 4 (optional)">
+              </div>
 
-<!-- Importance -->
-<div class="mb-3">
-  <label for="importance" class="form-label">Importance <span class="text-danger">*</span></label>
-  <select class="form-select" id="importance" name="importance" required>
-    <option disabled selected>Choose importance</option>
-    <option value="Low">Low</option>
-    <option value="Medium">Medium</option>
-    <option value="High">High</option>
-  </select>
-</div>
+              <!-- Importance -->
+              <div class="mb-3">
+                <label for="importance" class="form-label">Importance <span class="text-danger">*</span></label>
+                <select class="form-select" id="importance" name="importance" required>
+                  <option disabled selected>Choose importance</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
 
               <!-- Start and End Dates -->
               <div class="row mb-3">
@@ -267,6 +269,7 @@
 
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-outline-secondary" id="resetEditBtn">Reset</button>
               <button type="submit" class="btn btn-site-orange text-white">Save Changes</button>
             </div>
           </div>
