@@ -1,0 +1,76 @@
+/* CSS FOR POLLSTATS.EJS */
+
+.btn-site-blue {
+  background-color: #003366 !important;
+  color: #060505 !important;
+  border: none !important;
+  transition: background-color 0.3s ease;
+}
+
+.btn-site-blue:hover {
+  background-color: #002244 !important;
+}
+
+.card-box {
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  background-color: #ffffff;
+}
+
+.poll-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.stat-info {
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.progress {
+  height: 20px;
+}
+
+.btn-view-green {
+  background-color: #198754 !important;
+  color: #ffffff !important;
+  border: none !important;
+  transition: background-color 0.3s ease;
+  font-size: 1.25rem;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.8rem;
+}
+
+.btn-view-green:hover {
+  background-color: #146c43 !important;
+}
+
+.btn-view-square {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #ffffff !important;
+  background-color: #198754 !important;
+  /* Bootstrap success green */
+  border: none !important;
+  font-size: 1.25rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background-color 0.3s ease;
+}
+
+.btn-view-square:hover {
+  background-color: #146c43 !important;
+}
