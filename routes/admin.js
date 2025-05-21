@@ -11,7 +11,7 @@ router.get('/admin', isAuthenticated, isAdmin, async (req, res) => {
     const userCollection = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
     const users = await userCollection.find().toArray();
 
-    res.render('admin', {
+    res.render('adminDashboard', {
       title: 'Admin Dashboard',
       users,
       user: req.session.user
@@ -28,7 +28,7 @@ router.get('/promote/:id', isAuthenticated, isAdmin, async (req, res) => {
     const userId = new ObjectId(req.params.id);
     const userCollection = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
     await userCollection.updateOne({ _id: userId }, { $set: { user_type: 'admin' } });
-    res.redirect('/admin');
+    res.redirect('/adminDashboard');
   } catch (error) {
     console.error('Error promoting user:', error);
     res.status(500).render('500', { title: 'Server Error' });
@@ -41,7 +41,7 @@ router.get('/demote/:id', isAuthenticated, isAdmin, async (req, res) => {
     const userId = new ObjectId(req.params.id);
     const userCollection = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
     await userCollection.updateOne({ _id: userId }, { $set: { user_type: 'user' } });
-    res.redirect('/admin');
+    res.redirect('/adminDashboard');
   } catch (error) {
     console.error('Error demoting user:', error);
     res.status(500).render('500', { title: 'Server Error' });
