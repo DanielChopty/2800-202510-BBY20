@@ -99,7 +99,8 @@
                                 <li><span class="text-muted">
                                     <%= choice.text %> - <strong>
                                         <%= choice.votes %>
-                                      </strong> votes
+                                      </strong>
+                                      <%= choice.votes===1 ? 'vote' : 'votes' %>
                                   </span></li>
                                 <% }); %>
                             </ul>
