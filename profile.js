@@ -1,4 +1,4 @@
-// All the code the will be needed for profile.ejs to accuratly show saved polls
+// All the code the will be needed for profile.ejs to accurately show saved polls
 
 document.addEventListener('DOMContentLoaded', () => {
   const unsaveButtons = document.querySelectorAll('.save-toggle-btn.saved'); // Target only those already saved
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reload to update the list on the profile page
             window.location.reload();
           } else {
-            // catching an error that occurrs when unsaving a poll from the profile page
+            // catching an error that occurs when unsaving a poll from the profile page
             console.error('Unsave error:', data);
             alert('Failed to unsave.');
           }

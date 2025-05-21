@@ -32,7 +32,7 @@ const path = require('path');
 const app = express();
 
 const port = PORT || 8080;
-const expireTime = 60 * 60 * 1000; // 1 hour session expiration
+const expireTime = 60 * 60 * 1000 * 24; // 24 hour session expiration
 
 
 // Set EJS as the templating engine
@@ -432,6 +432,7 @@ app.get('/profile', async (req, res) => {
 
     // Fetch the user based on their email
     const user = await userCollection.findOne({ email: req.session.email });
+
     // If the user does not exist in the database, redirect them to the home page
     if (!user) {
       return res.redirect('/');
@@ -445,8 +446,9 @@ app.get('/profile', async (req, res) => {
         .toArray();
     }
 
-    // Initialize personalizedMessage as empty string by default
-    const personalizedMessage = '';
+    // Read the personalized message from the session
+    const personalizedMessage = req.session.personalizedMessage || '';
+    req.session.personalizedMessage = ''; // Clear it after using
 
     // Render profile with the saved polls and personalized message
     res.render('profile', {
@@ -456,6 +458,7 @@ app.get('/profile', async (req, res) => {
       savedPolls: savedPollsData,
       personalizedMessage: personalizedMessage
     });
+    
   } catch (error) {
     console.error('Error rendering profile page:', error);
     res.status(500).render('500', { title: 'Server Error' });
@@ -613,12 +616,10 @@ app.post('/update-feelings', async (req, res) => {
           'Zero regrets, just lessons learned.'
         ],
       };
-       // Pick a random message from the array of messages for the first letter
-      const letterMessages = messages[firstLetter] || ['Thanks for sharing! You are unique and awesome!']; // Default message
+
+      // Pick a random message from the array of messages for the first letter
+      const letterMessages = messages[firstLetter] || ['Thanks for sharing! You are unique and awesome!'];
       personalizedMessage = letterMessages[Math.floor(Math.random() * letterMessages.length)];
-
-    
-
     }
 
     // Get user data again after the feelings update
@@ -648,7 +649,6 @@ app.post('/update-feelings', async (req, res) => {
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
-
   
 // About page (public or protected, choose based on need)
 app.get('/about', (req, res) => {
@@ -935,7 +935,9 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
       createdAt:      new Date(),
       available:      true,
       comments:       [],
-      choices
+      choices,
+      views: 0,
+      savedBy: []
     }
 
     // Inserting the values into our database
@@ -955,7 +957,6 @@ app.post('/createPoll', isAuthenticated, async (req, res) => {
   }
 });
 
-// Past polls page route
 // Past polls page route
 app.get('/pastpolls', isAuthenticated, isAdmin, async (req, res) => {
   try {
@@ -1060,6 +1061,77 @@ app.post('/editpoll/:id', isAuthenticated, isAdmin, async (req, res) => {
     res.redirect('/pastpolls?edited=true');
   } catch (error) {
     console.error('Error editing poll:', error);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+// GET route for pollStats.ejs (poll statistics/insights page for admins)
+app.get('/pollstats', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const sortOption = req.query.sort || 'all';
+
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    let polls = await pollsCollection
+      .find({ createdBy: req.session.email })
+      .toArray();
+
+    // Views calculations
+    const totalViews = polls.reduce((sum, p) => sum + (p.views || 0), 0);
+    const averageViews = polls.length ? totalViews / polls.length : 0;
+    const maxViews = Math.max(...polls.map(p => p.views || 0), averageViews);
+
+    // Saves calculations
+    const totalSaves = polls.reduce((sum, p) => sum + (p.savedBy?.length || 0), 0);
+    const averageSaves = polls.length ? totalSaves / polls.length : 0;
+    const maxSaves = Math.max(...polls.map(p => p.savedBy?.length || 0), averageSaves);
+
+    // Comments calculations
+    const totalComments = polls.reduce((sum, p) => sum + (p.comments?.length || 0), 0);
+    const averageComments = polls.length ? totalComments / polls.length : 0;
+    const maxComments = Math.max(...polls.map(p => (p.comments?.length || 0)), averageComments);
+
+    // Sorting logic (most viewed, favourited, commented, or alphabetical)
+    if (sortOption === 'views') {
+      polls.sort((a, b) => {
+        const diff = (b.views || 0) - (a.views || 0);
+        return diff !== 0 ? diff : a.title.localeCompare(b.title);
+      });
+    } else if (sortOption === 'saves') {
+      polls.sort((a, b) => {
+        const aSaves = a.savedBy?.length || 0;
+        const bSaves = b.savedBy?.length || 0;
+        const diff = bSaves - aSaves;
+        return diff !== 0 ? diff : a.title.localeCompare(b.title);
+      });
+    } else if (sortOption === 'comments') {
+      polls.sort((a, b) => {
+        const aComments = a.comments?.length || 0;
+        const bComments = b.comments?.length || 0;
+        const diff = bComments - aComments;
+        return diff !== 0 ? diff : a.title.localeCompare(b.title);
+      });
+    } else {
+      // Default alphabetical
+      polls.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    res.render('pollStats', {
+      title: 'Poll Statistics',
+      user: req.session.user,
+      polls,
+      sort: sortOption,
+      averageViews: averageViews.toFixed(2),
+      averageSaves: averageSaves.toFixed(2),
+      averageComments: averageComments.toFixed(2),
+      maxViews,
+      maxSaves,
+      maxComments
+    });
+  } catch (err) {
+    console.error('Error fetching poll statistics:', err);
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
@@ -1172,6 +1244,12 @@ app.get('/poll/:id', async (req, res) => {
       return res.status(404).render('404', { title: 'Poll Not Found' });
     }
 
+    await pollsCollection.updateOne(
+  { _id: new ObjectId(req.params.id) },
+  { $inc: { views: 1 } }
+);
+
+
     const votedPolls = req.session.votedPolls || {};
     res.render('pollDetail', {
       title: poll.title,
@@ -1197,17 +1275,14 @@ function requireLogin(req, res, next) {
   next();
 }
 
-
-// Route to save a poll to a user's profile
 app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
   try {
     const pollId = req.params.pollId;
     const userId = req.session.user._id;
 
-     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
 
-    // Validate if pollId is a valid ObjectId
     if (!ObjectId.isValid(pollId)) {
       return res.status(400).json({ message: 'Invalid poll ID' });
     }
@@ -1219,16 +1294,14 @@ app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
       return res.status(404).json({ message: 'User or poll not found' });
     }
 
-    // Check if savedPolls array exists, if not create it
     if (!user.savedPolls) {
       await userCollection.updateOne(
         { _id: new ObjectId(userId) },
         { $set: { savedPolls: [] } }
       );
-      user.savedPolls = []; // Update local user object
+      user.savedPolls = [];
     }
 
-    // Check if the poll is already saved
     if (!user.savedPolls.some(savedId => savedId.equals(new ObjectId(pollId)))) {
       await userCollection.updateOne(
         { _id: new ObjectId(userId) },
@@ -1244,24 +1317,20 @@ app.post('/save-poll/:pollId', requireLogin, async (req, res) => {
     } else {
       return res.status(200).json({ message: 'Poll already saved' });
     }
-    // When there is an error saving a poll
   } catch (error) {
     console.error('Error saving poll:', error);
     res.status(500).json({ message: 'Failed to save poll' });
   }
 });
 
-
-// Route to unsave a poll from a user's profile
 app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
   try {
     const pollId = req.params.pollId;
     const userId = req.session.user._id;
 
-     const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
-     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    const userCollection = database.db(MONGODB_DATABASE_USERS).collection('users');
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
 
-    // Validate if pollId is a valid ObjectId
     if (!ObjectId.isValid(pollId)) {
       return res.status(400).json({ message: 'Invalid poll ID' });
     }
@@ -1272,7 +1341,6 @@ app.delete('/unsave-poll/:pollId', requireLogin, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove the poll ID from the savedPolls array
     await userCollection.updateOne(
       { _id: new ObjectId(userId) },
       { $pull: { savedPolls: new ObjectId(pollId) } }

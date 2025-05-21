@@ -34,15 +34,17 @@
     }
 
     .btn-maroon {
-  background-color: #800000 !important; /* Maroon */
-  color: #ffffff !important;
-  border: none !important;
-  transition: background-color 0.3s ease;
-}
+      background-color: #800000 !important;
+      /* Maroon */
+      color: #ffffff !important;
+      border: none !important;
+      transition: background-color 0.3s ease;
+    }
 
-.btn-maroon:hover {
-  background-color: #660000 !important; /* Darker maroon on hover */
-}
+    .btn-maroon:hover {
+      background-color: #660000 !important;
+      /* Darker maroon on hover */
+    }
 
     /* Action Buttons (Edit/Delete/Details) */
     .btn-edit-grey,
@@ -121,7 +123,7 @@
 
     @media (max-width: 1000px) {
       .poll-content {
-      /* Leaves space for buttons on smaller screen widths */
+        /* Leaves space for buttons on smaller screen widths */
         max-width: calc(100% - 120px);
       }
     }
@@ -138,25 +140,25 @@
         <!-- Sort Controls -->
         <div class="d-flex justify-content-start gap-3 mb-3">
 
-  <!-- Sort alphabetically -->
-  <a href="/pastpolls?sort=all" class="btn btn-site-blue text-white"
-    style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-    Sort Alphabetically
-  </a>
+          <!-- Sort alphabetically -->
+          <a href="/pastpolls?sort=all" class="btn btn-site-blue text-white"
+            style="<%= (!sort || sort === 'all') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+            Sort Alphabetically
+          </a>
 
-  <!-- Sort by importance -->
-  <a href="/pastpolls?sort=importance" class="btn btn-site-orange text-white"
-    style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-    Sort by Importance
-  </a>
+          <!-- Sort by importance -->
+          <a href="/pastpolls?sort=importance" class="btn btn-site-orange text-white"
+            style="<%= (sort === 'importance') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+            Sort by Importance
+          </a>
 
-  <!-- Sort by creation date -->
-  <a href="/pastpolls?sort=date" class="btn btn-maroon text-white"
-    style="<%= (sort === 'date') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-    Sort by Creation Date
-  </a>
+          <!-- Sort by creation date -->
+          <a href="/pastpolls?sort=date" class="btn btn-maroon text-white"
+            style="<%= (sort === 'date') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
+            Sort by Creation Date
+          </a>
 
-</div>
+        </div>
 
         <hr>
 
@@ -173,7 +175,7 @@
 
                       <!-- Primary details (always visible) -->
                       <div class="d-flex align-items-baseline mb-3">
-                        <h5 class="mb-0 me-3">
+                        <h5 class="mb-0 me-3 fw-bold">
                           <%= poll.title %>
                         </h5>
                         <a href="javascript:void(0);" id="toggle-<%= poll._id %>"
@@ -194,7 +196,7 @@
                           </strong></p>
                         <% } %>
 
-                          <!-- Additional details (visible only if user clicks 'expand')-->
+                          <!-- Additional details (visible only if the user clicks 'expand')-->
                           <p class="mb-1 text-muted description-text" id="desc-<%= poll._id %>">
                             <% if (!poll.description) { %>
                               No description provided.
@@ -221,20 +223,21 @@
                             <p class="mb-1 text-muted">End Date: <strong>
                                 <%= poll.endDate ? new Date(poll.endDate).toLocaleDateString() : 'Not Set' %>
                               </strong></p>
-                              <!-- Tags Section -->
-  <p class="mt-3 mb-1 text-muted">Tags:</p>
-<div class="mb-2">
-  <% if (poll.tags && poll.tags.length > 0) { 
-       const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(','); 
-       tagsArray.forEach(tag => { %>
-        <span class="badge bg-info text-dark me-1 mb-1"><%= tag.trim() %></span>
-  <% }); 
-     } else { %>
-    <span class="text-muted">No tags provided.</span>
-  <% } %>
-</div>
+                            <!-- Tags Section -->
+                            <p class="mt-3 text-muted mb-1">Tags:</p>
+                            <div class="mb-2">
+                              <% if (poll.tags && poll.tags.length> 0) {
+                                const tagsArray = Array.isArray(poll.tags) ? poll.tags : poll.tags.split(',');
+                                tagsArray.forEach(tag => { %>
+                                <span class="badge bg-info text-dark mb-1">
+                                  <%= tag.trim() %>
+                                </span>
+                                <% }); } else { %>
+                                  <span class="text-muted mb-1">No tags provided.</span>
+                                  <% } %>
+                            </div>
                           </div>
-                          <small class="d-block mt-3">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
+                          <small class="d-block mt-4">Created on: <%= new Date(poll.createdAt).toLocaleDateString() %>
                           </small>
                     </div>
 
