@@ -106,19 +106,19 @@
           <!-- Most Viewed -->
           <a href="/pollstats?sort=views" class="btn text-white"
             style="background-color: #6139ab; border: none; <%= (sort === 'views') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-            Most Viewed
+            Most Views
           </a>
 
           <!-- Most Favourited -->
           <a href="/pollstats?sort=saves" class="btn text-white"
             style="background-color: #787603; <%= (sort === 'saves') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-            Most Favourited
+            Most Saves
           </a>
 
           <!-- Most Commented -->
           <a href="/pollstats?sort=comments" class="btn text-white"
             style="background-color: #8b0166; <%= (sort === 'comments') ? 'outline: 3px solid #FFD700; outline-offset: 2px;' : '' %>">
-            Most Commented
+            Most Comments
           </a>
 
         </div>
@@ -187,7 +187,7 @@
                               </div>
                             </div>
 
-                            <hr />
+                            <hr class="mt-4"/>
 
                             <!-- Saves -->
                             <div class="stat-info mt-4 mb-2 fw-bold">Saves: This Poll vs. Your Average</div>
@@ -214,7 +214,7 @@
                               </div>
                             </div>
 
-                            <hr />
+                            <hr class="mt-4"/>
 
                             <!-- Comments -->
                             <div class="stat-info mt-4 mb-2 fw-bold">Comments: This Poll vs. Your Average</div>
@@ -242,7 +242,7 @@
                               </div>
                             </div>
 
-                            <hr />
+                            <hr class="mt-4"/>
 
                             <!-- Pie Chart Header -->
                             <div class="stat-info mt-4 mb-2 fw-bold">Results: Breakdown of Votes</div>
