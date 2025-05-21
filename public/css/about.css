@@ -1,0 +1,79 @@
+/* CSS FOR ABOUT.EJS */
+
+body {
+  background: url('/images/homepage-background.png') no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+  color: white;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+.header-section, .footer-section {
+  background-color: rgba(30, 56, 138, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+.logo {
+  max-width: 120px;
+  height: auto;
+  display: block;
+  margin: 0 auto 1rem auto;
+}
+
+.topic {
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.topic-dedication {
+  background-color: rgba(96, 165, 250, 0.8);
+}
+
+.topic-creativity {
+  background-color: rgba(250, 204, 21, 0.85);
+  color: #222;
+  text-shadow: none;
+}
+
+.topic-teamwork {
+  background-color: rgba(249, 115, 22, 0.85);
+}
+
+h1, h2, h5 {
+  font-family: "Roboto Slab", serif;
+}
+
+.emoji {
+  display: inline-block;
+  animation: timedBounce 6s infinite;
+}
+
+@keyframes timedBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  5% {
+    transform: translateY(-20px);
+  }
+
+  10% {
+    transform: translateY(0);
+  }
+}
+
+.footer-section h5 {
+  margin-bottom: 0;
+  color: white;
+}
+
+a.btn-info {
+  position: absolute;
+  top: 10rem;
+  left: 1rem;
+  z-index: 999;
+}
