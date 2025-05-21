@@ -19,6 +19,8 @@ const tagsRoutes = require('./routes/tags');
 const indexRoutes = require('./routes/index');
 const dashboardRoutes = require('./routes/dashboard');
 const pastPollsRoutes = require('./routes/pastPolls');
+const voteRoutes = require('./routes/vote');
+const saveRoutes = require('./routes/save');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -54,6 +56,8 @@ app.use('/', pollStatsRoutes);
 app.use('/', tagsRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', pastPollsRoutes);
+app.use('/', voteRoutes);
+app.use('/', saveRoutes);
 
 // 404 catch-all
 app.use((req, res) => {
