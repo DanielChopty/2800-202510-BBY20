@@ -16,18 +16,34 @@ Other: OpenWeather API was used for user's location
 .gitignore
 README.md
 app.js
-databaseConnection.js
-images/Logo.png
-images/default.jpg
+config/databaseConnection.js
+config/multerConfig.js
+
+middleware/auth.js
+middleware/session.js
+middleware/weather.js
+
 package-lock.json
 package.json
+
 pollDetail.html
-polls.js
-profile.js
+public/css/about.css
+public/css/dashboard.css
+public/css/index.css
+public/css/pastPolls.css
+public/css/pollStats.css
+public/css/profile.css
+public/css/theme.css
+
 public/images/Logo.png
-public/images/css/dashboard.css
-public/images/css/theme.css
+public/images/default.jpg
 public/images/homepage-background.png
+
+public/js/pastPolls.js
+public/js/pollStats.js
+public/js/polls.js
+public/js/profile.js
+
 public/uploads/1746560296377.png
 public/uploads/1746560715655.png
 public/uploads/1746560823293.png
@@ -46,14 +62,25 @@ public/uploads/1747380847170.png
 public/uploads/1747380984061.png
 public/uploads/1747381029105.png
 public/uploads/1747414727424.webp
+
+routes/admin.js
+routes/auth.js
+routes/dashboard.js
+routes/index.js
+routes/pastPolls.js
+routes/pollStats.js
+routes/polls.js
+routes/profile.js
+routes/tags.js
+
 views/403.ejs
 views/404.ejs
+views/500.ejs
 views/about.ejs
-views/admin.ejs
+views/adminDashboard.ejs
 views/citizenDashboard.ejs
 views/createPoll.ejs
 views/dashboard.ejs
-views/databaseConnection.js
 views/error.ejs
 views/index.ejs
 views/login.ejs
@@ -67,6 +94,7 @@ views/signup.ejs
 views/templates/footer.ejs
 views/templates/header.ejs
 views/templates/poll.ejs
+
 
 # How to install or run the project
 
@@ -162,6 +190,27 @@ vote on later, or keep track of.
 
 On the other hand City Officials have a slightly different experience. When you create a City Official account, you are able to 
 post polls for the citizens to vote on. Tags can be added to these polls so that they are better filtered and stand out. Also, City Officials have their own dashboard to view stats like which option citizens voted the most on their poll, and how many citizens saved their poll. These important insights help City Officials plan and optomize their ideas.
+
+Citizens are not allowed to access the same features City Officials have at their fingertips which keeps the app consistent 
+for the two types of people that will be using it.
+
+
+# Credits, References, and Licenses
+
+Developers:
+Daniel Chopty,
+Jayden Bergstrome, 
+Mykyta Bozhanov, 
+Baltaj Bhandal, 
+Jun Morimoto
+
+License:
+
+
+# How AI and API's were used
+
+The main API that was used in the project was the OpenWeather API, and we have used this to implement personalization
+for the user 
 
 
 
