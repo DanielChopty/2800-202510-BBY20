@@ -3,11 +3,10 @@ const router = express.Router();
 const { ObjectId } = require('mongodb');
 const { database } = require('../config/databaseConnection');
 const upload = require('../config/multerConfig');
+const { isAuthenticated } = require('../middleware/auth');
 
 // GET /profile - user profile page
-router.get('/profile', async (req, res) => {
-  if (!req.session.authenticated) return res.redirect('/');
-
+router.get('/profile', isAuthenticated, async (req, res) => {
   try {
     const userCollection = database.db(process.env.MONGODB_DATABASE_USERS).collection('users');
     const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
@@ -15,7 +14,7 @@ router.get('/profile', async (req, res) => {
     const user = await userCollection.findOne({ email: req.session.email });
     if (!user) return res.redirect('/');
 
-    // Get saved polls if available
+    // Fetch saved polls
     let savedPollsData = [];
     if (user.savedPolls?.length > 0) {
       savedPollsData = await pollsCollection
@@ -23,6 +22,12 @@ router.get('/profile', async (req, res) => {
         .toArray();
     }
 
+    // Fetch available polls and count how many the user hasn't voted on
+    const allAvailablePolls = await pollsCollection.find({ available: true }).toArray();
+    const votedPolls = user.votedPolls || {};
+    const newPollCount = allAvailablePolls.filter(p => !votedPolls[p._id.toString()]).length;
+
+    // Handle message from feelings input
     const personalizedMessage = req.session.personalizedMessage || '';
     req.session.personalizedMessage = '';
 
@@ -31,7 +36,8 @@ router.get('/profile', async (req, res) => {
       username: user.name,
       user,
       savedPolls: savedPollsData,
-      personalizedMessage
+      personalizedMessage,
+      newPollCount
     });
   } catch (error) {
     console.error('Error rendering profile page:', error);
