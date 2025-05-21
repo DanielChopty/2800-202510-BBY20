@@ -1,7 +1,10 @@
 // CLIENT-SIDE SCRIPTS FOR PASTPOLLS.EJS
 
+let originalPollData = null;
+
 // Script to open the edit modal
 function openEditModal(poll) {
+  originalPollData = JSON.parse(JSON.stringify(poll));
   document.getElementById('pollId').value = poll._id;
   document.getElementById('title').value = poll.title || '';
   document.getElementById('description').value = poll.description || '';
@@ -103,6 +106,55 @@ function toggleDetails(id, fullText) {
   }
 }
 
+function resetEditPollForm() {
+  if (!originalPollData) return;
+
+  // Reset core fields
+  document.getElementById('pollId').value = originalPollData._id;
+  document.getElementById('title').value = originalPollData.title || '';
+  document.getElementById('description').value = originalPollData.description || '';
+  document.getElementById('importance').value = originalPollData.importance || 'Low';
+  document.getElementById('available').value = originalPollData.available ? 'true' : 'false';
+
+  // Reset options
+  const optionInputs = document.querySelectorAll('.option-input');
+  for (let i = 0; i < optionInputs.length; i++) {
+    optionInputs[i].value = originalPollData.choices && originalPollData.choices[i]
+      ? originalPollData.choices[i].text
+      : '';
+  }
+
+  // Reset dates
+  document.getElementById('startDate').value = originalPollData.startDate
+    ? new Date(originalPollData.startDate).toISOString().split('T')[0]
+    : '';
+  document.getElementById('endDate').value = originalPollData.endDate
+    ? new Date(originalPollData.endDate).toISOString().split('T')[0]
+    : '';
+
+  // Reset tags
+  const tagCheckboxes = document.querySelectorAll('.btn-check[name="tags[]"]');
+  const selectedTagsContainer = document.getElementById('editSelectedTags');
+  tagCheckboxes.forEach(cb => cb.checked = false);
+  selectedTagsContainer.innerHTML = '';
+
+  if (originalPollData.tags) {
+    const tagsArray = Array.isArray(originalPollData.tags)
+      ? originalPollData.tags
+      : originalPollData.tags.split(',');
+    tagsArray.forEach(tag => {
+      const trimmed = tag.trim();
+      const checkbox = document.querySelector(`.btn-check[value="${trimmed}"]`);
+      if (checkbox) checkbox.checked = true;
+
+      const badge = document.createElement('span');
+      badge.className = 'badge bg-info text-dark me-1';
+      badge.textContent = trimmed;
+      selectedTagsContainer.appendChild(badge);
+    });
+  }
+}
+
 // Delete poll confirmation script 
 function confirmDelete(event, pollId) {
   event.preventDefault();
@@ -185,6 +237,7 @@ function confirmEdit(event) {
 }
 
 // Event listener to give acknowledgement message that poll has been deleted/edited
+// Event listener to give acknowledgement message that poll has been deleted/edited
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -210,5 +263,11 @@ window.addEventListener('DOMContentLoaded', () => {
       const newUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
     });
+  }
+
+  // Attach reset button listener
+  const resetBtn = document.getElementById('resetEditBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetEditPollForm);
   }
 });
