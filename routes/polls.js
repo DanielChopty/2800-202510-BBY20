@@ -225,4 +225,35 @@ router.post('/poll/:id/comment', isAuthenticated, async (req, res) => {
   }
 });
 
+// POST /poll/:id/comment/delete — remove one comment by its timestamp + owner
+router.post('/poll/:id/comment/delete', isAuthenticated, async (req, res) => {
+  const pollId = req.params.id;
+  const createdAt = new Date(req.body.createdAt);
+  const username = req.session.user.name;
+
+  try {
+    const pollsCollection = database
+      .db(process.env.MONGODB_DATABASE_POLLS)
+      .collection('polls');
+
+    await pollsCollection.updateOne(
+      { _id: new ObjectId(pollId) },
+      {
+        $pull: {
+          comments: {
+            commenter: username,
+            createdAt: createdAt
+          }
+        }
+      }
+    );
+
+    res.redirect(`/poll/${pollId}#comments`);
+  } catch (err) {
+    console.error('Error deleting comment:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
+
 module.exports = router;
