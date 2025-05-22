@@ -125,7 +125,7 @@
                                         </p>
                                     </div>
                                     <% if (authenticated && user && user.name===c.commenter) { %>
-                                        <form action="/poll/<%= poll._id %>/comment/delete" method="POST" class="ms-2">
+                                        <form action="/poll/<%= poll._id %>/comment/delete" method="POST" class="ms-2 comment-delete-form">
                                             <input type="hidden" name="createdAt"
                                                 value="<%= c.createdAt.toISOString() %>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
@@ -158,6 +158,27 @@
         </main>
 
         <%- include('templates/footer') %>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.comment-delete-form').forEach(form => {
+            form.addEventListener('submit', e => {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This comment will be permanently deleted.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#dc3545'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            });
+        });
+    </script>
 </body>
 </html>
