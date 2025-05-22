@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
             color: '#fff',
             font: {
               weight: 'bold',
-              size: 16
+              size: 20
             },
             formatter: function (value) {
               return value;
