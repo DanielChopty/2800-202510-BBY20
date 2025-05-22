@@ -84,66 +84,116 @@ router.get('/createPoll', isAuthenticated, isAdmin, (req, res) => {
 // POST /createPoll - Handle poll creation form submission
 router.post('/createPoll', isAuthenticated, async (req, res) => {
   console.log('POST /createPoll hit', req.body);
-  try {
-    const {
-      title,
-      tags = '',
-      options = [],
-      importance,
-      startDate,
-      endDate,
-      visibility,
-      description
-    } = req.body;
 
-    const choices = Array.isArray(options)
-      ? options.filter(opt => opt && opt.trim().length > 0).map(opt => ({ text: opt.trim(), votes: 0 }))
-      : [];
+  const {
+    title,
+    tags = '',
+    options = [],
+    importance,
+    startDate,
+    endDate,
+    visibility,
+    description
+  } = req.body;
 
-    if (choices.length < 2) {
-      return res.render('createPoll', {
-        created: false,
-        redirectError: null,
-        submitErrors: ['Please provide at least two options.'],
-        formData: req.body
-      });
+  // Collect validation errors
+  const errors = [];
+
+  // 1) Title must be non-empty (beyond whitespace)
+  if (!title || !title.trim()) {
+    errors.push('Poll question is required.');
+  }
+
+  // 2) At least two non-blank options
+  const choices = Array.isArray(options)
+    ? options.filter(o => o && o.trim()).map(o => ({ text: o.trim(), votes: 0 }))
+    : [];
+  if (choices.length < 2) {
+    errors.push('Please provide at least two options.');
+  }
+
+  // 3) Importance & Visibility required
+  if (!importance) {
+    errors.push('Please choose an importance level.');
+  }
+  if (!visibility) {
+    errors.push('Please choose a visibility.');
+  }
+
+  // 4) Dates: both required
+  if (!startDate) {
+    errors.push('Please select a start date.');
+  }
+  if (!endDate) {
+    errors.push('Please select an end date.');
+  }
+
+  // 5) Temporal logic (only if both provided)
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end   = new Date(endDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (end <= start) {
+      errors.push('End date must be after start date.');
     }
+    if (end <= today) {
+      errors.push('End date must be in the future.');
+    }
+  }
 
-    const tagArray = tags
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag.length > 0);
+  // If any validation failed, re-render with all errors + the user's inputs
+  if (errors.length) {
+    return res.render('createPoll', {
+      created:       false,
+      redirectError: null,
+      submitErrors:  errors,
+      formData:      req.body
+    });
+  }
 
-    const pollDoc = {
-      title: title.trim(),
-      tags: tagArray,
-      importance,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      visibility,
-      description: description?.trim() || '',
-      createdBy: req.session.email,
-      createdAt: new Date(),
-      available: true,
-      choices,
-      comments: [],
-      views: 0,
-      savedBy: []
-    };
+  // Build the tags array
+  const tagArray = tags
+    .split(',')
+    .map(tag => tag.trim())
+    .filter(tag => tag.length > 0);
 
-    const pollsCollection = database
-      .db(process.env.MONGODB_DATABASE_POLLS)
-      .collection('polls');
+  // Construct the poll document
+  const pollDoc = {
+    title:       title.trim(),
+    tags:        tagArray,
+    importance,
+    startDate:   new Date(startDate),
+    endDate:     new Date(endDate),
+    visibility,
+    description: description?.trim() || '',
+    createdBy:   req.session.email,
+    createdAt:   new Date(),
+    available:   true,
+    choices,
+    comments:    [],
+    views:       0,
+    savedBy:     []
+  };
 
+  // Insert into MongoDB
+  const pollsCollection = database
+    .db(process.env.MONGODB_DATABASE_POLLS)
+    .collection('polls');
+
+  try {
     const result = await pollsCollection.insertOne(pollDoc);
     console.log('Inserted poll with _id:', result.insertedId);
 
+    // On success, redirect to show the "created" SweetAlert
     res.redirect('/createPoll?created=true');
   } catch (err) {
     console.error('Error creating poll:', err);
     res.status(500).render('500', { title: 'Server Error' });
   }
 });
+
 
 // POST /poll/:id/comment - Add a new comment to a poll
 router.post('/poll/:id/comment', isAuthenticated, async (req, res) => {
