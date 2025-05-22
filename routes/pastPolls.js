@@ -97,4 +97,15 @@ router.post('/deletepoll/:id', isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+router.post('/delete-all-polls', isAuthenticated, isAdmin, async (req, res) => {
+  try {
+    const pollsCollection = database.db(process.env.MONGODB_DATABASE_POLLS).collection('polls');
+    await pollsCollection.deleteMany({ createdBy: req.session.email });
+    res.redirect('/pastpolls?deletedAll=true');
+  } catch (err) {
+    console.error('Error deleting all polls:', err);
+    res.status(500).render('500', { title: 'Server Error' });
+  }
+});
+
 module.exports = router;

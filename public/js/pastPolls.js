@@ -1,7 +1,10 @@
 // CLIENT-SIDE SCRIPTS FOR PASTPOLLS.EJS
 
+let originalPollData = null;
+
 // Script to open the edit modal
 function openEditModal(poll) {
+  originalPollData = JSON.parse(JSON.stringify(poll));
   document.getElementById('pollId').value = poll._id;
   document.getElementById('title').value = poll.title || '';
   document.getElementById('description').value = poll.description || '';
@@ -103,6 +106,75 @@ function toggleDetails(id, fullText) {
   }
 }
 
+function resetEditPollForm() {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will discard all unsaved changes.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, reset it!',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#f36f21'
+  }).then((result) => {
+    if (!result.isConfirmed) return;
+
+    if (!originalPollData) return;
+
+    // Reset core fields
+    document.getElementById('pollId').value = originalPollData._id;
+    document.getElementById('title').value = originalPollData.title || '';
+    document.getElementById('description').value = originalPollData.description || '';
+    document.getElementById('importance').value = originalPollData.importance || 'Low';
+    document.getElementById('available').value = originalPollData.available ? 'true' : 'false';
+
+    // Reset options
+    const optionInputs = document.querySelectorAll('.option-input');
+    for (let i = 0; i < optionInputs.length; i++) {
+      optionInputs[i].value = originalPollData.choices && originalPollData.choices[i]
+        ? originalPollData.choices[i].text
+        : '';
+    }
+
+    // Reset dates
+    document.getElementById('startDate').value = originalPollData.startDate
+      ? new Date(originalPollData.startDate).toISOString().split('T')[0]
+      : '';
+    document.getElementById('endDate').value = originalPollData.endDate
+      ? new Date(originalPollData.endDate).toISOString().split('T')[0]
+      : '';
+
+    // Reset tags
+    const tagCheckboxes = document.querySelectorAll('.btn-check[name="tags[]"]');
+    const selectedTagsContainer = document.getElementById('editSelectedTags');
+    tagCheckboxes.forEach(cb => cb.checked = false);
+    selectedTagsContainer.innerHTML = '';
+
+    if (originalPollData.tags) {
+      const tagsArray = Array.isArray(originalPollData.tags)
+        ? originalPollData.tags
+        : originalPollData.tags.split(',');
+      tagsArray.forEach(tag => {
+        const trimmed = tag.trim();
+        const checkbox = document.querySelector(`.btn-check[value="${trimmed}"]`);
+        if (checkbox) checkbox.checked = true;
+
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-info text-dark me-1';
+        badge.textContent = trimmed;
+        selectedTagsContainer.appendChild(badge);
+      });
+    }
+
+    // Show success acknowledgement
+    Swal.fire({
+      icon: 'success',
+      title: 'Reset Complete',
+      text: 'The form has been restored to its original state.',
+      confirmButtonColor: '#003366'
+    });
+  });
+}
+
 // Delete poll confirmation script 
 function confirmDelete(event, pollId) {
   event.preventDefault();
@@ -184,6 +256,29 @@ function confirmEdit(event) {
   return false;
 }
 
+function setupDeleteAllListener() {
+  const form = document.getElementById('deleteAllForm');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault(); // Stop form from submitting immediately
+
+    Swal.fire({
+      title: 'Delete All Polls?',
+      text: 'This will permanently delete all polls you’ve created.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete all!',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc3545'
+    }).then(result => {
+      if (result.isConfirmed) {
+        form.submit(); // Only submit if confirmed
+      }
+    });
+  });
+}
+
 // Event listener to give acknowledgement message that poll has been deleted/edited
 window.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -209,6 +304,46 @@ window.addEventListener('DOMContentLoaded', () => {
     }).then(() => {
       const newUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
+    });
+  }
+
+  if (urlParams.get('deletedAll') === 'true') {
+    Swal.fire({
+      icon: 'success',
+      title: 'All Polls Deleted',
+      text: 'All your polls have been removed.',
+      confirmButtonColor: '#003366'
+    }).then(() => {
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    });
+  }
+
+  // Attach reset button listener
+  const resetBtn = document.getElementById('resetEditBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetEditPollForm);
+  }
+
+  // Attach delete all polls confirmation listener
+  const deleteAllForm = document.getElementById('deleteAllForm');
+  if (deleteAllForm) {
+    deleteAllForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      Swal.fire({
+        title: 'Delete All Polls?',
+        text: 'This will permanently delete all polls you’ve created.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete all!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#dc3545'
+      }).then(result => {
+        if (result.isConfirmed) {
+          deleteAllForm.submit();
+        }
+      });
     });
   }
 });

@@ -62,7 +62,7 @@ router.post('/signup', async (req, res) => {
     req.session.email = insertedUser.email;
     req.session.user = insertedUser;
     req.session.votedPolls = insertedUser.votedPolls || {};
-    req.session.cookie.maxAge = 60 * 60 * 1000 * 24; // 1 day
+    req.session.cookie.maxAge = 60 * 60 * 1000 * 24;
 
     res.redirect('/dashboard');
   } catch (err) {
