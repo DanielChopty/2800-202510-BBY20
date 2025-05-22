@@ -71,7 +71,14 @@ router.get('/poll/:id', async (req, res) => {
 
 router.get('/createPoll', isAuthenticated, isAdmin, (req, res) => {
   const created = req.query.created === 'true';
-  res.render('createPoll', { created });
+  const redirectError = req.query.error || null;
+
+  res.render('createPoll', { 
+    created,
+    redirectError,
+    submitErrors: [],
+    formData: {}
+   });
 });
 
 // POST /createPoll - Handle poll creation form submission
@@ -94,7 +101,12 @@ router.post('/createPoll', isAuthenticated, async (req, res) => {
       : [];
 
     if (choices.length < 2) {
-      return res.status(400).send('Please provide at least two valid poll options.');
+      return res.render('createPoll', {
+        created: false,
+        redirectError: null,
+        submitErrors: ['Please provide at least two options.'],
+        formData: req.body
+      });
     }
 
     const tagArray = tags

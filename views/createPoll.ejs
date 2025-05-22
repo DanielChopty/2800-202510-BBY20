@@ -18,37 +18,46 @@
         <div class="col-lg-8">
           <h2 class="mb-4 text-center text-primary">Create a New Poll</h2>
 
+          <!-- Redirect Error Check -->
+          <% if (redirectError) { %>
+            <div class="alert alert-warning">
+              <%= redirectError %>
+            </div>
+          <% } %>
+
           <form method="POST" action="/createPoll">
             <!-- Poll Question -->
             <div class="mb-3">
               <label for="question" class="form-label">Poll Question</label>
-              <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question">
+              <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question" value="<%= formData.title || '' %>">
             </div>
 
             <!-- Description -->
             <div class="mb-3">
               <label for="description" class="form-label">Description</label>
               <textarea class="form-control" id="description" name="description" rows="3"
-                placeholder="Enter a short description for the poll..."></textarea>
+                placeholder="Enter a short description for the poll..."><%= formData.description || '' %></textarea>
             </div>
 
             <!-- Options -->
             <div class="mb-3">
               <label class="form-label">Options (Enter at least two)</label>
-              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 1">
-              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 2">
-              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 3 (optional)">
-              <input type="text" name="options[]" class="form-control" placeholder="Option 4 (optional)">
+              <% const opts = Array.isArray(formData.options) 
+                ? formData.options.concat('','','','').slice(0,4) 
+                : ['','','','']; %>
+                <% opts.forEach((opt, i) => { %>
+                  <input type="text" name="options[]" class="form-control mb-2" placeholder="Option <%= i+1 %><%= i<2 ? '' : ' (optional)' %>" value="<%= opt %>">
+                <% }) %>
             </div>
 
             <!-- Importance -->
             <div class="mb-3">
               <label for="importance" class="form-label">Importance</label>
               <select class="form-select" name="importance" id="importance">
-                <option selected disabled>Choose importance</option>
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
+                <option disabled <%= !formData.importance ? 'selected' : '' %>>Choose importance</option>
+                <% ['Low','Medium','High'].forEach(level => { %>
+                  <option <%= formData.importance===level ? 'selected' : '' %>><%= level %></option>
+                <% }) %>
               </select>
             </div>
 
@@ -56,11 +65,11 @@
             <div class="row mb-3">
               <div class="col">
                 <label for="startDate" class="form-label">Start Date</label>
-                <input type="date" name="startDate" class="form-control" id="startDate">
+                <input type="date" name="startDate" class="form-control" id="startDate" value="<%= formData.startDate || '' %>">
               </div>
               <div class="col">
                 <label for="endDate" class="form-label">End Date</label>
-                <input type="date" name="endDate" class="form-control" id="endDate">
+                <input type="date" name="endDate" class="form-control" id="endDate" value="<%= formData.endDate || '' %>">
               </div>
             </div>
 
@@ -68,9 +77,10 @@
             <div class="mb-3">
               <label for="visibility" class="form-label">Visibility</label>
               <select class="form-select" name="visibility" id="visibility">
-                <option selected disabled>Select visibility</option>
-                <option>Public</option>
-                <option>Internal</option>
+                <option disabled <%= !formData.visibility ? 'selected' : '' %>>Select visibility</option>
+                <% ['Public','Internal'].forEach(vis => { %>
+                  <option <%= formData.visibility===vis ? 'selected' : '' %>><%= vis %></option>
+                <% }) %>
               </select>
             </div>
 
@@ -99,6 +109,16 @@
               <div id="selectedTags" class="mt-2"></div>
               <input type="hidden" name="tags" id="tagsInput">
             </div>
+
+            <% if (submitErrors && submitErrors.length) { %>
+              <div class="alert alert-warning mt-3">
+                <ul class="mb-0">
+                  <% submitErrors.forEach(error => { %>
+                    <li><%= error %></li>
+                  <% }) %>
+                </ul>
+              </div>
+            <% } %>
 
             <!-- Submit Button -->
             <div class="text-center">
