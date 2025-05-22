@@ -28,7 +28,7 @@
           <form method="POST" action="/createPoll">
             <!-- Poll Question -->
             <div class="mb-3">
-              <label for="question" class="form-label">Poll Question</label>
+              <label for="question" class="form-label">Poll Question <span class="text-danger">*</span></label>
               <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question" value="<%= formData.title || '' %>">
             </div>
 
@@ -41,18 +41,40 @@
 
             <!-- Options -->
             <div class="mb-3">
-              <label class="form-label">Options (Enter at least two)</label>
-              <% const opts = Array.isArray(formData.options) 
-                ? formData.options.concat('','','','').slice(0,4) 
-                : ['','','','']; %>
-                <% opts.forEach((opt, i) => { %>
-                  <input type="text" name="options[]" class="form-control mb-2" placeholder="Option <%= i+1 %><%= i<2 ? '' : ' (optional)' %>" value="<%= opt %>">
-                <% }) %>
+              <label class="form-label">
+                Options
+                <small class="text-muted">(Enter at least two)</small>
+              </label>
+              <% 
+                const opts = Array.isArray(formData.options)
+                  ? formData.options.concat('','','','').slice(0,4)
+                  : ['','','',''];
+              %>
+              <% opts.forEach((opt, i) => { %>
+                <div class="mb-2">
+                  <label for="option<%= i %>" class="form-label">
+                    Option <%= i+1 %>
+                    <% if (i < 2) { %>
+                      <span class="text-danger">*</span>
+                    <% } else { %>
+                      <small class="text-muted">(optional)</small>
+                    <% } %>
+                  </label>
+                  <input
+                    type="text"
+                    id="option<%= i %>"
+                    name="options[]"
+                    class="form-control"
+                    placeholder="Enter option <%= i+1 %>"
+                    value="<%= opt %>"
+                  >
+                </div>
+              <% }) %>
             </div>
 
             <!-- Importance -->
             <div class="mb-3">
-              <label for="importance" class="form-label">Importance</label>
+              <label for="importance" class="form-label">Importance <span class="text-danger">*</span></label>
               <select class="form-select" name="importance" id="importance">
                 <option disabled <%= !formData.importance ? 'selected' : '' %>>Choose importance</option>
                 <% ['Low','Medium','High'].forEach(level => { %>
@@ -64,18 +86,18 @@
             <!-- Start and End Dates -->
             <div class="row mb-3">
               <div class="col">
-                <label for="startDate" class="form-label">Start Date</label>
+                <label for="startDate" class="form-label">Start Date <span class="text-danger">*</span></label>
                 <input type="date" name="startDate" class="form-control" id="startDate" value="<%= formData.startDate || '' %>">
               </div>
               <div class="col">
-                <label for="endDate" class="form-label">End Date</label>
+                <label for="endDate" class="form-label">End Date <span class="text-danger">*</span></label>
                 <input type="date" name="endDate" class="form-control" id="endDate" value="<%= formData.endDate || '' %>">
               </div>
             </div>
 
             <!-- Visibility -->
             <div class="mb-3">
-              <label for="visibility" class="form-label">Visibility</label>
+              <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
               <select class="form-select" name="visibility" id="visibility">
                 <option disabled <%= !formData.visibility ? 'selected' : '' %>>Select visibility</option>
                 <% ['Public','Internal'].forEach(vis => { %>
