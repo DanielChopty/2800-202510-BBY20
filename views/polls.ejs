@@ -43,7 +43,6 @@
       </div>
     </div>
 
-
     <!-- Main Content -->
     <main class="container mt-4">
       <div class="mx-auto" style="max-width: 700px;">
@@ -93,8 +92,34 @@
         }
       </script>
 
-    <!-- The javascript code related to save functionality in this page -->
-    <script src="polls.js"></script>
-</body>
+       <script id="saved-polls-data" type="application/json">
+  <%= JSON.stringify(savedPollIds) %>
+      </script>
 
+    <!-- The javascript code related to save functionality in this page -->
+    <script src="/js/polls.js"></script>
+   
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.querySelectorAll('.unvote-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'This will remove your vote.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, remove it',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#d33'
+        }).then(result => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
+  </script>
+</body>
 </html>

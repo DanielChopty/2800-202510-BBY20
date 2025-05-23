@@ -10,17 +10,38 @@
     rel="stylesheet"
   />
 </head>
+  <!-- Background -->
+  <style>
+      body {
+        background: url('/images/homepage-background.png') no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .bg-overlay {
+        background-color: rgba(255, 255, 255, 0.75);
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-top: 1.5rem;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        transition: 0.2s ease-in-out;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+    </style>
 <body class="bg-light">
 
   <%- include('templates/header') %>
 
   <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow border-0 p-4 rounded-4" style="max-width: 400px; width: 100%;">
-      <h2 class="text-center mb-4" style="color: #003366;">Sign Up</h2> <!-- Deep Blue -->
+      <h2 class="text-center mb-4" style="color: #003366;">Sign Up</h2>
 
       <form action="/signup" method="POST">
         <div class="mb-3">
-          <label for="name" class="form-label">Name</label>
+          <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -31,7 +52,7 @@
         </div>
 
         <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
+          <label for="email" class="form-label">Email address <span class="text-danger">*</span></label>
           <input
             type="email"
             class="form-control"
@@ -42,7 +63,7 @@
         </div>
 
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
+          <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
           <input
             type="password"
             class="form-control"
@@ -62,7 +83,7 @@
           <button
             type="submit"
             class="btn text-white"
-            style="background-color: #f36f21;" <!-- Civic Orange -->
+            style="background-color: #f36f21;">
             Sign Up
           </button>
         </div>

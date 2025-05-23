@@ -18,65 +18,97 @@
         <div class="col-lg-8">
           <h2 class="mb-4 text-center text-primary">Create a New Poll</h2>
 
+          <!-- Redirect Error Check -->
+          <% if (redirectError) { %>
+            <div class="alert alert-warning">
+              <%= redirectError %>
+            </div>
+          <% } %>
+
           <form method="POST" action="/createPoll">
             <!-- Poll Question -->
             <div class="mb-3">
-              <label for="question" class="form-label">Poll Question</label>
-              <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question">
+              <label for="question" class="form-label">Poll Question <span class="text-danger">*</span></label>
+              <input type="text" name="title" class="form-control" id="question" placeholder="Enter the poll question" value="<%= formData.title || '' %>">
             </div>
 
             <!-- Description -->
             <div class="mb-3">
               <label for="description" class="form-label">Description</label>
               <textarea class="form-control" id="description" name="description" rows="3"
-                placeholder="Enter a short description for the poll..."></textarea>
+                placeholder="Enter a short description for the poll..."><%= formData.description || '' %></textarea>
             </div>
 
             <!-- Options -->
             <div class="mb-3">
-              <label class="form-label">Options (Enter at least two)</label>
-              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 1">
-              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 2">
-              <input type="text" name="options[]" class="form-control mb-2" placeholder="Option 3 (optional)">
-              <input type="text" name="options[]" class="form-control" placeholder="Option 4 (optional)">
+              <label class="form-label">
+                Options
+                <small class="text-muted">(Enter at least two)</small>
+              </label>
+              <% 
+                const opts = Array.isArray(formData.options)
+                  ? formData.options.concat('','','','').slice(0,4)
+                  : ['','','',''];
+              %>
+              <% opts.forEach((opt, i) => { %>
+                <div class="mb-2">
+                  <label for="option<%= i %>" class="form-label">
+                    Option <%= i+1 %>
+                    <% if (i < 2) { %>
+                      <span class="text-danger">*</span>
+                    <% } else { %>
+                      <small class="text-muted">(optional)</small>
+                    <% } %>
+                  </label>
+                  <input
+                    type="text"
+                    id="option<%= i %>"
+                    name="options[]"
+                    class="form-control"
+                    placeholder="Enter option <%= i+1 %>"
+                    value="<%= opt %>"
+                  >
+                </div>
+              <% }) %>
             </div>
 
             <!-- Importance -->
             <div class="mb-3">
-              <label for="importance" class="form-label">Importance</label>
+              <label for="importance" class="form-label">Importance <span class="text-danger">*</span></label>
               <select class="form-select" name="importance" id="importance">
-                <option selected disabled>Choose importance</option>
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
+                <option disabled <%= !formData.importance ? 'selected' : '' %>>Choose importance</option>
+                <% ['Low','Medium','High'].forEach(level => { %>
+                  <option <%= formData.importance===level ? 'selected' : '' %>><%= level %></option>
+                <% }) %>
               </select>
             </div>
 
             <!-- Start and End Dates -->
             <div class="row mb-3">
               <div class="col">
-                <label for="startDate" class="form-label">Start Date</label>
-                <input type="date" name="startDate" class="form-control" id="startDate">
+                <label for="startDate" class="form-label">Start Date <span class="text-danger">*</span></label>
+                <input type="date" name="startDate" class="form-control" id="startDate" value="<%= formData.startDate || '' %>">
               </div>
               <div class="col">
-                <label for="endDate" class="form-label">End Date</label>
-                <input type="date" name="endDate" class="form-control" id="endDate">
+                <label for="endDate" class="form-label">End Date <span class="text-danger">*</span></label>
+                <input type="date" name="endDate" class="form-control" id="endDate" value="<%= formData.endDate || '' %>">
               </div>
             </div>
 
             <!-- Visibility -->
             <div class="mb-3">
-              <label for="visibility" class="form-label">Visibility</label>
+              <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
               <select class="form-select" name="visibility" id="visibility">
-                <option selected disabled>Select visibility</option>
-                <option>Public</option>
-                <option>Internal</option>
+                <option disabled <%= !formData.visibility ? 'selected' : '' %>>Select visibility</option>
+                <% ['Public','Internal'].forEach(vis => { %>
+                  <option <%= formData.visibility===vis ? 'selected' : '' %>><%= vis %></option>
+                <% }) %>
               </select>
             </div>
 
             <div class="mb-3">
               <label class="form-label">Tags</label>
-              <div class="btn-group" role="group" aria-label="Tag selection">
+              <div class="d-flex flex-wrap gap-2" role="group" aria-label="Tag selection">
                 <input type="checkbox" class="btn-check" id="tag1" autocomplete="off" value="#DailyLife">
                 <label class="btn btn-outline-primary" for="tag1">#DailyLife</label>
 
@@ -100,9 +132,20 @@
               <input type="hidden" name="tags" id="tagsInput">
             </div>
 
-            <!-- Submit Button -->
+            <% if (submitErrors && submitErrors.length) { %>
+              <div class="alert alert-warning mt-3">
+                <ul class="mb-0">
+                  <% submitErrors.forEach(error => { %>
+                    <li><%= error %></li>
+                  <% }) %>
+                </ul>
+              </div>
+            <% } %>
+
+            <!-- Submit & Reset Button -->
             <div class="text-center">
               <button type="submit" class="btn btn-primary">Submit Poll</button>
+              <button type="button" id="resetBtn" class="btn btn-outline-secondary ms-2">Reset</button>             
             </div>
           </form>
         </div>
@@ -174,6 +217,27 @@
           });
         </script>
         <% } %>
+
+        <script>
+          document.getElementById('resetBtn').addEventListener('click', function() {
+            Swal.fire({
+              title: 'Clear all fields?',
+              text: 'This will erase everything you’ve entered.',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Yes, reset',
+              cancelButtonText: 'Cancel',
+              confirmButtonColor: '#d33'
+            }).then(result => {
+              if (result.isConfirmed) {
+                document.querySelector('form').reset();
+
+                document.getElementById('selectedTags').innerHTML = '';
+                document.getElementById('tagsInput').value = '';
+              }
+            });
+          });
+        </script>
 
 </body>
 </html>
