@@ -175,7 +175,7 @@ function resetEditPollForm() {
   });
 }
 
-// Delete poll confirmation script 
+// Delete poll confirmation script
 function confirmDelete(event, pollId) {
   event.preventDefault();
   Swal.fire({
